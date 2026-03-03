@@ -1,0 +1,74 @@
+# =========================
+# Python cache
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Jupyter Notebook
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Data files (do not upload datasets)
+# =========================
+# Ignore only Sports dataset
+data/Amazon/*/Sports*
+data/Amazon18/
+data/Amazon14/
+data/Amazon/index/.cache/
+data/Amazon/train/.cache/
+data/Amazon/valid/.cache/
+temp/
+data/Amazon14_Processed/
+raw_data/
+data/Amazon/info/Toys_and_Games_5_2016-10-2018-11.txt
+data/Amazon/test/Toys_and_Games_5_2016-10-2018-11.csv
+data/Amazon/train/Toys_and_Games_5_2016-10-2018-11.csv
+results/final_checkpoint/final_result_Toys_and_Games.json
+results/final_checkpoint/final_result_Office_Products.json
+results/final_checkpoint/final_result_Industrial_and_Scientific.json
+results/checkpoint-1416
+results/checkpoint-1800
+results/checkpoint-627
+data/Amazon/valid/Toys_and_Games_5_2016-10-2018-11.csv
+# =========================
+# Output / experiment results
+# =========================
+output/
+logs/
+
+# =========================
+# Model checkpoints
+# =========================
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+
+# =========================
+# WandB
+# =========================
+wandb/
+
+# =========================
+# Environment files
+# =========================
+.env
+.venv/
+venv/
+conda-meta/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDE
+# =========================
+.vscode/
+.idea/

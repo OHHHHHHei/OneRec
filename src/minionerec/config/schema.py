@@ -1,0 +1,116 @@
+from dataclasses import dataclass, field
+
+from .base import StageConfig
+
+
+@dataclass
+class ModelConfig:
+    base_model: str = ""
+    train_from_scratch: bool = False
+
+
+@dataclass
+class DataConfig:
+    train_file: str = ""
+    eval_file: str = ""
+    test_file: str = ""
+    item_meta_path: str = ""
+    sid_index_path: str = ""
+    info_file: str = ""
+    data_dir: str = ""
+    dataset_name: str = ""
+    output_dir: str = ""
+    category: str = ""
+
+
+@dataclass
+class TrainConfig:
+    batch_size: int = 32
+    micro_batch_size: int = 4
+    num_epochs: int = 1
+    learning_rate: float = 1e-4
+    seed: int = 42
+    freeze_llm: bool = False
+    gradient_accumulation_steps: int = 1
+    train_batch_size: int = 32
+    eval_batch_size: int = 32
+    num_generations: int = 8
+    temperature: float = 1.0
+    beta: float = 1e-3
+    reward_type: str = "ranking"
+
+
+@dataclass
+class LoggingConfig:
+    wandb_project: str = ""
+    wandb_run_name: str = ""
+    report_to: str = "wandb"
+
+
+@dataclass
+class OutputConfig:
+    output_dir: str = ""
+    save_total_limit: int = 2
+    resume_from_checkpoint: str | None = None
+
+
+@dataclass
+class PreprocessConfig(StageConfig):
+    data: DataConfig = field(default_factory=DataConfig)
+    training: TrainConfig = field(default_factory=TrainConfig)
+    output: OutputConfig = field(default_factory=OutputConfig)
+
+
+@dataclass
+class EmbedConfig(StageConfig):
+    data: DataConfig = field(default_factory=DataConfig)
+    model: ModelConfig = field(default_factory=ModelConfig)
+    training: TrainConfig = field(default_factory=TrainConfig)
+    output: OutputConfig = field(default_factory=OutputConfig)
+
+
+@dataclass
+class SidTrainConfig(StageConfig):
+    data: DataConfig = field(default_factory=DataConfig)
+    training: TrainConfig = field(default_factory=TrainConfig)
+    output: OutputConfig = field(default_factory=OutputConfig)
+
+
+@dataclass
+class SidGenerateConfig(StageConfig):
+    data: DataConfig = field(default_factory=DataConfig)
+    model: ModelConfig = field(default_factory=ModelConfig)
+    output: OutputConfig = field(default_factory=OutputConfig)
+
+
+@dataclass
+class ConvertConfig(StageConfig):
+    data: DataConfig = field(default_factory=DataConfig)
+    training: TrainConfig = field(default_factory=TrainConfig)
+    output: OutputConfig = field(default_factory=OutputConfig)
+
+
+@dataclass
+class SFTConfig(StageConfig):
+    model: ModelConfig = field(default_factory=ModelConfig)
+    data: DataConfig = field(default_factory=DataConfig)
+    training: TrainConfig = field(default_factory=TrainConfig)
+    logging: LoggingConfig = field(default_factory=LoggingConfig)
+    output: OutputConfig = field(default_factory=OutputConfig)
+
+
+@dataclass
+class RLConfig(StageConfig):
+    model: ModelConfig = field(default_factory=ModelConfig)
+    data: DataConfig = field(default_factory=DataConfig)
+    training: TrainConfig = field(default_factory=TrainConfig)
+    logging: LoggingConfig = field(default_factory=LoggingConfig)
+    output: OutputConfig = field(default_factory=OutputConfig)
+
+
+@dataclass
+class EvaluateConfig(StageConfig):
+    model: ModelConfig = field(default_factory=ModelConfig)
+    data: DataConfig = field(default_factory=DataConfig)
+    training: TrainConfig = field(default_factory=TrainConfig)
+    output: OutputConfig = field(default_factory=OutputConfig)

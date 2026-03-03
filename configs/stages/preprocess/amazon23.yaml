@@ -1,0 +1,10 @@
+source: amazon23
+dataset: All_Beauty
+user_k: 5
+st_year: 2018
+st_month: 10
+ed_year: 2023
+ed_month: 9
+metadata_file: ../meta_All_Beauty.jsonl
+reviews_file: ../All_Beauty.jsonl
+output_path: ./data/Amazon23

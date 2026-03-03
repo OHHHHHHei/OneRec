@@ -1,0 +1,12 @@
+model:
+  base_model: ./output/sft_Industrial_and_Scientific_refactor/final_checkpoint
+data:
+  test_file: ./data/Amazon/test/Industrial_and_Scientific_5_2016-10-2018-11.csv
+  info_file: ./data/Amazon/info/Industrial_and_Scientific_5_2016-10-2018-11.txt
+  category: Industrial_and_Scientific
+training:
+  seed: 42
+output:
+  output_dir: ./results/final_result_Industrial_and_Scientific.json
+num_beams: 20
+max_new_tokens: 128

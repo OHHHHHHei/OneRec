@@ -1,0 +1,27 @@
+model:
+  base_model: ./output/sft_Industrial_and_Scientific_refactor/final_checkpoint
+data:
+  train_file: ./data/Amazon/train/Industrial_and_Scientific_5_2016-10-2018-11.csv
+  eval_file: ./data/Amazon/valid/Industrial_and_Scientific_5_2016-10-2018-11.csv
+  info_file: ./data/Amazon/info/Industrial_and_Scientific_5_2016-10-2018-11.txt
+  sid_index_path: ./data/Amazon/index/Industrial_and_Scientific.index.json
+  item_meta_path: ./data/Amazon/index/Industrial_and_Scientific.item.json
+  category: Industrial_and_Scientific
+training:
+  seed: 42
+  train_batch_size: 8
+  eval_batch_size: 8
+  gradient_accumulation_steps: 1
+  num_epochs: 1
+  num_generations: 4
+  learning_rate: 0.00001
+  reward_type: ranking
+  temperature: 1.0
+  beta: 0.001
+logging:
+  wandb_project: MiniOneRec
+  wandb_run_name: rl_default
+  report_to: none
+output:
+  output_dir: ./output/rl_Industrial_and_Scientific_refactor
+  save_total_limit: 2

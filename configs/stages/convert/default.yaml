@@ -1,0 +1,9 @@
+data:
+  data_dir: ./data/Amazon/index
+  dataset_name: Industrial_and_Scientific
+  output_dir: ./data/Amazon
+  category: Industrial_and_Scientific
+training:
+  seed: 42
+info_path: ./data/Amazon/info/Industrial_and_Scientific_5_2016-10-2018-11.txt
+keep_longest_only: false

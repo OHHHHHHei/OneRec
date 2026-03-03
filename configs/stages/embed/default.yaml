@@ -1,0 +1,6 @@
+model:
+  base_model: ../Qwen3-Embedding-8B
+data:
+  data_dir: ./data/Amazon/index
+  dataset_name: Industrial_and_Scientific
+plm_name: qwen

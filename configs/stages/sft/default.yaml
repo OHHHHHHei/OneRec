@@ -1,0 +1,22 @@
+model:
+  base_model: ../Qwen3-1.7B
+data:
+  train_file: ./data/Amazon/train/Industrial_and_Scientific_5_2016-10-2018-11.csv
+  eval_file: ./data/Amazon/valid/Industrial_and_Scientific_5_2016-10-2018-11.csv
+  sid_index_path: ./data/Amazon/index/Industrial_and_Scientific.index.json
+  item_meta_path: ./data/Amazon/index/Industrial_and_Scientific.item.json
+  category: Industrial_and_Scientific
+training:
+  batch_size: 1024
+  micro_batch_size: 4
+  num_epochs: 1
+  learning_rate: 0.0003
+  seed: 42
+  freeze_llm: false
+logging:
+  wandb_project: MiniOneRec
+  wandb_run_name: sft_default
+  report_to: none
+output:
+  output_dir: ./output/sft_Industrial_and_Scientific_refactor
+  save_total_limit: 2
