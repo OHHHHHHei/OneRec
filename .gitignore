@@ -1,74 +1,70 @@
-# =========================
-# Python cache
-# =========================
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
 
-# =========================
-# Jupyter Notebook
-# =========================
+# Notebooks
 .ipynb_checkpoints/
 
-# =========================
-# Data files (do not upload datasets)
-# =========================
-# Ignore only Sports dataset
-data/Amazon/*/Sports*
-data/Amazon18/
-data/Amazon14/
-data/Amazon/index/.cache/
-data/Amazon/train/.cache/
-data/Amazon/valid/.cache/
-temp/
-data/Amazon14_Processed/
-raw_data/
-data/Amazon/info/Toys_and_Games_5_2016-10-2018-11.txt
-data/Amazon/test/Toys_and_Games_5_2016-10-2018-11.csv
-data/Amazon/train/Toys_and_Games_5_2016-10-2018-11.csv
-results/final_checkpoint/final_result_Toys_and_Games.json
-results/final_checkpoint/final_result_Office_Products.json
-results/final_checkpoint/final_result_Industrial_and_Scientific.json
-results/checkpoint-1416
-results/checkpoint-1800
-results/checkpoint-627
-data/Amazon/valid/Toys_and_Games_5_2016-10-2018-11.csv
-# =========================
-# Output / experiment results
-# =========================
-output/
-logs/
+# Build and packaging
+build/
+dist/
+site/
+*.egg-info/
+.eggs/
 
-# =========================
-# Model checkpoints
-# =========================
+# Virtual environments
+.env
+.venv/
+venv/
+env/
+ENV/
+conda-meta/
+.python-version
+
+# Editors and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and local caches
+logs/
+log/
+wandb/
+.cache/
+temp/
+tmp/
+*.log
+
+# Training and evaluation outputs
+output/
+results/
+checkpoints/
+runs/
+
+# Model artifacts
 *.pt
 *.pth
 *.ckpt
 *.bin
 *.safetensors
 
-# =========================
-# WandB
-# =========================
-wandb/
+# Data artifacts generated during preprocessing, SID construction, and training
+raw_data/
+data/Amazon/
+data/Amazon14/
+data/Amazon18/
+data/Amazon14_Processed/
+data/**/.cache/
+data/**/*.npy
 
-# =========================
-# Environment files
-# =========================
-.env
-.venv/
-venv/
-conda-meta/
-
-# =========================
-# OS files
-# =========================
-.DS_Store
-Thumbs.db
-
-# =========================
-# IDE
-# =========================
-.vscode/
-.idea/
+# Keep small fixtures used by unit tests
+!tests/fixtures/
+!tests/fixtures/**
