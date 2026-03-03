@@ -1,4 +1,4 @@
-# Project Understanding
+﻿# Project Understanding
 
 ## High-level view
 
@@ -47,3 +47,4 @@ Local validation is meant for:
 - conversion contract checks
 
 Full training and evaluation should run on a remote machine with the required GPU environment.
+

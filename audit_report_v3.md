@@ -1,4 +1,4 @@
-# Audit Report v3
+﻿# Audit Report v3
 
 ## Scope
 
@@ -24,3 +24,4 @@ cleanup posture of the repository.
 - Mainline code lives in `src/minionerec`.
 - Experimental and historical code should stay under `archive/`.
 - Large datasets and generated outputs should stay out of version control.
+
