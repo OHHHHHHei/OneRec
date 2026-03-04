@@ -10,3 +10,7 @@ output:
   output_dir: ./results/final_result_Industrial_and_Scientific.json
 num_beams: 20
 max_new_tokens: 128
+runtime:
+  launcher: python
+  cuda_visible_devices: "0"
+  nproc_per_node: 1
