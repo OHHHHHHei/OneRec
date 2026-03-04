@@ -58,7 +58,6 @@ runs/
 
 # Data artifacts generated during preprocessing, SID construction, and training
 raw_data/
-data/Amazon/
 data/Amazon14/
 data/Amazon18/
 data/Amazon14_Processed/
@@ -68,3 +67,7 @@ data/**/*.npy
 # Keep small fixtures used by unit tests
 !tests/fixtures/
 !tests/fixtures/**
+
+# Track curated Amazon artifacts in this repository
+!data/Amazon/
+!data/Amazon/**
