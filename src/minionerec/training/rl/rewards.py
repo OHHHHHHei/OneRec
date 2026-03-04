@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import logging
 import math
 import random
 
-import numpy as np
 import torch
+
+logger = logging.getLogger(__name__)
 
 
 def build_rule_reward(prompt2history, history2target):
@@ -47,11 +49,16 @@ def build_semantic_reward(prompt2history, history2target, item2id, item_embeddin
         targets = [history2target[item] for item in history]
         target_ids = [item2id[target.strip("\"\n")] for target in targets]
         resolved_completion_ids = []
-        for completion in [entry.strip("\"\n") for entry in completions]:
+        invalid_count = 0
+        for idx, completion in enumerate([entry.strip("\"\n") for entry in completions]):
             if completion in item2id:
                 resolved_completion_ids.append(item2id[completion])
             else:
+                invalid_count += 1
+                logger.warning("semantic_reward fallback for invalid completion at index=%s value=%r", idx, completion)
                 resolved_completion_ids.append(random.choice(target_ids))
+        if invalid_count > 0:
+            logger.warning("semantic_reward encountered %s/%s invalid completions; used target-based fallback ids.", invalid_count, len(completions))
         rewards = torch.cosine_similarity(item_embeddings[target_ids], item_embeddings[resolved_completion_ids], dim=-1)
         return rewards.tolist() if isinstance(rewards, torch.Tensor) else rewards
 

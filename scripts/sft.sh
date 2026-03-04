@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
+
 DEFAULT_CONFIG="configs/stages/sft/default.yaml"
 CONFIG_PATH="${MINIONEREC_CONFIG:-$DEFAULT_CONFIG}"
 
@@ -29,7 +33,7 @@ path = sys.argv[1]
 with open(path, "r", encoding="utf-8") as f:
     cfg = yaml.safe_load(f) or {}
 runtime = cfg.get("runtime", {}) if isinstance(cfg, dict) else {}
-launcher = str(runtime.get("launcher", "python")).strip() or "python"
+launcher = str(runtime.get("launcher", "torchrun")).strip() or "torchrun"
 gpus = str(runtime.get("cuda_visible_devices", "")).strip()
 nproc = runtime.get("nproc_per_node", None)
 if nproc is None:

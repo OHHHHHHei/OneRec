@@ -27,17 +27,35 @@ class DataConfig:
 class TrainConfig:
     batch_size: int = 32
     micro_batch_size: int = 4
+    cutoff_len: int = 512
+    group_by_length: bool = False
+    warmup_steps: int = 20
+    load_best_model_at_end: bool = True
+    early_stopping_patience: int = 3
     num_epochs: int = 1
     learning_rate: float = 1e-4
     seed: int = 42
     freeze_llm: bool = False
     gradient_accumulation_steps: int = 1
+    eval_step: float = 0.1
     train_batch_size: int = 32
     eval_batch_size: int = 32
     num_generations: int = 8
     temperature: float = 1.0
     beta: float = 1e-3
-    reward_type: str = "ranking"
+    reward_type: str = "rule"
+    add_gt: bool = False
+    beam_search: bool = False
+    test_during_training: bool = True
+    dynamic_sampling: bool = False
+    sync_ref_model: bool = False
+    test_beam: int = 20
+    sample_train: bool = False
+    dapo: bool = False
+    gspo: bool = False
+    mask_all_zero: bool = False
+    ada_path: str = ""
+    cf_path: str = ""
 
 
 @dataclass
@@ -114,3 +132,10 @@ class EvaluateConfig(StageConfig):
     data: DataConfig = field(default_factory=DataConfig)
     training: TrainConfig = field(default_factory=TrainConfig)
     output: OutputConfig = field(default_factory=OutputConfig)
+    batch_size: int = 4
+    K: int = 0
+    length_penalty: float = 0.0
+    max_new_tokens: int = 256
+    num_beams: int = 50
+    temperature: float = 1.0
+    guidance_scale: float | None = 1.0

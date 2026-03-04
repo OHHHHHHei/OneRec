@@ -18,6 +18,8 @@ def _deep_set(target: dict[str, Any], dotted_key: str, value: Any) -> None:
 
 def _coerce_value(raw: str) -> Any:
     lowered = raw.lower()
+    if lowered in {"none", "null"}:
+        return None
     if lowered in {"true", "false"}:
         return lowered == "true"
     try:
@@ -43,8 +45,12 @@ def _construct(cls: type[T], payload: Any) -> T:
     kwargs = {}
     consumed = set()
     for field in fields(cls):
-        value = payload.get(field.name) if isinstance(payload, dict) else None
+        if not isinstance(payload, dict) or field.name not in payload:
+            continue
+        value = payload[field.name]
         if value is None:
+            kwargs[field.name] = None
+            consumed.add(field.name)
             continue
         field_type = field.type
         try:

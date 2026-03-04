@@ -9,6 +9,7 @@ from torch.utils.data import ConcatDataset
 from transformers import AutoTokenizer
 from trl import GRPOConfig
 
+from minionerec.common.seed import set_global_seed
 from minionerec.data.datasets.rl import RLSeqTitle2SidDataset, RLTitle2SidDataset, SidDataset
 from minionerec.training.rl.rewards import build_ranking_reward, build_rule_reward, build_semantic_reward
 from minionerec.training.rl.trainer import ReReTrainer
@@ -26,6 +27,13 @@ def _resolve_precision() -> tuple[torch.dtype, bool, bool]:
 
 
 def run_rl(config) -> str:
+    set_global_seed(config.training.seed)
+    if config.logging.wandb_project:
+        os.environ["WANDB_PROJECT"] = config.logging.wandb_project
+    if torch.cuda.is_available():
+        torch.backends.cuda.enable_flash_sdp(False)
+        torch.backends.cuda.enable_mem_efficient_sdp(False)
+
     model_dtype, use_bf16, use_fp16 = _resolve_precision()
     logger.info("RL precision config: bf16=%s fp16=%s dtype=%s", use_bf16, use_fp16, model_dtype)
 
@@ -41,8 +49,11 @@ def run_rl(config) -> str:
     ]
     eval_data = SidDataset(config.data.eval_file, category=config.data.category)
     train_data = ConcatDataset(train_parts)
-    train_dataset = Dataset.from_dict({key: [row[key] for row in train_data] for key in train_data[0].keys()})
-    eval_dataset = Dataset.from_dict({key: [row[key] for row in eval_data] for key in eval_data[0].keys()})
+    train_dataset = Dataset.from_dict({key: [row[key] for row in train_data] for key in train_data[0].keys()}).shuffle(seed=config.training.seed)
+    if config.training.sample_train and "sft" in config.model.base_model.lower():
+        start = int(0.2 * len(train_dataset))
+        train_dataset = train_dataset.select(range(start, len(train_dataset)))
+    eval_dataset = Dataset.from_dict({key: [row[key] for row in eval_data] for key in eval_data[0].keys()}).shuffle(seed=config.training.seed)
 
     prompt2history = {}
     history2target = {}
@@ -55,10 +66,20 @@ def run_rl(config) -> str:
     reward_fun = build_rule_reward(prompt2history, history2target)
     if config.training.reward_type == "ranking":
         reward_fun = [build_rule_reward(prompt2history, history2target), build_ranking_reward(prompt2history, history2target, config.training.num_generations)]
+    elif config.training.reward_type == "ranking_only":
+        reward_fun = build_ranking_reward(prompt2history, history2target, config.training.num_generations)
     elif config.training.reward_type == "semantic":
-        with open(config.extras["ada_path"], "rb") as handle:
+        ada_path = config.training.ada_path or config.extras.get("ada_path")
+        if not ada_path:
+            raise ValueError("reward_type=semantic requires training.ada_path (or ada_path override).")
+        with open(ada_path, "rb") as handle:
             item_embeddings = torch.tensor(pickle.load(handle))
         reward_fun = build_semantic_reward(prompt2history, history2target, item2id, item_embeddings)
+    elif config.training.reward_type == "sasrec":
+        cf_path = config.training.cf_path or config.extras.get("cf_path")
+        if not cf_path:
+            raise ValueError("reward_type=sasrec requires training.cf_path (or cf_path override).")
+        raise NotImplementedError("reward_type=sasrec is reserved for legacy CF reward path and is not wired in mainline RL pipeline yet.")
 
     training_args = GRPOConfig(
         output_dir=config.output.output_dir,
@@ -69,10 +90,11 @@ def run_rl(config) -> str:
         max_completion_length=128,
         num_generations=config.training.num_generations,
         temperature=config.training.temperature,
+        sync_ref_model=bool(config.training.sync_ref_model),
         per_device_eval_batch_size=config.training.eval_batch_size,
         per_device_train_batch_size=config.training.train_batch_size,
         gradient_accumulation_steps=config.training.gradient_accumulation_steps,
-        eval_steps=0.1,
+        eval_steps=float(config.training.eval_step),
         logging_steps=1,
         learning_rate=config.training.learning_rate,
         beta=config.training.beta,
@@ -97,9 +119,13 @@ def run_rl(config) -> str:
         info_file=config.data.info_file,
         prompt2history=prompt2history,
         history2target=history2target,
-        beam_search=True,
-        test_during_training=False,
-        test_beam=20,
+        add_gt=bool(config.training.add_gt),
+        dynamic_sampling=bool(config.training.dynamic_sampling),
+        beam_search=bool(config.training.beam_search),
+        test_during_training=bool(config.training.test_during_training),
+        test_beam=int(config.training.test_beam),
+        dapo=bool(config.training.dapo),
+        gspo=bool(config.training.gspo),
     )
     trainer.train(resume_from_checkpoint=config.output.resume_from_checkpoint)
     trainer.save_model(config.output.output_dir)
