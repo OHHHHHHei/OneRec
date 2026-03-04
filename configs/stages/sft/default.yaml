@@ -14,13 +14,13 @@ training:
   seed: 42
   freeze_llm: false
 logging:
-  wandb_project: MiniOneRec
-  wandb_run_name: sft_default
-  report_to: none
+  wandb_project: OneRec
+  wandb_run_name: sft_Industrial_and_Scientific
+  report_to: wandb
 output:
   output_dir: ./output/sft_Industrial_and_Scientific_refactor
   save_total_limit: 2
 runtime:
   launcher: torchrun
-  cuda_visible_devices: "0,1,2,3"
-  nproc_per_node: 4
+  cuda_visible_devices: "2,3,4,5,6,7"
+  nproc_per_node: 6
