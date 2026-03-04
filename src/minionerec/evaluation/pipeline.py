@@ -1,10 +1,14 @@
 import json
+import logging
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, LogitsProcessorList
 
 from minionerec.data.datasets.eval import EvalSidDataset
 from minionerec.evaluation.constrained_decoding import ConstrainedLogitsProcessor
+
+
+logger = logging.getLogger(__name__)
 
 
 def _get_hash(tokens) -> str:
@@ -28,7 +32,13 @@ def build_prefix_allowed_tokens(tokenizer, info_file: str, base_model: str):
 
 def run_evaluate(config) -> str:
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = AutoModelForCausalLM.from_pretrained(config.model.base_model, torch_dtype=torch.bfloat16, device_map="auto")
+    use_bf16 = bool(torch.cuda.is_available() and torch.cuda.is_bf16_supported())
+    model_dtype = torch.bfloat16 if use_bf16 else torch.float16 if torch.cuda.is_available() else torch.float32
+    logger.info("Evaluate precision config: dtype=%s", model_dtype)
+    model_kwargs = {"torch_dtype": model_dtype}
+    if torch.cuda.is_available():
+        model_kwargs["device_map"] = "auto"
+    model = AutoModelForCausalLM.from_pretrained(config.model.base_model, **model_kwargs)
     model.eval()
     tokenizer = AutoTokenizer.from_pretrained(config.model.base_model)
     tokenizer.pad_token = tokenizer.eos_token

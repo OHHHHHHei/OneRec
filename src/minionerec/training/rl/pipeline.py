@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import pickle
 
@@ -13,7 +14,21 @@ from minionerec.training.rl.rewards import build_ranking_reward, build_rule_rewa
 from minionerec.training.rl.trainer import ReReTrainer
 
 
+logger = logging.getLogger(__name__)
+
+
+def _resolve_precision() -> tuple[torch.dtype, bool, bool]:
+    has_cuda = torch.cuda.is_available()
+    use_bf16 = bool(has_cuda and torch.cuda.is_bf16_supported())
+    use_fp16 = bool(has_cuda and not use_bf16)
+    model_dtype = torch.bfloat16 if use_bf16 else torch.float16 if use_fp16 else torch.float32
+    return model_dtype, use_bf16, use_fp16
+
+
 def run_rl(config) -> str:
+    model_dtype, use_bf16, use_fp16 = _resolve_precision()
+    logger.info("RL precision config: bf16=%s fp16=%s dtype=%s", use_bf16, use_fp16, model_dtype)
+
     with open(config.data.info_file, "r", encoding="utf-8") as handle:
         lines = handle.readlines()
     item_names = [line.split("\t")[0].strip() for line in lines]
@@ -47,6 +62,7 @@ def run_rl(config) -> str:
 
     training_args = GRPOConfig(
         output_dir=config.output.output_dir,
+        model_init_kwargs={"torch_dtype": model_dtype},
         save_steps=0.1,
         save_total_limit=config.output.save_total_limit,
         eval_strategy="steps",
@@ -63,7 +79,8 @@ def run_rl(config) -> str:
         warmup_ratio=0.03,
         max_grad_norm=0.3,
         num_train_epochs=config.training.num_epochs,
-        bf16=True,
+        bf16=use_bf16,
+        fp16=use_fp16,
         optim="paged_adamw_32bit",
         lr_scheduler_type="cosine",
         save_strategy="steps",

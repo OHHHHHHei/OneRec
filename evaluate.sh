@@ -51,6 +51,17 @@ if [[ -n "$GPU_LIST" ]]; then
   export CUDA_VISIBLE_DEVICES="$GPU_LIST"
 fi
 
+if [[ "$LAUNCHER" == "torchrun" && -n "$GPU_LIST" ]]; then
+  IFS=',' read -r -a _gpu_arr <<< "$GPU_LIST"
+  GPU_COUNT="${#_gpu_arr[@]}"
+  if [[ "$NPROC" -gt "$GPU_COUNT" ]]; then
+    echo "ERROR: nproc_per_node ($NPROC) > gpu_count ($GPU_COUNT) from runtime.cuda_visible_devices=$GPU_LIST" >&2
+    exit 1
+  fi
+fi
+
+echo "[EVAL] launcher=$LAUNCHER gpus=${GPU_LIST:-<default>} nproc_per_node=$NPROC config=$CONFIG_PATH"
+
 if [[ "$LAUNCHER" == "torchrun" && "$NPROC" -gt 1 ]]; then
   exec torchrun --standalone --nproc_per_node="$NPROC" -m minionerec.cli.main evaluate --config "$CONFIG_PATH" "$@"
 else

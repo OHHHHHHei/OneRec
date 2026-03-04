@@ -1,3 +1,5 @@
+import logging
+import math
 import os
 from pathlib import Path
 
@@ -12,13 +14,51 @@ from minionerec.training.sft.token_extension import TokenExtender
 from minionerec.training.sft.trainer import concat_dataset_to_hf
 
 
+logger = logging.getLogger(__name__)
+
+
+def _resolve_precision() -> tuple[torch.dtype, bool, bool]:
+    has_cuda = torch.cuda.is_available()
+    use_bf16 = bool(has_cuda and torch.cuda.is_bf16_supported())
+    use_fp16 = bool(has_cuda and not use_bf16)
+    model_dtype = torch.bfloat16 if use_bf16 else torch.float16 if use_fp16 else torch.float32
+    return model_dtype, use_bf16, use_fp16
+
+
+def _resolve_grad_accum_steps(config) -> tuple[int, int, int]:
+    world_size = max(1, int(os.environ.get("WORLD_SIZE", "1")))
+    per_device_batch = max(1, int(config.training.micro_batch_size))
+    target_global_batch = max(1, int(config.training.batch_size))
+    denominator = per_device_batch * world_size
+    gradient_accumulation_steps = max(1, math.ceil(target_global_batch / denominator))
+    effective_global_batch = denominator * gradient_accumulation_steps
+    if effective_global_batch != target_global_batch:
+        logger.warning(
+            "SFT global batch mismatch: requested=%s, effective=%s (world_size=%s, per_device=%s, grad_accum=%s).",
+            target_global_batch,
+            effective_global_batch,
+            world_size,
+            per_device_batch,
+            gradient_accumulation_steps,
+        )
+    logger.info(
+        "SFT launch config: world_size=%s, per_device_batch=%s, grad_accum=%s, effective_global_batch=%s",
+        world_size,
+        per_device_batch,
+        gradient_accumulation_steps,
+        effective_global_batch,
+    )
+    return gradient_accumulation_steps, world_size, effective_global_batch
+
+
 def run_sft(config) -> str:
     set_global_seed(config.training.seed)
+    model_dtype, use_bf16, use_fp16 = _resolve_precision()
     if config.model.train_from_scratch:
         model_config = AutoConfig.from_pretrained(config.model.base_model)
         model = AutoModelForCausalLM.from_config(model_config)
     else:
-        model = AutoModelForCausalLM.from_pretrained(config.model.base_model, torch_dtype=torch.bfloat16)
+        model = AutoModelForCausalLM.from_pretrained(config.model.base_model, torch_dtype=model_dtype)
     tokenizer = AutoTokenizer.from_pretrained(config.model.base_model, trust_remote_code=True)
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
@@ -56,7 +96,7 @@ def run_sft(config) -> str:
     hf_train = concat_dataset_to_hf(train_dataset)
     hf_eval = concat_dataset_to_hf(eval_dataset)
 
-    gradient_accumulation_steps = max(1, config.training.batch_size // max(1, config.training.micro_batch_size))
+    gradient_accumulation_steps, _, _ = _resolve_grad_accum_steps(config)
     args = transformers.TrainingArguments(
         output_dir=config.output.output_dir,
         run_name=config.logging.wandb_run_name,
@@ -65,7 +105,8 @@ def run_sft(config) -> str:
         gradient_accumulation_steps=gradient_accumulation_steps,
         num_train_epochs=config.training.num_epochs,
         learning_rate=config.training.learning_rate,
-        bf16=True,
+        bf16=use_bf16,
+        fp16=use_fp16,
         logging_steps=1,
         eval_strategy="steps",
         eval_steps=0.05,
