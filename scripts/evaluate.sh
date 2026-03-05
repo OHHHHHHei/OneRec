@@ -48,6 +48,13 @@ if parallel is None:
 data = cfg.get("data", {}) if isinstance(cfg, dict) else {}
 model = cfg.get("model", {}) if isinstance(cfg, dict) else {}
 output = cfg.get("output", {}) if isinstance(cfg, dict) else {}
+batch_size = cfg.get("batch_size", 8) if isinstance(cfg, dict) else 8
+K = cfg.get("K", 0) if isinstance(cfg, dict) else 0
+num_beams = cfg.get("num_beams", 50) if isinstance(cfg, dict) else 50
+max_new_tokens = cfg.get("max_new_tokens", 256) if isinstance(cfg, dict) else 256
+length_penalty = cfg.get("length_penalty", 0.0) if isinstance(cfg, dict) else 0.0
+temperature = cfg.get("temperature", 1.0) if isinstance(cfg, dict) else 1.0
+guidance_scale = cfg.get("guidance_scale", None) if isinstance(cfg, dict) else None
 print(launcher)
 print(gpus)
 print(int(nproc))
@@ -57,6 +64,13 @@ print(str(data.get("test_file", "")).strip())
 print(str(data.get("info_file", "")).strip())
 print(str(data.get("category", "")).strip())
 print(str(output.get("output_dir", "")).strip())
+print(batch_size)
+print(K)
+print(num_beams)
+print(max_new_tokens)
+print(length_penalty)
+print(temperature)
+print("None" if guidance_scale is None else guidance_scale)
 PY
 )
 
@@ -69,6 +83,13 @@ TEST_FILE="${_launch[5]:-}"
 INFO_FILE="${_launch[6]:-}"
 CATEGORY="${_launch[7]:-}"
 RESULT_PATH="${_launch[8]:-./results/final_result.json}"
+BATCH_SIZE="${_launch[9]:-8}"
+K_VALUE="${_launch[10]:-0}"
+NUM_BEAMS="${_launch[11]:-50}"
+MAX_NEW_TOKENS="${_launch[12]:-256}"
+LENGTH_PENALTY="${_launch[13]:-0.0}"
+TEMPERATURE="${_launch[14]:-1.0}"
+GUIDANCE_SCALE="${_launch[15]:-None}"
 
 if [[ -n "$GPU_LIST" ]]; then
   export CUDA_VISIBLE_DEVICES="$GPU_LIST"
@@ -105,10 +126,19 @@ for gpu in "${_gpu_arr[@]}"; do
   fi
   if [[ -f "$TEMP_DIR/${gpu}.csv" ]]; then
     echo "[EVAL] launch worker on GPU $gpu"
-    CUDA_VISIBLE_DEVICES="$gpu" python -u -m minionerec.cli.main evaluate --config "$CONFIG_PATH" \
-      "$@" \
-      "data.test_file=$TEMP_DIR/${gpu}.csv" \
-      "output.output_dir=$TEMP_DIR/${gpu}.json" &
+    CUDA_VISIBLE_DEVICES="$gpu" python -u ./evaluate.py \
+      --base_model "$MODEL_PATH" \
+      --info_file "$INFO_FILE" \
+      --category "$CATEGORY" \
+      --test_data_path "$TEMP_DIR/${gpu}.csv" \
+      --result_json_data "$TEMP_DIR/${gpu}.json" \
+      --batch_size "$BATCH_SIZE" \
+      --K "$K_VALUE" \
+      --num_beams "$NUM_BEAMS" \
+      --max_new_tokens "$MAX_NEW_TOKENS" \
+      --length_penalty "$LENGTH_PENALTY" \
+      --temperature "$TEMPERATURE" \
+      --guidance_scale "$GUIDANCE_SCALE" &
   else
     echo "[EVAL] skip GPU $gpu: split file not found."
   fi

@@ -9,7 +9,7 @@ from transformers import EarlyStoppingCallback
 from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer
 
 from minionerec.common.seed import set_global_seed
-from minionerec.data.datasets.sft import FusionSeqRecDataset, SidItemFeatDataset, SidSFTDataset
+from minionerec.data.datasets.sft import FusionSeqRecDataset, SidItemFeatDataset, SidSFTDataset, TitleHistory2SidSFTDataset
 from minionerec.training.sft.token_extension import TokenExtender
 from minionerec.training.sft.trainer import concat_dataset_to_hf
 
@@ -89,6 +89,7 @@ def run_sft(config) -> str:
         SidSFTDataset(config.data.train_file, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed),
         SidItemFeatDataset(config.data.item_meta_path, config.data.sid_index_path, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed),
         FusionSeqRecDataset(config.data.train_file, config.data.item_meta_path, config.data.sid_index_path, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed),
+        TitleHistory2SidSFTDataset(config.data.train_file, config.data.item_meta_path, config.data.sid_index_path, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed),
     ]
     train_dataset = ConcatDataset(train_datasets)
     eval_dataset = SidSFTDataset(config.data.eval_file, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed)

@@ -51,10 +51,11 @@ class BaseDataset(Dataset):
         return list(self.data)
 
     def get_inputs(self) -> None:
+        cache_tag = getattr(self, "cache_tag", "")
         cache_path = build_cache_path(
             self.__class__.__name__,
             self._cache_sources,
-            [str(self.max_len), str(self.category), str(self.dedup), str(self.test)],
+            [str(self.max_len), str(self.category), str(self.dedup), str(self.test), str(cache_tag)],
         )
         cached = load_cache(cache_path)
         if isinstance(cached, dict) and "inputs" in cached:
