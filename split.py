@@ -1,6 +1,6 @@
 import fire
 
-from minionerec.evaluation.split_merge import split
+from minionerec.flows.evaluate.split_merge import split
 
 
 if __name__ == "__main__":

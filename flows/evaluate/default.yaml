@@ -18,5 +18,5 @@ guidance_scale: null
 runtime:
   launcher: parallel
   parallel: true
-  cuda_visible_devices: "0,1,2,3"
+  cuda_visible_devices: "4,5,6,7"
   nproc_per_node: 4

@@ -4,26 +4,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
+source "$SCRIPT_DIR/_common.sh"
 
 DEFAULT_CONFIG="flows/evaluate/default.yaml"
-CONFIG_PATH="${MINIONEREC_CONFIG:-$DEFAULT_CONFIG}"
-
-if [[ $# -gt 0 ]]; then
-  case "$1" in
-    *.yaml|*.yml)
-      CONFIG_PATH="$1"
-      shift
-      ;;
-    --config)
-      if [[ $# -lt 2 ]]; then
-        echo "ERROR: --config requires a path" >&2
-        exit 1
-      fi
-      CONFIG_PATH="$2"
-      shift 2
-      ;;
-  esac
-fi
+resolve_config_path "$DEFAULT_CONFIG" "$@"
 
 mapfile -t _launch < <(python - "$CONFIG_PATH" <<'PY'
 import sys
@@ -99,7 +83,7 @@ echo "[EVAL] launcher=$LAUNCHER parallel=$PARALLEL gpus=${GPU_LIST:-<default>} c
 echo "[EVAL] summary batch_size=$BATCH_SIZE num_beams=$NUM_BEAMS max_new_tokens=$MAX_NEW_TOKENS length_penalty=$LENGTH_PENALTY temperature=$TEMPERATURE guidance_scale=$GUIDANCE_SCALE output=$RESULT_PATH"
 
 if [[ "$LAUNCHER" == "python" || "$LAUNCHER" == "single" || "$PARALLEL" != "true" || "$NPROC" -le 1 ]]; then
-  exec python -m minionerec.cli.main evaluate --config "$CONFIG_PATH" "$@"
+  exec python -m minionerec.cli.main evaluate --config "$CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}"
 fi
 
 if [[ -z "$TEST_FILE" || -z "$INFO_FILE" ]]; then

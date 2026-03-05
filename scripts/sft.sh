@@ -4,26 +4,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
+source "$SCRIPT_DIR/_common.sh"
 
 DEFAULT_CONFIG="flows/sft/default.yaml"
-CONFIG_PATH="${MINIONEREC_CONFIG:-$DEFAULT_CONFIG}"
-
-if [[ $# -gt 0 ]]; then
-  case "$1" in
-    *.yaml|*.yml)
-      CONFIG_PATH="$1"
-      shift
-      ;;
-    --config)
-      if [[ $# -lt 2 ]]; then
-        echo "ERROR: --config requires a path" >&2
-        exit 1
-      fi
-      CONFIG_PATH="$2"
-      shift 2
-      ;;
-  esac
-fi
+resolve_config_path "$DEFAULT_CONFIG" "$@"
 
 mapfile -t _launch < <(python - "$CONFIG_PATH" <<'PY'
 import sys
@@ -72,20 +56,13 @@ if [[ -n "$GPU_LIST" ]]; then
   export CUDA_VISIBLE_DEVICES="$GPU_LIST"
 fi
 
-if [[ "$LAUNCHER" == "torchrun" && -n "$GPU_LIST" ]]; then
-  IFS=',' read -r -a _gpu_arr <<< "$GPU_LIST"
-  GPU_COUNT="${#_gpu_arr[@]}"
-  if [[ "$NPROC" -gt "$GPU_COUNT" ]]; then
-    echo "ERROR: nproc_per_node ($NPROC) > gpu_count ($GPU_COUNT) from runtime.cuda_visible_devices=$GPU_LIST" >&2
-    exit 1
-  fi
-fi
+ensure_nproc_within_gpu_list "$LAUNCHER" "$NPROC" "$GPU_LIST" "SFT"
 
 echo "[SFT] launcher=$LAUNCHER gpus=${GPU_LIST:-<default>} nproc_per_node=$NPROC config=$CONFIG_PATH"
 echo "[SFT] summary batch_size=$TRAIN_BS micro_batch_size=$TRAIN_MBS epochs=$TRAIN_EPOCHS lr=$TRAIN_LR wandb_project=$WANDB_PROJECT run_name=$WANDB_RUN_NAME output=$OUTPUT_DIR"
 
 if [[ "$LAUNCHER" == "torchrun" && "$NPROC" -gt 1 ]]; then
-  exec torchrun --standalone --nproc_per_node="$NPROC" -m minionerec.cli.main sft --config "$CONFIG_PATH" "$@"
+  exec torchrun --standalone --nproc_per_node="$NPROC" -m minionerec.cli.main sft --config "$CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}"
 else
-  exec python -m minionerec.cli.main sft --config "$CONFIG_PATH" "$@"
+  exec python -m minionerec.cli.main sft --config "$CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}"
 fi

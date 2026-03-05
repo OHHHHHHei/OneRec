@@ -8,41 +8,54 @@ from minionerec.common.io import read_yaml
 
 
 _STAGE_DEFAULTS = {
-    "sft": ("flows/sft/default.yaml", "configs/stages/sft/default.yaml"),
-    "rl": ("flows/rl/default.yaml", "configs/stages/rl/default.yaml"),
-    "evaluate": ("flows/evaluate/default.yaml", "configs/stages/evaluate/default.yaml"),
-    "preprocess": ("configs/stages/preprocess/amazon18.yaml", "configs/stages/preprocess/amazon18.yaml"),
-    "embed": ("configs/stages/embed/default.yaml", "configs/stages/embed/default.yaml"),
-    "sid-train": ("configs/stages/sid/rqvae_train.yaml", "configs/stages/sid/rqvae_train.yaml"),
-    "sid-generate": ("configs/stages/sid/rqvae_generate.yaml", "configs/stages/sid/rqvae_generate.yaml"),
-    "convert": ("configs/stages/convert/default.yaml", "configs/stages/convert/default.yaml"),
+    "sft": "flows/sft/default.yaml",
+    "rl": "flows/rl/default.yaml",
+    "evaluate": "flows/evaluate/default.yaml",
+    "preprocess": "configs/stages/preprocess/amazon18.yaml",
+    "embed": "configs/stages/embed/default.yaml",
+    "sid-train": "configs/stages/sid/rqvae_train.yaml",
+    "sid-generate": "configs/stages/sid/rqvae_generate.yaml",
+    "convert": "configs/stages/convert/default.yaml",
+}
+
+_FLOW_STAGES = {"sft", "rl", "evaluate"}
+
+_LEGACY_PATHS = {
+    "sft": "configs/stages/sft/default.yaml",
+    "rl": "configs/stages/rl/default.yaml",
+    "evaluate": "configs/stages/evaluate/default.yaml",
 }
 
 
 def _resolve_config_path(stage: str, config_path: str | None) -> str:
+    preferred = _STAGE_DEFAULTS.get(stage, "")
+    legacy = _LEGACY_PATHS.get(stage)
+
     if config_path:
         normalized = config_path.replace("\\", "/")
-        if normalized.startswith("configs/stages/"):
-            warnings.warn(
+        if stage in _FLOW_STAGES and legacy and normalized == legacy:
+            raise ValueError(
                 f"Config path `{config_path}` is deprecated for stage `{stage}`. "
-                f"Prefer flow config path `{_STAGE_DEFAULTS.get(stage, ('', ''))[0]}`.",
-                DeprecationWarning,
-                stacklevel=3,
+                f"Use `{preferred}`."
             )
         return config_path
 
-    preferred, fallback = _STAGE_DEFAULTS.get(stage, ("", ""))
     if preferred and Path(preferred).exists():
         return preferred
-    if fallback and Path(fallback).exists():
-        if preferred != fallback:
-            warnings.warn(
-                f"Flow config `{preferred}` not found for stage `{stage}`. Falling back to `{fallback}`.",
-                RuntimeWarning,
-                stacklevel=3,
-            )
-        return fallback
-    return ""
+
+    if stage in _FLOW_STAGES:
+        raise FileNotFoundError(
+            f"Default flow config not found for stage `{stage}`: `{preferred}`. "
+            "Please restore the file or pass --config <path> explicitly."
+        )
+
+    if preferred:
+        warnings.warn(
+            f"Default config path for stage `{stage}` does not exist: `{preferred}`.",
+            RuntimeWarning,
+            stacklevel=3,
+        )
+    return preferred
 
 
 def build_config(config_cls, config_path: str | None, overrides: list[str] | None, stage: str):

@@ -1,6 +1,6 @@
 # OneRec 参数一致性矩阵（基线：`E:/MiniOneRec`）
 
-本表用于锁定 `SFT/RL/Evaluate` 与原版脚本的关键参数语义，作为二次重构回归基线。
+本表用于锁定 `SFT / RL / Evaluate` 与原版脚本的关键参数语义，作为重构后的回归基线。
 
 ## SFT
 
@@ -42,4 +42,3 @@
 - `sft.py` 兼容映射：`freeze_LLM -> training.freeze_llm`
 - `rl.py` 兼容映射：`beam_search/test_during_training/eval_step/sync_ref_model`
 - `evaluate.py` 兼容映射：`num_beams/max_new_tokens/length_penalty/temperature/guidance_scale`
-

@@ -1,6 +1,6 @@
 import fire
 
-from minionerec.evaluation.metrics import gao
+from minionerec.flows.evaluate.metrics import gao
 
 
 if __name__ == "__main__":
