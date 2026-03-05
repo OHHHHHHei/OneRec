@@ -1,8 +1,11 @@
 import json
 import logging
+import os
+from collections import Counter
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, LogitsProcessorList
+from tqdm import tqdm
 
 from minionerec.common.seed import set_global_seed
 from minionerec.data.datasets.eval import EvalSidDataset
@@ -14,6 +17,15 @@ logger = logging.getLogger(__name__)
 
 def _get_hash(tokens) -> str:
     return "-".join(str(token) for token in tokens)
+
+
+def _get_worker_context() -> tuple[str, str, bool]:
+    worker_id = os.environ.get("MINIONEREC_EVAL_WORKER_ID", "").strip()
+    if not worker_id:
+        raw = os.environ.get("CUDA_VISIBLE_DEVICES", "").strip()
+        worker_id = raw.split(",")[0].strip() if raw else "single"
+    primary_worker = os.environ.get("MINIONEREC_EVAL_PRIMARY_WORKER", "").strip() or worker_id
+    return worker_id, primary_worker, worker_id == primary_worker
 
 
 def build_prefix_allowed_tokens(tokenizer, info_file: str, base_model: str):
@@ -44,6 +56,8 @@ def run_evaluate(config) -> str:
     device = "cuda" if torch.cuda.is_available() else "cpu"
     use_bf16 = bool(torch.cuda.is_available() and torch.cuda.is_bf16_supported())
     model_dtype = torch.bfloat16 if use_bf16 else torch.float16 if torch.cuda.is_available() else torch.float32
+    worker_id, primary_worker, is_primary_worker = _get_worker_context()
+    warn_limit_per_step = int(os.environ.get("MINIONEREC_EVAL_WARN_LIMIT", "2"))
     batch_size = int(_resolve_eval_param(config, "batch_size", 4))
     num_beams = int(_resolve_eval_param(config, "num_beams", 50))
     max_new_tokens = int(_resolve_eval_param(config, "max_new_tokens", 256))
@@ -53,17 +67,52 @@ def run_evaluate(config) -> str:
     guidance_scale = _resolve_eval_param(config, "guidance_scale", 1.0)
     if isinstance(guidance_scale, str) and guidance_scale.lower() in {"none", "null"}:
         guidance_scale = None
-    logger.info("Evaluate precision config: dtype=%s", model_dtype)
-    model_kwargs = {"torch_dtype": model_dtype}
+    logger.info(
+        "[worker=%s primary=%s] Evaluate start: dtype=%s batch_size=%d num_beams=%d max_new_tokens=%d length_penalty=%s configured_temperature=%s",
+        worker_id,
+        primary_worker,
+        model_dtype,
+        batch_size,
+        num_beams,
+        max_new_tokens,
+        length_penalty,
+        _temperature,
+    )
+    model_kwargs = {"dtype": model_dtype}
     if torch.cuda.is_available():
         model_kwargs["device_map"] = "auto"
-    model = AutoModelForCausalLM.from_pretrained(config.model.base_model, **model_kwargs)
+    try:
+        model = AutoModelForCausalLM.from_pretrained(config.model.base_model, **model_kwargs)
+    except TypeError:
+        model_kwargs.pop("dtype", None)
+        model_kwargs["torch_dtype"] = model_dtype
+        model = AutoModelForCausalLM.from_pretrained(config.model.base_model, **model_kwargs)
     model.eval()
     tokenizer = AutoTokenizer.from_pretrained(config.model.base_model)
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
     tokenizer.padding_side = "left"
     hash_dict = build_prefix_allowed_tokens(tokenizer, config.data.info_file, config.model.base_model)
+    response_prefix = "### Response:\n"
+    response_prefix_ids = tokenizer(response_prefix).input_ids[1:] if "llama" in config.model.base_model.lower() else tokenizer(response_prefix).input_ids
+    prefix_index = 4 if "gpt2" in config.model.base_model.lower() else 3
+    root_key = _get_hash(response_prefix_ids[:prefix_index]) if len(response_prefix_ids) >= prefix_index else ""
+    root_branch_count = len(hash_dict.get(root_key, [])) if root_key else 0
+    logger.info(
+        "[worker=%s] Constraint index loaded: keys=%d prefix_index=%d root_branch_count=%d",
+        worker_id,
+        len(hash_dict),
+        prefix_index,
+        root_branch_count,
+    )
+    if root_branch_count and num_beams > root_branch_count:
+        logger.warning(
+            "[worker=%s] num_beams=%d exceeds first-step valid branches=%d. "
+            "This can create frequent invalid-branch fallbacks.",
+            worker_id,
+            num_beams,
+            root_branch_count,
+        )
 
     def prefix_allowed_tokens_fn(batch_id, input_ids):
         return hash_dict.get(_get_hash(input_ids), [])
@@ -88,7 +137,13 @@ def run_evaluate(config) -> str:
     outputs = []
     total = len(encodings)
     blocks = (total + batch_size - 1) // batch_size
-    for block_idx in range(blocks):
+    invalid_total = 0
+    invalid_by_step = Counter()
+    invalid_hash_counter = Counter()
+    block_iterator = range(blocks)
+    if is_primary_worker:
+        block_iterator = tqdm(block_iterator, total=blocks, desc=f"Eval GPU {worker_id}", dynamic_ncols=True)
+    for block_idx in block_iterator:
         batch_encodings = encodings[block_idx * batch_size : (block_idx + 1) * batch_size]
         max_len = max(len(item["input_ids"]) for item in batch_encodings)
         input_ids = []
@@ -103,6 +158,8 @@ def run_evaluate(config) -> str:
             num_beams=num_beams,
             base_model=config.model.base_model,
             eos_token_id=tokenizer.eos_token_id,
+            warn_limit_per_step=warn_limit_per_step,
+            enable_warning=is_primary_worker,
         )
         generation_kwargs = {}
         if guidance_scale is not None:
@@ -126,6 +183,11 @@ def run_evaluate(config) -> str:
             output_scores=True,
             **generation_kwargs,
         )
+        diagnostics = clp.get_diagnostics(top_k=3)
+        invalid_total += diagnostics["invalid_total"]
+        invalid_by_step.update(diagnostics["invalid_by_step"])
+        for item in diagnostics["top_invalid_hashes"]:
+            invalid_hash_counter[tuple(item["hash_key"])] += int(item["count"])
         completions = generation_output.sequences[:, max_len:]
         if "llama" in config.model.base_model.lower():
             decoded = tokenizer.batch_decode(completions, skip_special_tokens=True, clean_up_tokenization_spaces=False)
@@ -134,6 +196,23 @@ def run_evaluate(config) -> str:
         decoded = [entry.split("Response:\n")[-1].strip() for entry in decoded]
         grouped = [decoded[i : i + num_beams] for i in range(0, len(decoded), num_beams)]
         outputs.extend(grouped)
+        if not is_primary_worker and ((block_idx + 1) % 50 == 0 or (block_idx + 1) == blocks):
+            logger.info("[worker=%s] Evaluate progress: %d/%d blocks", worker_id, block_idx + 1, blocks)
+
+    if invalid_total > 0:
+        top_invalid_hashes = [
+            {"hash_key": list(hash_key), "count": count}
+            for hash_key, count in invalid_hash_counter.most_common(5)
+        ]
+        logger.warning(
+            "[worker=%s] Constraint mismatch summary: total_invalid=%d invalid_by_step=%s top_hashes=%s",
+            worker_id,
+            invalid_total,
+            dict(sorted(invalid_by_step.items())),
+            top_invalid_hashes,
+        )
+    else:
+        logger.info("[worker=%s] Constraint mismatch summary: total_invalid=0", worker_id)
 
     for idx, row in enumerate(test_data):
         row["predict"] = outputs[idx]

@@ -119,6 +119,19 @@ echo "[EVAL] splitting test file: $TEST_FILE -> $TEMP_DIR"
 python ./split.py --input_path "$TEST_FILE" --output_path "$TEMP_DIR" --cuda_list "$GPU_LIST"
 
 IFS=',' read -r -a _gpu_arr <<< "$GPU_LIST"
+PRIMARY_WORKER=""
+for gpu in "${_gpu_arr[@]}"; do
+  gpu="$(echo "$gpu" | xargs)"
+  if [[ -n "$gpu" ]]; then
+    PRIMARY_WORKER="$gpu"
+    break
+  fi
+done
+if [[ -z "$PRIMARY_WORKER" ]]; then
+  echo "ERROR: failed to resolve primary worker from runtime.cuda_visible_devices=$GPU_LIST" >&2
+  exit 1
+fi
+
 for gpu in "${_gpu_arr[@]}"; do
   gpu="$(echo "$gpu" | xargs)"
   if [[ -z "$gpu" ]]; then
@@ -126,7 +139,10 @@ for gpu in "${_gpu_arr[@]}"; do
   fi
   if [[ -f "$TEMP_DIR/${gpu}.csv" ]]; then
     echo "[EVAL] launch worker on GPU $gpu"
-    CUDA_VISIBLE_DEVICES="$gpu" python -u ./evaluate.py \
+    CUDA_VISIBLE_DEVICES="$gpu" \
+    MINIONEREC_EVAL_WORKER_ID="$gpu" \
+    MINIONEREC_EVAL_PRIMARY_WORKER="$PRIMARY_WORKER" \
+    python -u ./evaluate.py \
       --base_model "$MODEL_PATH" \
       --info_file "$INFO_FILE" \
       --category "$CATEGORY" \
