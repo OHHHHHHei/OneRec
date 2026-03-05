@@ -71,3 +71,7 @@ data/**/*.npy
 # Track curated Amazon artifacts in this repository
 !data/Amazon/
 !data/Amazon/**
+
+# Do not track runtime dataset caches under curated Amazon artifacts
+data/Amazon/**/.cache/
+data/Amazon/**/.cache/**
