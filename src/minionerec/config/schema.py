@@ -24,7 +24,12 @@ class DataConfig:
 
 
 @dataclass
-class TrainConfig:
+class CommonTrainConfig:
+    seed: int = 42
+
+
+@dataclass
+class SFTTrainConfig(CommonTrainConfig):
     batch_size: int = 32
     micro_batch_size: int = 4
     cutoff_len: int = 512
@@ -34,8 +39,12 @@ class TrainConfig:
     early_stopping_patience: int = 3
     num_epochs: int = 1
     learning_rate: float = 1e-4
-    seed: int = 42
     freeze_llm: bool = False
+    eval_step: float = 0.1
+
+
+@dataclass
+class RLTrainConfig(CommonTrainConfig):
     gradient_accumulation_steps: int = 1
     eval_step: float = 0.1
     train_batch_size: int = 32
@@ -43,6 +52,8 @@ class TrainConfig:
     num_generations: int = 8
     temperature: float = 1.0
     beta: float = 1e-3
+    num_epochs: int = 1
+    learning_rate: float = 1e-4
     reward_type: str = "rule"
     add_gt: bool = False
     beam_search: bool = False
@@ -56,6 +67,11 @@ class TrainConfig:
     mask_all_zero: bool = False
     ada_path: str = ""
     cf_path: str = ""
+
+
+@dataclass
+class EvaluateTrainConfig(CommonTrainConfig):
+    pass
 
 
 @dataclass
@@ -75,7 +91,7 @@ class OutputConfig:
 @dataclass
 class PreprocessConfig(StageConfig):
     data: DataConfig = field(default_factory=DataConfig)
-    training: TrainConfig = field(default_factory=TrainConfig)
+    training: CommonTrainConfig = field(default_factory=CommonTrainConfig)
     output: OutputConfig = field(default_factory=OutputConfig)
 
 
@@ -83,14 +99,14 @@ class PreprocessConfig(StageConfig):
 class EmbedConfig(StageConfig):
     data: DataConfig = field(default_factory=DataConfig)
     model: ModelConfig = field(default_factory=ModelConfig)
-    training: TrainConfig = field(default_factory=TrainConfig)
+    training: CommonTrainConfig = field(default_factory=CommonTrainConfig)
     output: OutputConfig = field(default_factory=OutputConfig)
 
 
 @dataclass
 class SidTrainConfig(StageConfig):
     data: DataConfig = field(default_factory=DataConfig)
-    training: TrainConfig = field(default_factory=TrainConfig)
+    training: CommonTrainConfig = field(default_factory=CommonTrainConfig)
     output: OutputConfig = field(default_factory=OutputConfig)
 
 
@@ -104,7 +120,7 @@ class SidGenerateConfig(StageConfig):
 @dataclass
 class ConvertConfig(StageConfig):
     data: DataConfig = field(default_factory=DataConfig)
-    training: TrainConfig = field(default_factory=TrainConfig)
+    training: CommonTrainConfig = field(default_factory=CommonTrainConfig)
     output: OutputConfig = field(default_factory=OutputConfig)
 
 
@@ -112,7 +128,7 @@ class ConvertConfig(StageConfig):
 class SFTConfig(StageConfig):
     model: ModelConfig = field(default_factory=ModelConfig)
     data: DataConfig = field(default_factory=DataConfig)
-    training: TrainConfig = field(default_factory=TrainConfig)
+    training: SFTTrainConfig = field(default_factory=SFTTrainConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
     output: OutputConfig = field(default_factory=OutputConfig)
 
@@ -121,7 +137,7 @@ class SFTConfig(StageConfig):
 class RLConfig(StageConfig):
     model: ModelConfig = field(default_factory=ModelConfig)
     data: DataConfig = field(default_factory=DataConfig)
-    training: TrainConfig = field(default_factory=TrainConfig)
+    training: RLTrainConfig = field(default_factory=RLTrainConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
     output: OutputConfig = field(default_factory=OutputConfig)
 
@@ -130,7 +146,7 @@ class RLConfig(StageConfig):
 class EvaluateConfig(StageConfig):
     model: ModelConfig = field(default_factory=ModelConfig)
     data: DataConfig = field(default_factory=DataConfig)
-    training: TrainConfig = field(default_factory=TrainConfig)
+    training: EvaluateTrainConfig = field(default_factory=EvaluateTrainConfig)
     output: OutputConfig = field(default_factory=OutputConfig)
     batch_size: int = 4
     K: int = 0
@@ -139,3 +155,4 @@ class EvaluateConfig(StageConfig):
     num_beams: int = 50
     temperature: float = 1.0
     guidance_scale: float | None = 1.0
+

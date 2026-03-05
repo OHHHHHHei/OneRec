@@ -8,7 +8,7 @@ from minionerec.config.schema import EmbedConfig
 
 
 def run_embed_cli(config_path: str | None, overrides: list[str] | None):
-    config = build_config(EmbedConfig, config_path, overrides)
+    config = build_config(EmbedConfig, config_path, overrides, stage="embed")
     argv = [
         "minionerec.sid.text2emb",
         "--dataset", config.data.dataset_name,

@@ -6,13 +6,17 @@ import warnings
 
 def _legacy_to_overrides(kwargs: dict[str, object], mapping_map: dict[str, str]) -> list[str]:
     overrides = []
+    unknown_keys = []
     for key, value in kwargs.items():
         if value is None:
             continue
         target = mapping_map.get(key)
         if target is None:
+            unknown_keys.append(key)
             continue
         overrides.append(f"{target}={value}")
+    if unknown_keys:
+        raise ValueError(f"Unsupported legacy arguments: {sorted(unknown_keys)}")
     return overrides
 
 

@@ -6,14 +6,14 @@ from minionerec.config.schema import SFTConfig
 
 class ConfigLoaderTest(unittest.TestCase):
     def test_load_default_sft_config(self):
-        config = load_config(SFTConfig, "configs/stages/sft/default.yaml")
+        config = load_config(SFTConfig, "flows/sft/default.yaml")
         self.assertEqual(config.data.category, "Industrial_and_Scientific")
         self.assertTrue(config.model.base_model)
 
     def test_apply_overrides(self):
         config = load_config(
             SFTConfig,
-            "configs/stages/sft/default.yaml",
+            "flows/sft/default.yaml",
             overrides=["training.seed=7", "output.output_dir=./output/test_sft"],
         )
         self.assertEqual(config.training.seed, 7)

@@ -1,3 +1,3 @@
-from minionerec.evaluation.constrained_decoding import ConstrainedLogitsProcessor
+from minionerec.flows.rl.constrained_generation import ConstrainedLogitsProcessor
 
 __all__ = ["ConstrainedLogitsProcessor"]

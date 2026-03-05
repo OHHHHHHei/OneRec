@@ -9,7 +9,7 @@ from minionerec.config.schema import PreprocessConfig
 
 
 def run_preprocess_cli(config_path: str | None, overrides: list[str] | None):
-    config = build_config(PreprocessConfig, config_path, overrides)
+    config = build_config(PreprocessConfig, config_path, overrides, stage="preprocess")
     target = "minionerec.preprocess.amazon18" if config.extras.get("source", "amazon18") == "amazon18" else "minionerec.preprocess.amazon23"
     argv = [target]
     for key, value in config.extras.items():

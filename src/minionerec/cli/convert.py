@@ -6,7 +6,7 @@ from minionerec.data.convert import convert_interactions_to_csv, create_item_inf
 
 
 def run_convert_cli(config_path: str | None, overrides: list[str] | None):
-    config = build_config(ConvertConfig, config_path, overrides)
+    config = build_config(ConvertConfig, config_path, overrides, stage="convert")
     dataset = load_dataset(config.data.data_dir, config.data.dataset_name)
     category = config.data.category or config.data.dataset_name
     info_path = config.extras.get("info_path") or os.path.join(config.data.output_dir, "info", f"{category}_5_2016-10-2018-11.txt")

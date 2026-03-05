@@ -8,7 +8,7 @@ from minionerec.config.schema import SidGenerateConfig, SidTrainConfig
 
 
 def run_sid_train_cli(config_path: str | None, overrides: list[str] | None):
-    config = build_config(SidTrainConfig, config_path, overrides)
+    config = build_config(SidTrainConfig, config_path, overrides, stage="sid-train")
     kind = config.extras.get("kind", "rqvae")
     module_name = {
         "rqvae": "minionerec.sid.quantizers.rqvae",
@@ -30,7 +30,7 @@ def run_sid_train_cli(config_path: str | None, overrides: list[str] | None):
 
 
 def run_sid_generate_cli(config_path: str | None, overrides: list[str] | None):
-    config = build_config(SidGenerateConfig, config_path, overrides)
+    config = build_config(SidGenerateConfig, config_path, overrides, stage="sid-generate")
     kind = config.extras.get("kind", "rqvae")
     module_name = "minionerec.sid.generate.rqvae_indices" if kind == "rqvae" else "minionerec.sid.generate.rqkmeans_plus_indices"
     argv = [module_name]
