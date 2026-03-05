@@ -48,7 +48,8 @@ def run_evaluate(config) -> str:
     num_beams = int(_resolve_eval_param(config, "num_beams", 50))
     max_new_tokens = int(_resolve_eval_param(config, "max_new_tokens", 256))
     length_penalty = float(_resolve_eval_param(config, "length_penalty", 0.0))
-    temperature = float(_resolve_eval_param(config, "temperature", 1.0))
+    # Keep this for legacy config compatibility; deterministic beam decoding below does not use temperature.
+    _temperature = float(_resolve_eval_param(config, "temperature", 1.0))
     guidance_scale = _resolve_eval_param(config, "guidance_scale", 1.0)
     if isinstance(guidance_scale, str) and guidance_scale.lower() in {"none", "null"}:
         guidance_scale = None
@@ -114,7 +115,8 @@ def run_evaluate(config) -> str:
                 num_return_sequences=num_beams,
                 max_new_tokens=max_new_tokens,
                 do_sample=False,
-                temperature=temperature,
+                top_k=None,
+                top_p=None,
                 pad_token_id=tokenizer.eos_token_id,
                 eos_token_id=tokenizer.eos_token_id,
                 length_penalty=length_penalty,
