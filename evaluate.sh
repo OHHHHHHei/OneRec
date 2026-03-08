@@ -7,14 +7,47 @@ source "$SCRIPT_DIR/_common.sh"
 
 DEFAULT_CONFIG="config/evaluate.yaml"
 resolve_config_path "$DEFAULT_CONFIG" "$@"
+resolve_dataset_overrides "evaluate"
+build_effective_override_args
 
-mapfile -t _launch < <(python - "$CONFIG_PATH" <<'PY'
+mapfile -t _launch < <(python - "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}" <<'PY'
 import sys
 import yaml
 
 path = sys.argv[1]
 with open(path, "r", encoding="utf-8") as f:
     cfg = yaml.safe_load(f) or {}
+
+def parse_value(raw):
+    lowered = raw.lower()
+    if lowered == "true":
+        return True
+    if lowered == "false":
+        return False
+    if lowered in {"none", "null"}:
+        return None
+    try:
+        return int(raw)
+    except ValueError:
+        pass
+    try:
+        return float(raw)
+    except ValueError:
+        pass
+    return raw
+
+for override in sys.argv[2:]:
+    if "=" not in override:
+        continue
+    dotted, raw_value = override.split("=", 1)
+    cur = cfg
+    parts = dotted.split(".")
+    for part in parts[:-1]:
+        if part not in cur or not isinstance(cur[part], dict):
+            cur[part] = {}
+        cur = cur[part]
+    cur[parts[-1]] = parse_value(raw_value)
+
 runtime = cfg.get("runtime", {})
 launcher = str(runtime.get("launcher", "parallel")).strip() or "parallel"
 gpus = str(runtime.get("cuda_visible_devices", "")).strip()
@@ -68,11 +101,11 @@ if [[ -n "$GPU_LIST" ]]; then
   export CUDA_VISIBLE_DEVICES="$GPU_LIST"
 fi
 
-echo "[EVAL] launcher=$LAUNCHER parallel=$PARALLEL gpus=${GPU_LIST:-<default>} config=$CONFIG_PATH"
+echo "[EVAL] launcher=$LAUNCHER parallel=$PARALLEL gpus=${GPU_LIST:-<default>} config=$CONFIG_PATH dataset=${DATASET_KEY:-<config>}"
 echo "[EVAL] summary batch_size=$BATCH_SIZE num_beams=$NUM_BEAMS max_new_tokens=$MAX_NEW_TOKENS length_penalty=$LENGTH_PENALTY temperature=$TEMPERATURE guidance_scale=$GUIDANCE_SCALE output=$RESULT_PATH"
 
 if [[ "$LAUNCHER" == "python" || "$LAUNCHER" == "single" || "$PARALLEL" != "true" || "$NPROC" -le 1 ]]; then
-  exec python -m onerec.main evaluate --config "$CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}"
+  exec python -m onerec.main evaluate --config "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}"
 fi
 
 if [[ -z "$TEST_FILE" || -z "$INFO_FILE" ]]; then
@@ -118,6 +151,7 @@ for gpu in "${_gpu_arr[@]}"; do
     ONEREC_EVAL_PRIMARY_WORKER="$PRIMARY_WORKER" \
     python -u -m onerec.main evaluate \
       --config "$CONFIG_PATH" \
+      "${EFFECTIVE_OVERRIDES[@]}" \
       "data.test_file=$TEMP_DIR/${gpu}.csv" \
       "output.output_dir=$TEMP_DIR/${gpu}.json" &
   else

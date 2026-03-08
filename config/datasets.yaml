@@ -1,0 +1,9 @@
+industrial:
+  category: Industrial_and_Scientific
+  split_stem: Industrial_and_Scientific_5_2016-10-2018-11
+  artifact_stem: Industrial_and_Scientific
+
+office:
+  category: Office_Products
+  split_stem: Office_Products_5_2016-10-2018-11
+  artifact_stem: Office_Products

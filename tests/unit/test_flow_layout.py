@@ -4,6 +4,8 @@ import sys
 import unittest
 from pathlib import Path
 
+import yaml
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
@@ -19,6 +21,17 @@ class FlowLayoutTest(unittest.TestCase):
         self.assertTrue((self.repo_root / "config" / "sft.yaml").exists())
         self.assertTrue((self.repo_root / "config" / "rl.yaml").exists())
         self.assertTrue((self.repo_root / "config" / "evaluate.yaml").exists())
+        self.assertTrue((self.repo_root / "config" / "datasets.yaml").exists())
+
+    def test_dataset_mapping_contains_industrial_and_office(self):
+        path = self.repo_root / "config" / "datasets.yaml"
+        with open(path, "r", encoding="utf-8") as handle:
+            payload = yaml.safe_load(handle) or {}
+        for key in ("industrial", "office"):
+            self.assertIn(key, payload)
+            self.assertIn("category", payload[key])
+            self.assertIn("split_stem", payload[key])
+            self.assertIn("artifact_stem", payload[key])
 
     def test_no_legacy_or_minionerec_import_in_main_src(self):
         root = self.repo_root / "src" / "onerec"
