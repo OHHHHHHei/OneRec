@@ -136,10 +136,8 @@ def run_sft(config) -> str:
     )
     model.config.use_cache = False
     trainer.train(resume_from_checkpoint=config.output.resume_from_checkpoint)
-    trainer.save_model(config.output.output_dir)
     final_checkpoint = os.path.join(config.output.output_dir, "final_checkpoint")
     trainer.model.save_pretrained(final_checkpoint)
     tokenizer.save_pretrained(final_checkpoint)
     return final_checkpoint
-
 

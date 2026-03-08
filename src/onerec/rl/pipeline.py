@@ -175,7 +175,6 @@ def run_rl(config) -> str | None:
 
         final_checkpoint = os.path.join(config.output.output_dir, "final_checkpoint")
         if _is_main_process(trainer):
-            trainer.save_model(config.output.output_dir)
             trainer.model.save_pretrained(final_checkpoint)
             AutoTokenizer.from_pretrained(config.model.base_model).save_pretrained(final_checkpoint)
 
