@@ -7,6 +7,7 @@ source "$SCRIPT_DIR/_common.sh"
 
 DEFAULT_CONFIG="config/rl.yaml"
 resolve_config_path "$DEFAULT_CONFIG" "$@"
+use_first_positional_as_dataset_key
 resolve_dataset_overrides "rl"
 build_effective_override_args
 
