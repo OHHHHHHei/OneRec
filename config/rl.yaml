@@ -9,9 +9,9 @@ data:
   category: Industrial_and_Scientific
 training:
   seed: 42
-  train_batch_size: 64
-  eval_batch_size: 128
-  gradient_accumulation_steps: 2
+  train_batch_size: 16
+  eval_batch_size: 32
+  gradient_accumulation_steps: 4
   num_epochs: 2
   num_generations: 4
   learning_rate: 0.00001
