@@ -64,7 +64,7 @@ def main() -> int:
         {
             "training.num_generations": 4,
             "training.temperature": 1.0,
-            "training.eval_step": 0.0999,
+            "training.eval_step": 0.05,
             "training.beam_search": True,
             "training.test_during_training": False,
             "training.reward_type": "ranking",

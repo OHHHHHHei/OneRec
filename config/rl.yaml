@@ -15,7 +15,7 @@ training:
   num_epochs: 2
   num_generations: 4
   learning_rate: 0.00001
-  eval_step: 0.0999
+  eval_step: 0.05
   reward_type: ranking
   temperature: 1.0
   beta: 0.001
@@ -45,4 +45,3 @@ runtime:
   main_process_port: 29503
   accelerate_config: config/zero2_opt.yaml
   hf_endpoint: https://hf-mirror.com
-

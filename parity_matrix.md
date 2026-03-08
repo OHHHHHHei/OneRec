@@ -21,7 +21,7 @@
 - 关键字段：
   - `training.num_generations = 4`
   - `training.temperature = 1.0`
-  - `training.eval_step = 0.0999`
+  - `training.eval_step = 0.05`
   - `training.beam_search = true`
   - `training.test_during_training = false`
   - `training.reward_type = ranking`
