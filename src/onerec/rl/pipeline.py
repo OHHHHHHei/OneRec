@@ -1,3 +1,4 @@
+import gc
 import json
 import logging
 import os
@@ -26,7 +27,47 @@ def _resolve_precision() -> tuple[torch.dtype, bool, bool]:
     return model_dtype, use_bf16, use_fp16
 
 
-def run_rl(config) -> str:
+def _wait_for_everyone(trainer) -> None:
+    accelerator = getattr(trainer, "accelerator", None)
+    if accelerator is not None and hasattr(accelerator, "wait_for_everyone"):
+        accelerator.wait_for_everyone()
+
+
+def _is_main_process(trainer) -> bool:
+    accelerator = getattr(trainer, "accelerator", None)
+    if accelerator is None:
+        return True
+    return bool(getattr(accelerator, "is_main_process", True))
+
+
+def _cleanup_rl_runtime(trainer) -> None:
+    if trainer is None:
+        return
+
+    accelerator = getattr(trainer, "accelerator", None)
+    try:
+        _wait_for_everyone(trainer)
+    except Exception:
+        logger.warning("RL cleanup: wait_for_everyone failed before shutdown.", exc_info=True)
+
+    if accelerator is not None and hasattr(accelerator, "end_training"):
+        try:
+            accelerator.end_training()
+        except Exception:
+            logger.warning("RL cleanup: accelerator.end_training() failed.", exc_info=True)
+
+    if torch.distributed.is_available() and torch.distributed.is_initialized():
+        try:
+            torch.distributed.destroy_process_group()
+        except Exception:
+            logger.warning("RL cleanup: destroy_process_group() failed.", exc_info=True)
+
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+
+def run_rl(config) -> str | None:
     set_global_seed(config.training.seed)
     if config.logging.wandb_project:
         os.environ["WANDB_PROJECT"] = config.logging.wandb_project
@@ -109,29 +150,40 @@ def run_rl(config) -> str:
         report_to=config.logging.report_to,
         run_name=config.logging.wandb_run_name,
     )
-    trainer = ReReTrainer(
-        model=config.model.base_model,
-        base_model=config.model.base_model,
-        reward_funcs=reward_fun,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
-        args=training_args,
-        info_file=config.data.info_file,
-        prompt2history=prompt2history,
-        history2target=history2target,
-        add_gt=bool(config.training.add_gt),
-        dynamic_sampling=bool(config.training.dynamic_sampling),
-        beam_search=bool(config.training.beam_search),
-        test_during_training=bool(config.training.test_during_training),
-        test_beam=int(config.training.test_beam),
-        dapo=bool(config.training.dapo),
-        gspo=bool(config.training.gspo),
-    )
-    trainer.train(resume_from_checkpoint=config.output.resume_from_checkpoint)
-    trainer.save_model(config.output.output_dir)
-    final_checkpoint = os.path.join(config.output.output_dir, "final_checkpoint")
-    trainer.model.save_pretrained(final_checkpoint)
-    AutoTokenizer.from_pretrained(config.model.base_model).save_pretrained(final_checkpoint)
-    return final_checkpoint
+    trainer = None
+    try:
+        trainer = ReReTrainer(
+            model=config.model.base_model,
+            base_model=config.model.base_model,
+            reward_funcs=reward_fun,
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
+            args=training_args,
+            info_file=config.data.info_file,
+            prompt2history=prompt2history,
+            history2target=history2target,
+            add_gt=bool(config.training.add_gt),
+            dynamic_sampling=bool(config.training.dynamic_sampling),
+            beam_search=bool(config.training.beam_search),
+            test_during_training=bool(config.training.test_during_training),
+            test_beam=int(config.training.test_beam),
+            dapo=bool(config.training.dapo),
+            gspo=bool(config.training.gspo),
+        )
+        trainer.train(resume_from_checkpoint=config.output.resume_from_checkpoint)
+        _wait_for_everyone(trainer)
 
+        final_checkpoint = os.path.join(config.output.output_dir, "final_checkpoint")
+        if _is_main_process(trainer):
+            trainer.save_model(config.output.output_dir)
+            trainer.model.save_pretrained(final_checkpoint)
+            AutoTokenizer.from_pretrained(config.model.base_model).save_pretrained(final_checkpoint)
 
+        _wait_for_everyone(trainer)
+        return final_checkpoint if _is_main_process(trainer) else None
+    finally:
+        _cleanup_rl_runtime(trainer)
+        trainer = None
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()

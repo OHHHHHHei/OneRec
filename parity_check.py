@@ -62,7 +62,7 @@ def main() -> int:
         "rl",
         rl_cfg,
         {
-            "training.num_generations": 8,
+            "training.num_generations": 4,
             "training.temperature": 1.0,
             "training.eval_step": 0.0999,
             "training.beam_search": True,

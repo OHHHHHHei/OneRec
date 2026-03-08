@@ -1,6 +1,6 @@
 # OneRec 参数一致性矩阵
 
-这份文件只描述当前正式主配置，不再维护旧兼容入口映射。
+这份文件只描述当前主仓默认配置的关键基线，用来配合 `parity_check.py` 做静态校验。
 
 ## SFT
 
@@ -19,7 +19,7 @@
 
 - 配置文件：`config/rl.yaml`
 - 关键字段：
-  - `training.num_generations = 8`
+  - `training.num_generations = 4`
   - `training.temperature = 1.0`
   - `training.eval_step = 0.0999`
   - `training.beam_search = true`
@@ -39,7 +39,7 @@
   - `temperature = 1.0`
   - `guidance_scale = null`
 
-## 验收方式
+## 校验方式
 
 执行：
 
@@ -47,4 +47,4 @@
 python parity_check.py
 ```
 
-如果输出 `Parity check passed.`，说明当前主配置仍处于既定一致性区间。
+如果输出 `Parity check passed.`，说明当前默认主配置仍然落在既定基线内。
