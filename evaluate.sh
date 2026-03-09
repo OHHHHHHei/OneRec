@@ -8,10 +8,9 @@ source "$SCRIPT_DIR/_common.sh"
 DEFAULT_CONFIG="config/evaluate.yaml"
 resolve_config_path "$DEFAULT_CONFIG" "$@"
 resolve_evaluate_selection
-resolve_dataset_overrides "evaluate"
-build_effective_override_args
+render_stage_config "evaluate"
 
-mapfile -t _launch < <(python - "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}" <<'PY'
+mapfile -t _launch < <(python - "$RENDERED_CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}" <<'PY'
 import sys
 import yaml
 
@@ -102,11 +101,11 @@ if [[ -n "$GPU_LIST" ]]; then
   export CUDA_VISIBLE_DEVICES="$GPU_LIST"
 fi
 
-echo "[EVAL] launcher=$LAUNCHER parallel=$PARALLEL gpus=${GPU_LIST:-<default>} config=$CONFIG_PATH model_stage=${EVAL_MODEL_STAGE:-sft} dataset=${DATASET_KEY:-<config>}"
+echo "[EVAL] launcher=$LAUNCHER parallel=$PARALLEL gpus=${GPU_LIST:-<default>} config=$RENDERED_CONFIG_PATH model_stage=${EVAL_MODEL_STAGE:-sft} dataset=${DATASET_KEY:-industrial}"
 echo "[EVAL] summary batch_size=$BATCH_SIZE num_beams=$NUM_BEAMS max_new_tokens=$MAX_NEW_TOKENS length_penalty=$LENGTH_PENALTY temperature=$TEMPERATURE guidance_scale=$GUIDANCE_SCALE output=$RESULT_PATH"
 
 if [[ "$LAUNCHER" == "python" || "$LAUNCHER" == "single" || "$PARALLEL" != "true" || "$NPROC" -le 1 ]]; then
-  exec python -m onerec.main evaluate --config "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}"
+  exec python -m onerec.main evaluate --config "$RENDERED_CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}"
 fi
 
 if [[ -z "$TEST_FILE" || -z "$INFO_FILE" ]]; then
@@ -151,8 +150,8 @@ for gpu in "${_gpu_arr[@]}"; do
     ONEREC_EVAL_WORKER_ID="$gpu" \
     ONEREC_EVAL_PRIMARY_WORKER="$PRIMARY_WORKER" \
     python -u -m onerec.main evaluate \
-      --config "$CONFIG_PATH" \
-      "${EFFECTIVE_OVERRIDES[@]}" \
+      --config "$RENDERED_CONFIG_PATH" \
+      "${PASSTHROUGH_ARGS[@]}" \
       "data.test_file=$TEMP_DIR/${gpu}.csv" \
       "output.output_dir=$TEMP_DIR/${gpu}.json" &
   else

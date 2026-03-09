@@ -1,12 +1,12 @@
-﻿model:
-  base_model: ./output/sft_Industrial_and_Scientific_refactor/final_checkpoint
+model:
+  base_model: "./output/sft_%{category}_refactor/final_checkpoint"
 data:
-  train_file: ./data/Amazon/train/Industrial_and_Scientific_5_2016-10-2018-11.csv
-  eval_file: ./data/Amazon/valid/Industrial_and_Scientific_5_2016-10-2018-11.csv
-  info_file: ./data/Amazon/info/Industrial_and_Scientific_5_2016-10-2018-11.txt
-  sid_index_path: ./data/Amazon/index/Industrial_and_Scientific.index.json
-  item_meta_path: ./data/Amazon/index/Industrial_and_Scientific.item.json
-  category: Industrial_and_Scientific
+  train_file: ./data/Amazon/train/%{split_stem}.csv
+  eval_file: ./data/Amazon/valid/%{split_stem}.csv
+  info_file: ./data/Amazon/info/%{split_stem}.txt
+  sid_index_path: ./data/Amazon/index/%{artifact_stem}.index.json
+  item_meta_path: ./data/Amazon/index/%{artifact_stem}.item.json
+  category: "%{category}"
 training:
   seed: 42
   train_batch_size: 16
@@ -33,10 +33,10 @@ training:
   cf_path: ""
 logging:
   wandb_project: OneRec
-  wandb_run_name: RL_Industrial_and_Scientific_refactor
+  wandb_run_name: "RL_%{category}_refactor"
   report_to: wandb
 output:
-  output_dir: ./output/rl_Industrial_and_Scientific_refactor
+  output_dir: "./output/rl_%{category}_refactor"
   save_total_limit: 2
 runtime:
   launcher: accelerate

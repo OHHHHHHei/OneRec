@@ -8,10 +8,9 @@ source "$SCRIPT_DIR/_common.sh"
 DEFAULT_CONFIG="config/sft.yaml"
 resolve_config_path "$DEFAULT_CONFIG" "$@"
 use_first_positional_as_dataset_key
-resolve_dataset_overrides "sft"
-build_effective_override_args
+render_stage_config "sft"
 
-mapfile -t _launch < <(python - "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}" <<'PY'
+mapfile -t _launch < <(python - "$RENDERED_CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}" <<'PY'
 import sys
 import yaml
 
@@ -88,11 +87,11 @@ fi
 
 ensure_nproc_within_gpu_list "$LAUNCHER" "$NPROC" "$GPU_LIST" "SFT"
 
-echo "[SFT] launcher=$LAUNCHER gpus=${GPU_LIST:-<default>} nproc_per_node=$NPROC config=$CONFIG_PATH dataset=${DATASET_KEY:-<config>}"
+echo "[SFT] launcher=$LAUNCHER gpus=${GPU_LIST:-<default>} nproc_per_node=$NPROC config=$RENDERED_CONFIG_PATH dataset=${DATASET_KEY:-industrial}"
 echo "[SFT] summary batch_size=$TRAIN_BS micro_batch_size=$TRAIN_MBS epochs=$TRAIN_EPOCHS lr=$TRAIN_LR wandb_project=$WANDB_PROJECT run_name=$WANDB_RUN_NAME output=$OUTPUT_DIR"
 
 if [[ "$LAUNCHER" == "torchrun" && "$NPROC" -gt 1 ]]; then
-  exec torchrun --standalone --nproc_per_node="$NPROC" -m onerec.main sft --config "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}"
+  exec torchrun --standalone --nproc_per_node="$NPROC" -m onerec.main sft --config "$RENDERED_CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}"
 else
-  exec python -m onerec.main sft --config "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}"
+  exec python -m onerec.main sft --config "$RENDERED_CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}"
 fi

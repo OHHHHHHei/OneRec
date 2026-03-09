@@ -1,13 +1,13 @@
 model:
-  base_model: ./output/sft_Industrial_and_Scientific_refactor/final_checkpoint
+  base_model: "./output/%{eval_model_stage}_%{category}_refactor/final_checkpoint"
 data:
-  test_file: ./data/Amazon/test/Industrial_and_Scientific_5_2016-10-2018-11.csv
-  info_file: ./data/Amazon/info/Industrial_and_Scientific_5_2016-10-2018-11.txt
-  category: Industrial_and_Scientific
+  test_file: ./data/Amazon/test/%{split_stem}.csv
+  info_file: ./data/Amazon/info/%{split_stem}.txt
+  category: "%{category}"
 training:
   seed: 42
 output:
-  output_dir: ./results/final_result_Industrial_and_Scientific.json
+  output_dir: "./results/final_result%{eval_result_suffix}_%{category}.json"
 batch_size: 8
 K: 0
 num_beams: 50

@@ -1,19 +1,14 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
-import yaml
-
-
 ROOT = Path(__file__).resolve().parent
+SRC_ROOT = ROOT / "src"
+if str(SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(SRC_ROOT))
 
-
-def _read_yaml(path: Path) -> dict:
-    with open(path, "r", encoding="utf-8") as handle:
-        data = yaml.safe_load(handle) or {}
-    if not isinstance(data, dict):
-        raise ValueError(f"YAML root must be dict: {path}")
-    return data
+from onerec.utils.config_templates import render_config_payload
 
 
 def _lookup(payload: dict, dotted: str):
@@ -39,9 +34,10 @@ def _check_defaults(name: str, payload: dict, expected: dict[str, object]) -> li
 
 
 def main() -> int:
-    sft_cfg = _read_yaml(ROOT / "config" / "sft.yaml")
-    rl_cfg = _read_yaml(ROOT / "config" / "rl.yaml")
-    eval_cfg = _read_yaml(ROOT / "config" / "evaluate.yaml")
+    datasets_path = ROOT / "config" / "datasets.yaml"
+    sft_cfg = render_config_payload(ROOT / "config" / "sft.yaml", datasets_path, dataset_key="industrial", eval_model_stage="sft")
+    rl_cfg = render_config_payload(ROOT / "config" / "rl.yaml", datasets_path, dataset_key="industrial", eval_model_stage="sft")
+    eval_cfg = render_config_payload(ROOT / "config" / "evaluate.yaml", datasets_path, dataset_key="industrial", eval_model_stage="sft")
 
     errors: list[str] = []
     errors += _check_defaults(

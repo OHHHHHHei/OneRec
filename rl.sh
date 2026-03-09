@@ -8,10 +8,9 @@ source "$SCRIPT_DIR/_common.sh"
 DEFAULT_CONFIG="config/rl.yaml"
 resolve_config_path "$DEFAULT_CONFIG" "$@"
 use_first_positional_as_dataset_key
-resolve_dataset_overrides "rl"
-build_effective_override_args
+render_stage_config "rl"
 
-mapfile -t _launch < <(python - "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}" <<'PY'
+mapfile -t _launch < <(python - "$RENDERED_CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}" <<'PY'
 import sys
 import yaml
 
@@ -100,7 +99,7 @@ fi
 
 ensure_nproc_within_gpu_list "$LAUNCHER" "$NPROC" "$GPU_LIST" "RL"
 
-echo "[RL] launcher=$LAUNCHER gpus=${GPU_LIST:-<default>} nproc_per_node=$NPROC config=$CONFIG_PATH dataset=${DATASET_KEY:-<config>}"
+echo "[RL] launcher=$LAUNCHER gpus=${GPU_LIST:-<default>} nproc_per_node=$NPROC config=$RENDERED_CONFIG_PATH dataset=${DATASET_KEY:-industrial}"
 echo "[RL] summary reward_type=$REWARD_TYPE num_generations=$NUM_GENERATIONS eval_step=$EVAL_STEP beam_search=$BEAM_SEARCH wandb_project=$WANDB_PROJECT run_name=$WANDB_RUN_NAME output=$OUTPUT_DIR"
 
 if [[ "$LAUNCHER" == "accelerate" ]]; then
@@ -108,9 +107,9 @@ if [[ "$LAUNCHER" == "accelerate" ]]; then
     --config_file "$ACC_CONFIG" \
     --num_processes "$NPROC" \
     --main_process_port "$MAIN_PORT" \
-    -m onerec.main rl --config "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}"
+    -m onerec.main rl --config "$RENDERED_CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}"
 elif [[ "$LAUNCHER" == "torchrun" && "$NPROC" -gt 1 ]]; then
-  exec torchrun --standalone --nproc_per_node="$NPROC" -m onerec.main rl --config "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}"
+  exec torchrun --standalone --nproc_per_node="$NPROC" -m onerec.main rl --config "$RENDERED_CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}"
 else
-  exec python -m onerec.main rl --config "$CONFIG_PATH" "${EFFECTIVE_OVERRIDES[@]}"
+  exec python -m onerec.main rl --config "$RENDERED_CONFIG_PATH" "${PASSTHROUGH_ARGS[@]}"
 fi
