@@ -118,8 +118,7 @@ if [[ -z "$GPU_LIST" ]]; then
 fi
 
 mkdir -p "$(dirname "$RESULT_PATH")"
-RESULT_STEM="$(basename "${RESULT_PATH%.*}")"
-TEMP_DIR="./temp/${CATEGORY:-eval}-${RESULT_STEM}"
+TEMP_DIR="./temp/${EVAL_MODEL_STAGE:-sft}-${CATEGORY:-eval}"
 mkdir -p "$TEMP_DIR"
 
 echo "[EVAL] splitting test file: $TEST_FILE -> $TEMP_DIR"

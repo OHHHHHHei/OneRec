@@ -40,7 +40,7 @@ def build_template_context(
         "split_stem": split_stem,
         "artifact_stem": artifact_stem,
         "eval_model_stage": eval_model_stage,
-        "eval_result_suffix": "" if eval_model_stage == "sft" else f"_{eval_model_stage}",
+        "eval_result_suffix": f"_{eval_model_stage}",
     }
 
 

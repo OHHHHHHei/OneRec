@@ -39,6 +39,22 @@ class ConfigTemplateTest(unittest.TestCase):
             "./results/final_result_rl_Office_Products.json",
         )
 
+    def test_render_evaluate_sft_industrial(self):
+        payload = render_config_payload(
+            config_path=REPO_ROOT / "config" / "evaluate.yaml",
+            datasets_path=DATASETS_PATH,
+            dataset_key="industrial",
+            eval_model_stage="sft",
+        )
+        self.assertEqual(
+            payload["model"]["base_model"],
+            "./output/sft_Industrial_and_Scientific_refactor/final_checkpoint",
+        )
+        self.assertEqual(
+            payload["output"]["output_dir"],
+            "./results/final_result_sft_Industrial_and_Scientific.json",
+        )
+
     def test_render_to_temp_file(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = Path(tmpdir) / "rendered.yaml"
