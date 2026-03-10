@@ -484,6 +484,7 @@ class ReReTrainer(Trainer):
                     length_penalty=self.length_penalty,
                     num_beams=self.num_generations,
                     num_return_sequences=self.num_generations,
+                    bos_token_id=processing_class.bos_token_id,
                     pad_token_id=processing_class.pad_token_id,
                     eos_token_id=processing_class.eos_token_id,
                     top_k=None,
@@ -499,9 +500,15 @@ class ReReTrainer(Trainer):
                     length_penalty=self.length_penalty,
                     do_sample=True,
                     temperature=args.temperature,
+                    bos_token_id=processing_class.bos_token_id,
                     pad_token_id=processing_class.pad_token_id,
                     eos_token_id=processing_class.eos_token_id,
                 )
+
+        model.config.pad_token_id = processing_class.pad_token_id
+        model.config.eos_token_id = processing_class.eos_token_id
+        model.config.bos_token_id = processing_class.bos_token_id
+        model.generation_config = self.generation_config
 
         # Gradient accumulation requires scaled loss. Normally, loss scaling in the parent class depends on whether the
         # model accepts loss-related kwargs. Since we compute our own loss, this check is irrelevant. We set
@@ -575,9 +582,11 @@ class ReReTrainer(Trainer):
                                                             length_penalty=self.length_penalty,
                                                             num_beams=self.test_beam,
                                                             num_return_sequences=self.test_beam,
+                                                            bos_token_id=self.processing_class.bos_token_id,
                                                             top_k=None,
                                                             top_p=None,
                                                             do_sample=False,
+                                                            temperature=self.temperature,
                                                             pad_token_id=self.processing_class.pad_token_id,
                                                             eos_token_id=self.processing_class.eos_token_id,)
 
