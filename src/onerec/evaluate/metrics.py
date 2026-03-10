@@ -3,6 +3,10 @@ import json
 import numpy as np
     
 from tqdm import tqdm
+
+from onerec.evaluate.semantic_id import canonicalize_semantic_id
+
+
 def gao(path, item_path):
     if type(path) != list:
         path = [path]
@@ -14,7 +18,7 @@ def gao(path, item_path):
     f = open(f"{item_path}.txt", 'r')
     items = f.readlines()
     # item_names = [ _[:-len(_.split('\t')[-1])].strip() for _ in items]
-    item_names= [_.split('\t')[0].strip() for _ in items]
+    item_names= [canonicalize_semantic_id(_.split('\t')[0]) for _ in items]
     item_ids = [_ for _ in range(len(item_names))]
     item_dict = dict()
     for i in range(len(item_names)):
@@ -38,18 +42,18 @@ def gao(path, item_path):
         test_data = json.load(f)
         f.close()
         
-        text = [ [_.strip("\"\n").strip() for _ in sample["predict"]] for sample in test_data]
+        text = [[canonicalize_semantic_id(_) for _ in sample["predict"]] for sample in test_data]
         
-        for index, sample in tqdm(enumerate(text)):
+        for index, sample in tqdm(enumerate(text), total=len(text)):
             if n_beam == -1:
                 n_beam = len(sample)
                 valid_topk = [k for k in topk_list if k <= n_beam]
                 ALLNDCG = np.zeros(len(valid_topk))
                 ALLHR = np.zeros(len(valid_topk))
             if type(test_data[index]['output']) == list:
-                target_item = test_data[index]['output'][0].strip("\"").strip(" ")
+                target_item = canonicalize_semantic_id(test_data[index]['output'][0])
             else:
-                target_item = test_data[index]['output'].strip(" \n\"")
+                target_item = canonicalize_semantic_id(test_data[index]['output'])
             minID = 1000000
             for i in range(len(sample)):
                 

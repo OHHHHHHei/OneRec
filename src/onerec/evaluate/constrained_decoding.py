@@ -30,14 +30,16 @@ class ConstrainedLogitsProcessor(LogitsProcessor):
         num_beams: int,
         base_model: str = None,
         eos_token_id: int = None,
+        prompt_prefix_length: int | None = None,
         warn_limit_per_step: int = 2,
         enable_warning: bool = True,
     ):
         self._prefix_allowed_tokens_fn = prefix_allowed_tokens_fn
         self._num_beams = num_beams
-        self.count=0
+        self.count = 0
         self.base_model = base_model
         self.eos_token_id = eos_token_id
+        self.prompt_prefix_length = prompt_prefix_length
         self.warn_limit_per_step = max(0, int(warn_limit_per_step))
         self.enable_warning = bool(enable_warning)
         self.invalid_total = 0
@@ -48,6 +50,20 @@ class ConstrainedLogitsProcessor(LogitsProcessor):
             self.prefix_index = 4
         else:
             self.prefix_index = 3
+
+    def _resolve_prefix_state(self, sent: torch.LongTensor) -> tuple[list[int], int]:
+        if self.prompt_prefix_length is None:
+            if self.count == 0:
+                return sent[-self.prefix_index :].tolist(), self.count
+            return sent[-self.count :].tolist(), self.count
+
+        completion_tokens = sent[self.prompt_prefix_length :]
+        if self.eos_token_id is not None and (completion_tokens == self.eos_token_id).any():
+            return [self.eos_token_id], int(completion_tokens.numel())
+        if completion_tokens.numel() == 0:
+            prompt_tail = sent[self.prompt_prefix_length - self.prefix_index : self.prompt_prefix_length]
+            return prompt_tail.tolist(), 0
+        return completion_tokens.tolist(), int(completion_tokens.numel())
 
     def get_diagnostics(self, top_k: int = 5) -> dict:
         top_hashes = [
@@ -68,24 +84,24 @@ class ConstrainedLogitsProcessor(LogitsProcessor):
             
         for batch_id, beam_sent in enumerate(input_ids.view(-1, self._num_beams, input_ids.shape[-1])):
             for beam_id, sent in enumerate(beam_sent):
-                if self.count == 0:
-                    hash_key = sent[-self.prefix_index:]
-                else:
-                    hash_key=sent[-self.count:]
-                hash_key = hash_key.tolist()
+                hash_key, step = self._resolve_prefix_state(sent)
+                if hash_key == [self.eos_token_id]:
+                    if self.eos_token_id is not None:
+                        mask[batch_id * self._num_beams + beam_id, self.eos_token_id] = 0
+                    continue
                 prefix_allowed_tokens = self._prefix_allowed_tokens_fn(batch_id, hash_key)
 
                 if len(prefix_allowed_tokens) == 0:
                     self.invalid_total += 1
-                    self.invalid_by_step[self.count] = self.invalid_by_step.get(self.count, 0) + 1
+                    self.invalid_by_step[step] = self.invalid_by_step.get(step, 0) + 1
                     self._invalid_hash_counter[tuple(hash_key)] += 1
-                    warned_count = self._warned_by_step.get(self.count, 0)
+                    warned_count = self._warned_by_step.get(step, 0)
                     if self.enable_warning and warned_count < self.warn_limit_per_step:
                         warnings.warn(
-                            f"No valid tokens found for hash_key {hash_key} at step {self.count}. "
+                            f"No valid tokens found for hash_key {hash_key} at step {step}. "
                             f"(step_warn {warned_count + 1}/{self.warn_limit_per_step})"
                         )
-                        self._warned_by_step[self.count] = warned_count + 1
+                        self._warned_by_step[step] = warned_count + 1
                     # Force EOS token to end invalid sequence
                     if self.eos_token_id is not None:
                         mask[batch_id * self._num_beams + beam_id, self.eos_token_id] = 0
@@ -93,7 +109,8 @@ class ConstrainedLogitsProcessor(LogitsProcessor):
                 
                 mask[batch_id * self._num_beams + beam_id, prefix_allowed_tokens] = 0
 
-        self.count += 1
+        if self.prompt_prefix_length is None:
+            self.count += 1
 
         scores = scores + mask
         return scores

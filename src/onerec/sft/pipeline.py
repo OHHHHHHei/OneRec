@@ -19,9 +19,10 @@ logger = logging.getLogger(__name__)
 
 def _resolve_precision() -> tuple[torch.dtype, bool, bool]:
     has_cuda = torch.cuda.is_available()
-    use_bf16 = bool(has_cuda and torch.cuda.is_bf16_supported())
-    use_fp16 = bool(has_cuda and not use_bf16)
-    model_dtype = torch.bfloat16 if use_bf16 else torch.float16 if use_fp16 else torch.float32
+    # Keep mainline aligned with legacy MiniOneRec: CUDA runs default to BF16.
+    use_bf16 = bool(has_cuda)
+    use_fp16 = False
+    model_dtype = torch.bfloat16 if use_bf16 else torch.float32
     return model_dtype, use_bf16, use_fp16
 
 
@@ -140,4 +141,3 @@ def run_sft(config) -> str:
     trainer.model.save_pretrained(final_checkpoint)
     tokenizer.save_pretrained(final_checkpoint)
     return final_checkpoint
-

@@ -10,6 +10,7 @@ from torch.utils.data import ConcatDataset
 from transformers import AutoTokenizer
 from trl import GRPOConfig
 
+from onerec.rl.deepspeed_compat import patch_bf16_optimizer_destroy
 from onerec.utils.seed import set_global_seed
 from onerec.rl.datasets import RLSeqTitle2SidDataset, RLTitle2SidDataset, SidDataset
 from onerec.rl.rewards import build_ranking_reward, build_rule_reward, build_semantic_reward
@@ -21,9 +22,10 @@ logger = logging.getLogger(__name__)
 
 def _resolve_precision() -> tuple[torch.dtype, bool, bool]:
     has_cuda = torch.cuda.is_available()
-    use_bf16 = bool(has_cuda and torch.cuda.is_bf16_supported())
-    use_fp16 = bool(has_cuda and not use_bf16)
-    model_dtype = torch.bfloat16 if use_bf16 else torch.float16 if use_fp16 else torch.float32
+    # Keep mainline aligned with legacy MiniOneRec: CUDA runs default to BF16.
+    use_bf16 = bool(has_cuda)
+    use_fp16 = False
+    model_dtype = torch.bfloat16 if use_bf16 else torch.float32
     return model_dtype, use_bf16, use_fp16
 
 
@@ -69,6 +71,7 @@ def _cleanup_rl_runtime(trainer) -> None:
 
 def run_rl(config) -> str | None:
     set_global_seed(config.training.seed)
+    patch_bf16_optimizer_destroy()
     if config.logging.wandb_project:
         os.environ["WANDB_PROJECT"] = config.logging.wandb_project
     if torch.cuda.is_available():

@@ -7,9 +7,10 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, LogitsProcessorList
 from tqdm import tqdm
 
-from onerec.utils.seed import set_global_seed
 from onerec.evaluate.constrained_decoding import ConstrainedLogitsProcessor
 from onerec.evaluate.datasets import EvalSidDataset
+from onerec.evaluate.semantic_id import canonicalize_semantic_id
+from onerec.utils.seed import set_global_seed
 
 
 logger = logging.getLogger(__name__)
@@ -17,6 +18,11 @@ logger = logging.getLogger(__name__)
 
 def _get_hash(tokens) -> str:
     return "-".join(str(token) for token in tokens)
+
+
+def _resolve_precision() -> torch.dtype:
+    # Keep mainline aligned with legacy MiniOneRec: CUDA runs default to BF16.
+    return torch.bfloat16 if torch.cuda.is_available() else torch.float32
 
 
 def _get_worker_context() -> tuple[str, str, bool]:
@@ -51,11 +57,26 @@ def _resolve_eval_param(config, key: str, default):
     return config.extras.get(key, default)
 
 
+def _build_generation_config(tokenizer, num_beams: int, max_new_tokens: int, length_penalty: float, temperature: float) -> GenerationConfig:
+    return GenerationConfig(
+        num_beams=num_beams,
+        num_return_sequences=num_beams,
+        max_new_tokens=max_new_tokens,
+        do_sample=False,
+        temperature=temperature,
+        top_k=None,
+        top_p=None,
+        pad_token_id=tokenizer.eos_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+        bos_token_id=tokenizer.bos_token_id,
+        length_penalty=length_penalty,
+    )
+
+
 def run_evaluate(config) -> str:
     set_global_seed(config.training.seed)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    use_bf16 = bool(torch.cuda.is_available() and torch.cuda.is_bf16_supported())
-    model_dtype = torch.bfloat16 if use_bf16 else torch.float16 if torch.cuda.is_available() else torch.float32
+    model_dtype = _resolve_precision()
     worker_id, primary_worker, is_primary_worker = _get_worker_context()
     warn_limit_per_step = int(os.environ.get("ONEREC_EVAL_WARN_LIMIT", "2"))
     batch_size = int(_resolve_eval_param(config, "batch_size", 4))
@@ -132,6 +153,14 @@ def run_evaluate(config) -> str:
     model.config.pad_token_id = tokenizer.eos_token_id
     model.config.eos_token_id = tokenizer.eos_token_id
     model.config.bos_token_id = tokenizer.bos_token_id
+    generation_config = _build_generation_config(
+        tokenizer=tokenizer,
+        num_beams=num_beams,
+        max_new_tokens=max_new_tokens,
+        length_penalty=length_penalty,
+        temperature=_temperature,
+    )
+    model.generation_config = generation_config
     model = model.to(device)
 
     outputs = []
@@ -158,6 +187,7 @@ def run_evaluate(config) -> str:
             num_beams=num_beams,
             base_model=config.model.base_model,
             eos_token_id=tokenizer.eos_token_id,
+            prompt_prefix_length=max_len,
             warn_limit_per_step=warn_limit_per_step,
             enable_warning=is_primary_worker,
         )
@@ -167,17 +197,7 @@ def run_evaluate(config) -> str:
         generation_output = model.generate(
             torch.tensor(input_ids).to(device),
             attention_mask=torch.tensor(attention_mask).to(device),
-            generation_config=GenerationConfig(
-                num_beams=num_beams,
-                num_return_sequences=num_beams,
-                max_new_tokens=max_new_tokens,
-                do_sample=False,
-                top_k=None,
-                top_p=None,
-                pad_token_id=tokenizer.eos_token_id,
-                eos_token_id=tokenizer.eos_token_id,
-                length_penalty=length_penalty,
-            ),
+            generation_config=generation_config,
             logits_processor=LogitsProcessorList([clp]),
             return_dict_in_generate=True,
             output_scores=True,
@@ -193,7 +213,7 @@ def run_evaluate(config) -> str:
             decoded = tokenizer.batch_decode(completions, skip_special_tokens=True, clean_up_tokenization_spaces=False)
         else:
             decoded = tokenizer.batch_decode(completions, skip_special_tokens=True)
-        decoded = [entry.split("Response:\n")[-1].strip() for entry in decoded]
+        decoded = [canonicalize_semantic_id(entry.split("Response:\n")[-1]) for entry in decoded]
         grouped = [decoded[i : i + num_beams] for i in range(0, len(decoded), num_beams)]
         outputs.extend(grouped)
         if not is_primary_worker and ((block_idx + 1) % 50 == 0 or (block_idx + 1) == blocks):
