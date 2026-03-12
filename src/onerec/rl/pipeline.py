@@ -10,7 +10,7 @@ from torch.utils.data import ConcatDataset
 from transformers import AutoTokenizer
 from trl import GRPOConfig
 
-from onerec.rl.deepspeed_compat import patch_bf16_optimizer_destroy
+from onerec.rl.deepspeed_compat import patch_deepspeed_cleanup
 from onerec.utils.seed import set_global_seed
 from onerec.rl.datasets import RLSeqTitle2SidDataset, RLTitle2SidDataset, SidDataset
 from onerec.rl.rewards import build_ranking_reward, build_rule_reward, build_semantic_reward
@@ -71,7 +71,7 @@ def _cleanup_rl_runtime(trainer) -> None:
 
 def run_rl(config) -> str | None:
     set_global_seed(config.training.seed)
-    patch_bf16_optimizer_destroy()
+    patch_deepspeed_cleanup()
     if config.logging.wandb_project:
         os.environ["WANDB_PROJECT"] = config.logging.wandb_project
     if torch.cuda.is_available():
