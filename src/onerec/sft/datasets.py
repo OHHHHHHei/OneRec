@@ -124,7 +124,7 @@ class FusionSeqRecDataset(BaseDataset):
         # Manual toggle:
         # False: title task only (legacy default).
         # True: randomly mix title and description alignment tasks.
-        self.enable_title_description_alignment = False
+        self.enable_title_description_alignment = True
         self.description_task_probability = 0.5
         for item_id, sids in self.indices.items():
             if item_id in self.item_feat and len(sids) >= 3:

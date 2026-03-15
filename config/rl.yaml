@@ -13,7 +13,7 @@ training:
   eval_batch_size: 32
   gradient_accumulation_steps: 4
   num_epochs: 2
-  num_generations: 4
+  num_generations: 16
   learning_rate: 0.00001
   eval_step: 0.05
   reward_type: ranking
