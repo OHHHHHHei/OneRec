@@ -114,7 +114,6 @@ class FusionSeqRecDataset(BaseDataset):
 
         BaseDataset.__init__(self, tokenizer, max_len, test, category, dedup, seed)
         self.data = pd.read_csv(train_file)
-        self._cache_sources = [train_file, item_file, index_file]
         if sample > 0:
             self.data = self.data.sample(sample, random_state=seed)
         self.item_feat = read_json(item_file)
@@ -133,7 +132,6 @@ class FusionSeqRecDataset(BaseDataset):
                 description = self.item_feat[item_id].get("description", "")
                 self.sid2title[sid] = title
                 self.sid2description[sid] = self._process_description(description, title)
-        self.cache_tag = f"title_desc_align={self.enable_title_description_alignment}"
         self.get_inputs()
 
     def _process_description(self, description, title: str) -> str:
@@ -220,7 +218,6 @@ class TitleHistory2SidSFTDataset(BaseDataset):
 
         BaseDataset.__init__(self, tokenizer, max_len, test, category, dedup, seed)
         self.data = pd.read_csv(train_file)
-        self._cache_sources = [train_file, item_file, index_file]
         if sample > 0:
             self.data = self.data.sample(sample, random_state=seed)
         self.item_feat = read_json(item_file)
@@ -283,4 +280,3 @@ Based on the user's historical interaction with item titles, predict the semanti
             "attention_mask": attention_mask[-self.max_len:],
             "labels": labels[-self.max_len:],
         }
-

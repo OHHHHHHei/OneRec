@@ -33,6 +33,7 @@ conda-meta/
 .idea/
 .DS_Store
 Thumbs.db
+AGENTS.md
 
 # Logs and local caches
 logs/

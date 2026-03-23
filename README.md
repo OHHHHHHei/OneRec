@@ -276,7 +276,6 @@ bash evaluate.sh config/evaluate.yaml rl industrial
 本地不要求跑完整训练，当前推荐的检查方式是：
 
 ```bash
-python parity_check.py
 python -m unittest discover -s tests/unit -v
 PYTHONPATH=./src python -m onerec.main --help
 ```

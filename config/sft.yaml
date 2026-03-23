@@ -25,7 +25,7 @@ logging:
   wandb_run_name: "sft_%{category}"
   report_to: wandb
 output:
-  output_dir: "./output/sft_%{category}_refactor_align"
+  output_dir: "./output/sft_%{category}_refactor"
   save_total_limit: 2
 runtime:
   launcher: torchrun

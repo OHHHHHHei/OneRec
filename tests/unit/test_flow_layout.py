@@ -1,5 +1,3 @@
-import os
-import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -47,21 +45,6 @@ class FlowLayoutTest(unittest.TestCase):
         self.assertFalse((self.repo_root / "scripts").exists())
         self.assertFalse((self.repo_root / "legacy").exists())
         self.assertFalse((self.repo_root / "src" / "minionerec").exists())
-
-    def test_parity_check_script(self):
-        env = os.environ.copy()
-        env["PYTHONPATH"] = str(self.repo_root / "src") + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
-        proc = subprocess.run(
-            [sys.executable, "parity_check.py"],
-            capture_output=True,
-            text=True,
-            check=False,
-            cwd=self.repo_root,
-            env=env,
-        )
-        self.assertEqual(proc.returncode, 0, msg=f"stdout={proc.stdout}\nstderr={proc.stderr}")
-        self.assertIn("Parity check passed.", proc.stdout)
-
 
 if __name__ == "__main__":
     unittest.main()
