@@ -108,7 +108,21 @@ Answer the question about item identification.
 
 
 class FusionSeqRecDataset(BaseDataset):
-    def __init__(self, train_file, item_file, index_file, tokenizer, max_len=2048, sample=-1, test=False, seed=0, category="", dedup=False):
+    def __init__(
+        self,
+        train_file,
+        item_file,
+        index_file,
+        tokenizer,
+        max_len=2048,
+        sample=-1,
+        test=False,
+        seed=0,
+        category="",
+        dedup=False,
+        enable_title_description_alignment=True,
+        description_task_probability=0.5,
+    ):
         import pandas as pd
         from onerec.utils.io import read_json
 
@@ -120,11 +134,8 @@ class FusionSeqRecDataset(BaseDataset):
         self.indices = read_json(index_file)
         self.sid2title = {}
         self.sid2description = {}
-        # Manual toggle:
-        # False: title task only (legacy default).
-        # True: randomly mix title and description alignment tasks.
-        self.enable_title_description_alignment = True
-        self.description_task_probability = 0.5
+        self.enable_title_description_alignment = bool(enable_title_description_alignment)
+        self.description_task_probability = float(description_task_probability)
         for item_id, sids in self.indices.items():
             if item_id in self.item_feat and len(sids) >= 3:
                 sid = "".join(sids[:3])

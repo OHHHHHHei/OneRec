@@ -11,6 +11,9 @@ training:
   batch_size: 1024
   micro_batch_size: 2
   cutoff_len: 512
+  # Keep local default as the noalign baseline; override to true for align runs.
+  enable_title_description_alignment: false
+  description_task_probability: 0.5
   num_epochs: 10
   learning_rate: 0.0003
   seed: 42
@@ -29,5 +32,5 @@ output:
   save_total_limit: 2
 runtime:
   launcher: torchrun
-  cuda_visible_devices: "2,3,4,5"
+  cuda_visible_devices: "4,5,6,7"
   nproc_per_node: 4

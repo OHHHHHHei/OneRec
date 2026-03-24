@@ -89,7 +89,17 @@ def run_sft(config) -> str:
     train_datasets = [
         SidSFTDataset(config.data.train_file, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed),
         SidItemFeatDataset(config.data.item_meta_path, config.data.sid_index_path, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed),
-        FusionSeqRecDataset(config.data.train_file, config.data.item_meta_path, config.data.sid_index_path, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed),
+        FusionSeqRecDataset(
+            config.data.train_file,
+            config.data.item_meta_path,
+            config.data.sid_index_path,
+            tokenizer=tokenizer,
+            max_len=cutoff_len,
+            category=config.data.category,
+            seed=config.training.seed,
+            enable_title_description_alignment=config.training.enable_title_description_alignment,
+            description_task_probability=config.training.description_task_probability,
+        ),
         TitleHistory2SidSFTDataset(config.data.train_file, config.data.item_meta_path, config.data.sid_index_path, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed),
     ]
     train_dataset = ConcatDataset(train_datasets)

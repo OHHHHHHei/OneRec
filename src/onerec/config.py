@@ -44,6 +44,8 @@ class SFTTrainConfig(CommonTrainConfig):
     batch_size: int = 32
     micro_batch_size: int = 4
     cutoff_len: int = 512
+    enable_title_description_alignment: bool = True
+    description_task_probability: float = 0.5
     group_by_length: bool = False
     warmup_steps: int = 20
     load_best_model_at_end: bool = True

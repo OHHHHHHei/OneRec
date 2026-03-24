@@ -11,7 +11,9 @@ training:
   seed: 42
   train_batch_size: 16
   eval_batch_size: 32
-  gradient_accumulation_steps: 4
+  # Keep the effective global prompt batch aligned with the legacy 64 x 2 x 4 = 512
+  # setup without increasing per-device memory usage.
+  gradient_accumulation_steps: 8
   num_epochs: 2
   num_generations: 16
   learning_rate: 0.00001
