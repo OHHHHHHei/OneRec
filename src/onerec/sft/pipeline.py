@@ -100,8 +100,19 @@ def run_sft(config) -> str:
             enable_title_description_alignment=config.training.enable_title_description_alignment,
             description_task_probability=config.training.description_task_probability,
         ),
-        TitleHistory2SidSFTDataset(config.data.train_file, config.data.item_meta_path, config.data.sid_index_path, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed),
     ]
+    if config.training.enable_title_history2sid_dataset:
+        train_datasets.append(
+            TitleHistory2SidSFTDataset(
+                config.data.train_file,
+                config.data.item_meta_path,
+                config.data.sid_index_path,
+                tokenizer=tokenizer,
+                max_len=cutoff_len,
+                category=config.data.category,
+                seed=config.training.seed,
+            )
+        )
     train_dataset = ConcatDataset(train_datasets)
     eval_dataset = SidSFTDataset(config.data.eval_file, tokenizer=tokenizer, max_len=cutoff_len, category=config.data.category, seed=config.training.seed)
     hf_train = concat_dataset_to_hf(train_dataset).shuffle(seed=42)

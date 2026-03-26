@@ -13,6 +13,20 @@ preprocess -> embed -> sid-train -> sid-generate -> convert -> sft -> rl -> eval
 - 用统一的 `bash + yaml` 入口替代分散脚本
 - 用更清晰的目录结构组织代码、配置和产物
 
+## 文档导航
+
+如果你要快速建立上下文，建议按下面顺序阅读：
+
+- [项目理解报告](/home/leejt/OneRec/project_understanding_report.md)
+  - 适合系统了解仓库结构、主链路、配置系统、数据契约、SFT / RL / Evaluate 实现细节。
+- [MiniOneRec 复现进度表](/home/leejt/OneRec/mini_onerec_reproduction_progress.md)
+  - 适合了解当前复现目标、论文目标值、已完成实验、repo-faithful 与 research-enhanced 的口径区分，以及下一步研究计划。
+
+当前建议：
+
+- 想理解代码，优先看“项目理解报告”
+- 想了解现在做到哪里、下一步做什么，优先看“复现进度表”
+
 ## 特性
 
 - 统一的主入口：

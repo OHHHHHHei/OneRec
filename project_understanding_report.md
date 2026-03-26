@@ -1,5 +1,10 @@
 # OneRec 项目理解报告
 
+补充说明：
+
+- 本报告主要回答“这个仓库当前代码到底是怎么工作的”。
+- 如果你想看最新的 MiniOneRec 论文复现状态、实验结果和后续计划，请同时阅读 [MiniOneRec 复现进度表](/home/leejt/OneRec/mini_onerec_reproduction_progress.md)。
+
 ## 项目整体结论
 
 OneRec 是一个面向生成式推荐的工程化主链仓库，目标是把原始 MiniOneRec 的核心实验链路收敛为统一的 `bash + yaml + python stage` 体系，主链为：
