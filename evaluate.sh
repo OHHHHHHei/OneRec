@@ -96,9 +96,18 @@ MAX_NEW_TOKENS="${_launch[12]:-256}"
 LENGTH_PENALTY="${_launch[13]:-0.0}"
 TEMPERATURE="${_launch[14]:-1.0}"
 GUIDANCE_SCALE="${_launch[15]:-None}"
+RESULT_BASENAME="$(basename "$RESULT_PATH")"
+RESULT_STEM="${RESULT_BASENAME%.json}"
 
 if [[ -n "$GPU_LIST" ]]; then
   export CUDA_VISIBLE_DEVICES="$GPU_LIST"
+fi
+
+if [[ "$MODEL_PATH" == /* || "$MODEL_PATH" == ./* || "$MODEL_PATH" == ../* ]]; then
+  if [[ ! -e "$MODEL_PATH" ]]; then
+    echo "ERROR: local model path not found: $MODEL_PATH" >&2
+    exit 1
+  fi
 fi
 
 echo "[EVAL] launcher=$LAUNCHER parallel=$PARALLEL gpus=${GPU_LIST:-<default>} config=$RENDERED_CONFIG_PATH model_stage=${EVAL_MODEL_STAGE:-sft} dataset=${DATASET_KEY:-industrial}"
@@ -118,7 +127,9 @@ if [[ -z "$GPU_LIST" ]]; then
 fi
 
 mkdir -p "$(dirname "$RESULT_PATH")"
-TEMP_DIR="./temp/${EVAL_MODEL_STAGE:-sft}-${CATEGORY:-eval}"
+TEMP_ROOT="./temp/${EVAL_MODEL_STAGE:-sft}-${CATEGORY:-eval}"
+TEMP_DIR="$TEMP_ROOT/$RESULT_STEM"
+rm -rf "$TEMP_DIR"
 mkdir -p "$TEMP_DIR"
 
 echo "[EVAL] splitting test file: $TEST_FILE -> $TEMP_DIR"
@@ -138,6 +149,9 @@ if [[ -z "$PRIMARY_WORKER" ]]; then
   exit 1
 fi
 
+declare -a launched_gpus=()
+declare -a worker_pids=()
+
 for gpu in "${_gpu_arr[@]}"; do
   gpu="$(echo "$gpu" | xargs)"
   if [[ -z "$gpu" ]]; then
@@ -153,14 +167,38 @@ for gpu in "${_gpu_arr[@]}"; do
       "${PASSTHROUGH_ARGS[@]}" \
       "data.test_file=$TEMP_DIR/${gpu}.csv" \
       "output.output_dir=$TEMP_DIR/${gpu}.json" &
+    worker_pids+=("$!")
+    launched_gpus+=("$gpu")
   else
     echo "[EVAL] skip GPU $gpu: split file not found."
   fi
 done
 
-wait
+if [[ "${#launched_gpus[@]}" -eq 0 ]]; then
+  echo "ERROR: no evaluate workers launched; split outputs missing under $TEMP_DIR" >&2
+  exit 1
+fi
 
-actual_cuda_list="$(ls "$TEMP_DIR"/*.json 2>/dev/null | sed 's/.*\///g' | sed 's/\.json//g' | tr '\n' ',' | sed 's/,$//')"
+worker_failed=0
+for pid in "${worker_pids[@]}"; do
+  if ! wait "$pid"; then
+    worker_failed=1
+  fi
+done
+
+if [[ "$worker_failed" -ne 0 ]]; then
+  echo "ERROR: one or more evaluate workers failed; aborting merge." >&2
+  exit 1
+fi
+
+for gpu in "${launched_gpus[@]}"; do
+  if [[ ! -f "$TEMP_DIR/${gpu}.json" ]]; then
+    echo "ERROR: expected shard result missing: $TEMP_DIR/${gpu}.json" >&2
+    exit 1
+  fi
+done
+
+actual_cuda_list="$(printf '%s\n' "${launched_gpus[@]}" | paste -sd, -)"
 if [[ -z "$actual_cuda_list" ]]; then
   echo "ERROR: no shard results generated under $TEMP_DIR" >&2
   exit 1

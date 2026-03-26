@@ -11,6 +11,8 @@ training:
   batch_size: 1024
   micro_batch_size: 2
   cutoff_len: 512
+  # Keep local default aligned with the current mainline: include TitleHistory2SidSFTDataset.
+  enable_title_history2sid_dataset: true
   # Keep local default as the noalign baseline; override to true for align runs.
   enable_title_description_alignment: false
   description_task_probability: 0.5
