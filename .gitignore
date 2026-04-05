@@ -100,3 +100,6 @@ data/**/*.npy
 # Do not track runtime dataset caches under curated Amazon artifacts
 data/Amazon/**/.cache/
 data/Amazon/**/.cache/**
+
+# Local diagnostic ledgers
+sid_diagnostic_results.csv
