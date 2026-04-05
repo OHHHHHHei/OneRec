@@ -34,6 +34,30 @@ conda-meta/
 .DS_Store
 Thumbs.db
 AGENTS.md
+.codex
+
+# Local research notes and writeups
+Idea.tex
+project_understanding_report.md
+mini_onerec_reproduction_progress.md
+experiment_results.csv
+legacy_experiment_results.csv
+MiniOneRec An Open-Source Framework for Scaling Generative Recommendation.pdf
+
+# TeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
 
 # Logs and local caches
 logs/
