@@ -1,0 +1,392 @@
+% !TEX program = xelatex
+% NOTE: 为了更好的 Unicode 支持，请使用 XeLaTeX（或 LuaLaTeX）编译。
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setmainfont{CMU Serif}
+\IfFontExistsTF{Noto Serif CJK SC}{\setCJKmainfont{Noto Serif CJK SC}}{%
+  \IfFontExistsTF{Source Han Serif SC}{\setCJKmainfont{Source Han Serif SC}}{%
+    \setCJKmainfont{FandolSong-Regular}% TeX Live fallback
+  }%
+}%
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{tikz-cd}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{siunitx}
+
+\sisetup{table-number-alignment=center}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.3\baselineskip}
+\setlength{\textfloatsep}{5pt plus 1pt minus 1pt}
+\setlength{\floatsep}{4pt plus 1pt minus 1pt}
+\setlength{\intextsep}{4pt plus 1pt minus 1pt}
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{1pt}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.88}
+
+\makeatletter
+\renewcommand{\maketitle}{%
+  \begin{center}
+    {\LARGE \@title\par}
+  \end{center}
+  \vspace{-0.6\baselineskip}
+}
+\makeatother
+
+\title{Idea报告V2}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{研究背景}
+
+传统推荐系统多采用 “召回–排序” 或 “匹配–打分” 范式，性能提升常依赖更大的 embedding表，但边际收益正在减弱。生成式推荐将任务改写为序列生成：先把 item 编码为离散Semantic ID（SID），再由自回归模型生成目标 item 的 SID。由于这一路线天然契合大语言模型训练范式，已成为当前研究热点。
+
+MiniOneRec 提供了较完整且可复现的流程，覆盖 SID 构建与 SFT \cite{kong2025minionerec}；其推荐导向强化学习阶段采用 GRPO，而 GRPO 方法来源于 DeepSeekMath \cite{shao2024deepseekmath}。这一流程为我们提供了可复现的研究起点，也提示了一个有待验证的假设：在当前生成式推荐框架中，静态且以语义为主导的 tokenizer 可能已成为性能提升的关键瓶颈。
+
+\section{复现结果}
+
+目前在MiniOneRec的基础上，基于Qwen3-1.7B的base model，我们的复现结果如下
+
+其中，传统序列推荐基线主要包括 GRU4Rec \cite{hidasi2016gru4rec}、Caser \cite{tang2018caser} 和 SASRec \cite{kang2018sasrec}。
+生成式推荐基线主要包括 HSTU \cite{zhai2024hstu}、TIGER \cite{rajput2023tiger}、LCRec \cite{zheng2023lcrec}、BIGRec \cite{bao2023bigrec}、D3 \cite{bao2024d3}、S-DPO \cite{chen2024sdpo} 以及 MiniOneRec \cite{kong2025minionerec}。
+
+\begin{table}[htbp]
+  \centering
+  \caption{Industrial 数据集上的性能对比\protect\footnotemark[1]}
+  \small
+  \begin{tabular}{l *{6}{S[table-format=1.4]} c}
+    \toprule
+    方法 & {HR@3} & {NDCG@3} & {HR@5} & {NDCG@5} & {HR@10} & {NDCG@10} & {超过指标数} \\
+    \midrule
+    复现结果 & 0.1004 & 0.0890 & 0.1198 & 0.0970 & 0.1513 & 0.1073 & - \\
+    GRU4Rec & 0.0638 & 0.0542 & 0.0774 & 0.0598 & 0.0999 & 0.0669 & 6/6 \\
+    Caser & 0.0618 & 0.0514 & 0.0717 & 0.0555 & 0.0942 & 0.0628 & 6/6 \\
+    SASRec & 0.0790 & 0.0700 & 0.0909 & 0.0748 & 0.1088 & 0.0806 & 6/6 \\
+    HSTU & 0.0927 & 0.0885 & 0.1037 & 0.0918 & 0.1163 & 0.0958 & 6/6 \\
+    TIGER & 0.0852 & 0.0742 & 0.1010 & 0.0807 & 0.1321 & 0.0908 & 6/6 \\
+    LCRec & 0.0915 & 0.0805 & 0.1057 & 0.0862 & 0.1332 & 0.0952 & 6/6 \\
+    BIGRec & 0.0931 & 0.0841 & 0.1092 & 0.0907 & 0.1370 & 0.0997 & 6/6 \\
+    D3 & 0.1024 & 0.0991 & 0.1213 & 0.0989 & 0.1500 & 0.1082 & 1/6 \\
+    S-DPO & 0.1032 & 0.0906 & 0.1238 & 0.0991 & 0.1524 & 0.1082 & 0/6 \\
+    MiniOneRec & 0.1143 & 0.1011 & 0.1321 & 0.1084 & 0.1586 & 0.1167 & 0/6 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Office 数据集上的性能对比\protect\footnotemark[1]}
+  \small
+  \begin{tabular}{l *{6}{S[table-format=1.4]} c}
+    \toprule
+    方法 & {HR@3} & {NDCG@3} & {HR@5} & {NDCG@5} & {HR@10} & {NDCG@10} & {超过指标数} \\
+    \midrule
+    复现结果 & 0.1190 & 0.1055 & 0.1321 & 0.1109 & 0.1517 & 0.1171 & - \\
+    GRU4Rec & 0.0629 & 0.0528 & 0.0789 & 0.0595 & 0.1019 & 0.0669 & 6/6 \\
+    Caser & 0.0748 & 0.0615 & 0.0865 & 0.0664 & 0.1093 & 0.0737 & 6/6 \\
+    SASRec & 0.0861 & 0.0769 & 0.0949 & 0.0805 & 0.1120 & 0.0858 & 6/6 \\
+    HSTU & 0.1134 & 0.1031 & 0.1252 & 0.1079 & 0.1400 & 0.1126 & 6/6 \\
+    TIGER & 0.0986 & 0.0852 & 0.1163 & 0.0960 & 0.1408 & 0.1002 & 6/6 \\
+    LCRec & 0.0921 & 0.0807 & 0.1048 & 0.0859 & 0.1237 & 0.0920 & 6/6 \\
+    BIGRec & 0.1069 & 0.0961 & 0.1204 & 0.1017 & 0.1434 & 0.1091 & 6/6 \\
+    D3 & 0.1204 & 0.1055 & 0.1406 & 0.1139 & 0.1634 & 0.1213 & 0/6 \\
+    S-DPO & 0.1169 & 0.1033 & 0.1356 & 0.1110 & 0.1587 & 0.1255 & 2/6 \\
+    MiniOneRec & 0.1217 & 0.1088 & 0.1420 & 0.1172 & 0.1634 & 0.1242 & 0/6 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\footnotetext[1]{“超过指标数”表示本复现结果优于该方法的指标数/总指标数（总指标数为 6，对应 HR@3、NDCG@3、HR@5、NDCG@5、HR@10、NDCG@10）；“优于”按严格大于（$>$）统计，不包含相等（$=$）。}
+
+从结果来看，我目前的复现虽然还没有达到 MiniOneRec 论文中的最佳指标，但已经超过了大多数 baseline。我目前比较怀疑有两个主要原因导致和论文仍有差距：  
+\begin{enumerate}
+  \item 使用的 backbone 规模较小：本文使用 Qwen3-1.7B，而原论文使用 Qwen2.5-7B；
+  \item 开源代码中的 alignment tasks 与论文正文描述并不完全一致，代码里实际使用的对齐任务数量更少。
+\end{enumerate}
+
+\section{MiniOneRec}
+
+MiniOneRec 的主流程大致可以概括为下面四步： \cite{kong2025minionerec}：
+\begin{enumerate}
+  \item 用文本编码器将 title/description 映射到连续语义空间；
+  \item 用 RQ-VAE \cite{lee2022rqvae} 量化为三层 SID（典型设定：$L=3, K=256$，其中 $L$ 表示 SID 长度（层数），$K$ 表示每层 code 的词表大小（codebook size））；
+  \item 将 SID token 接入 LLM 词表进行 SFT；
+  \item 在 constrained decoding（合法 SID 约束）下执行 GRPO 强化学习。
+\end{enumerate}
+同时，MiniOneRec 借鉴了 LCRec \cite{zheng2023lcrec} 中的方法，通过 alignment tasks 绑定自然语言空间与 SID 空间，保证 SID 与自然语言的对齐，避免 SID 完全变成对 LLM 来说没有语义的离散符号。
+
+
+\section{Motivation}
+
+MiniOneRec 中的 tokenizer 基于 RQ-VAE \cite{lee2022rqvae} 对语义文本向量进行离散量化。
+这种方式目前有一些潜在问题：
+\begin{enumerate}
+  \item 目前的量化主要基于文本语义，协同信息没有直接进入 tokenizer；
+  \item 不同 item 可能会被量化到相同 SID，出现 collision，会影响推荐结果；
+  \item 同一个 code 在不同前缀下可能代表完全不同的语义方向，这会增加 LLM 的学习难度。
+\end{enumerate}
+
+\subsection{当前 SID 的初步诊断}
+
+为了判断上述问题是否真实存在，而不仅仅停留在直觉层面，我们基于当前最优 Industrial 与 Office 结果，对现有 SID 结构和评测错误进行了诊断分析。诊断分为两层：一是对现有 item-SID 映射本身做统计，观察 collision 和 prefix 结构；二是结合 evaluate 结果中的预测 SID 与真实 target SID，分析错误是否真的集中发生在“相近前缀但未命中”的情形。
+
+诊断结果表明，\textbf{collision 确实存在，但并不是当前最主要的问题}。在 Industrial 数据集上，现有 SID 的 collision rate 约为 $0.4341\%$；在 Office 数据集上约为 $0.4337\%$。这一结果说明不同 item 被映射到完全相同 SID 的现象并非不存在，但其绝对比例并不高，因此很难单独解释当前与论文结果之间的全部差距。
+
+相比之下，\textbf{前缀语义不稳定与同层 code 的上下文歧义更值得关注}。例如，在 Industrial 数据集中，某些二级 code（如若干 $\texttt{<b\_*>}$）会出现在多达 16 个不同的一级前缀下，而三级 code $\texttt{<c\_0>}$ 甚至出现在 96 个不同的二级前缀上下文中；在 Office 数据集中，类似现象同样存在，例如某些二级 code 会出现在 31 个不同一级前缀下，而 $\texttt{<c\_0>}$ 出现在 60 个不同的二级前缀上下文中。这意味着同一个 code 的语义高度依赖其历史前缀，而不是全局稳定的。
+
+更重要的是，这种 prefix ambiguity 已经直接体现在真实预测错误中。在 Industrial 数据集的 top-1 错误中，约有 $21.5\%$ 的错误样本与真实 target 共享相同的一级前缀，约有 $7.7\%$ 的错误样本甚至与真实 target 共享前两级前缀；在 Office 数据集中，这两个比例分别约为 $10.2\%$ 和 $1.9\%$。同时，在 beam 内部，Industrial 有约 $41.8\%$ 的样本至少出现过一个与 target 共享一级前缀的候选，约 $25.3\%$ 的样本至少出现过一个共享前两级前缀的候选；Office 上对应比例分别约为 $42.8\%$ 和 $23.5\%$。这说明模型并不是总在“完全错误的语义子树”上进行搜索，很多时候它已经进入了目标 item 附近的 prefix 子空间，但仍然无法在局部子树内部完成精确区分。
+
+这一现象也可以从具体案例中看出。例如，在 Industrial 数据集中，真实目标 item ``X-Treme Tape ... Black'' 的 SID 为 $\texttt{<a\_202><b\_198><c\_80>}$，而模型 top-1 预测为 ``X-Treme Tape ... Clear''，对应 SID 为 $\texttt{<a\_202><b\_198><c\_218>}$；两者前两级完全相同，仅最后一级不同。类似地，真实目标 ``3D Solutech Real White PLA'' 与错误预测 ``3D Solutech Silver Metal PLA'' 也共享相同的前两级 SID 前缀。在 Office 数据集中也有类似现象，例如真实目标 ``BIC ... Blue'' 与错误预测 ``BIC ... Red'' 共享相同的前两级前缀，真实目标 ``EXPO ... Assorted Colors'' 与错误预测 ``EXPO ... Black'' 也落在相同的前缀子树中。
+
+进一步地，我们又做了一个\textbf{train-only 的协同兼容性相关性诊断}。需要强调的是，这一分析\textbf{不是对“SID 构建缺少协同信息”进行严格因果量化}，而是检验如下现象是否存在：模型 top-1 预测的 item 在文本上已经很像真实 target，但从训练交互统计得到的协同兼容性来看，真实 target 其实更符合用户历史。具体做法是仅用训练集构建 item-item 共现/转移强度分数，并逐条比较测试样本中真实 target 与 top-1 预测之间的协同得分差。对于 top-1 预测 SID 对应多个 item 的碰撞场景，我们不再直接忽略，而是采用保守的 \textit{best-case} 口径：将该预测 SID 下协同分最高的候选视为模型最有利的比较对象。即便如此，在 Industrial 数据集上，仍有约 $9.8\%$ 的 top-1 错误样本满足“真实 target 的协同分高于预测 SID 下最强候选”；在 Office 数据集上，这一比例约为 $10.8\%$。如果只看同前缀错误，这种现象会更加明显：在 Industrial 的 same-$l_1$ 与 same-$l_2$ 错误中，这一比例分别约为 $19.0\%$ 和 $22.8\%$；在 Office 上分别约为 $21.7\%$ 和 $40.5\%$。
+
+同时，这些“协同上应更偏向 target”的错误样本在文本空间中往往仍然高度相似：在保守口径下，Industrial 中这类错误的 target 与预测候选之间平均文本余弦相似度约为 $0.840$，Office 上约为 $0.823$；而在 same-$l_1$ / same-$l_2$ 错误子集内，平均文本相似度进一步上升到约 $0.926/0.982$（Industrial）和 $0.939/0.984$（Office）。这说明当前系统的一部分错误并不是“完全偏离语义方向”，而更像是：模型已经找到了文本上非常接近的候选，却没有充分利用用户交互协同关系把真正更合理的目标 item 排到前面。换句话说，\textbf{当前 SID/tokenizer 更擅长组织文本语义近邻，而对行为上应当区分的细粒度候选仍缺乏足够敏感性}。
+
+因此，基于当前诊断结果，我们认为现阶段最值得优先解决的，并不是“完整 SID 碰撞太多”，而是：\textbf{现有 SID 的前缀结构尚未形成足够稳定且可解释的层级语义，同层 code 在不同上下文下被反复复用，导致模型虽然常常进入正确的语义子树，却难以在局部子树内部进一步精确区分目标 item。} 这也为后续围绕 prefix consistency、全局对齐量化以及更推荐原生的 tokenizer 设计提供了更直接的动机。
+
+
+\section{Idea}
+
+结合当前复现结果与问题诊断，本文当前阶段聚焦于\textbf{SID / Tokenizer 的改进}，暂不将强化学习阶段作为主要创新点。整体思路是：先提升物品连续表征的推荐原生性，再改进离散量化方式，使生成式推荐中的 SID 具备更强的协同感知能力、更稳定的前缀语义以及更低的碰撞风险。
+\par
+受 ReSID \cite{liang2026resid} 启发，本文考虑引入 FAMAE 模块。
+
+\subsection{FAMAE（Field-Aware Masked Auto-Encoding）}
+
+在 ReSID \cite{liang2026resid} 中，作者认为：在电商或内容推荐中，商品不仅仅是一段长文本描述，它天然带有\textbf{结构化特征字段}，比如：\texttt{Item\_ID}（商品ID）、\texttt{Category\_1}（一级类目：食品）、\texttt{Store}（店铺）等。
+
+FAMAE 的核心思想是：item 不应该只被看成一段文本，它其实天然包含很多结构化信息，比如类目、属性、店铺等。  
+如果 tokenizer 只看文本，那么它学到的更像“语义相似”，而不一定是“推荐里真正有用的相似”。
+
+在原版 ReSID \cite{liang2026resid} 中，FAMAE 仅仅依赖数据集中天然的结构化特征，并将这些特征向量与位置编码进行简单的求和池化以形成输入给 Transformer 的词元表示。我们可以加以改进，把文本特征、协同特征和一些结构化字段一起作为输入，让 tokenizer 学到更适合推荐任务的 item 表示。
+
+具体而言，我们引入了图结构特征（如使用 LightGCN \cite{he2020lightgcn} 提取的高阶协同向量），为每个物品 $i$ 构造多域特征集：
+$$\mathbf x_i = (\mathbf x_i^{\text{txt}},\mathbf x_i^{\text{cat}},\mathbf x_i^{\text{attr}},\mathbf x_i^{\text{cf}},\mathbf x_i^{\text{graph}}).$$
+\begin{itemize}
+  \item $\mathbf x_i^{\text{txt}}$：文本编码器输出的连续语义向量。
+  \item $\mathbf x_i^{\text{cf}}$：来自轻量图模型（如 LightGCN）提取的高阶协同表示。
+  \item $\mathbf x_i^{\text{cat}},\mathbf x_i^{\text{attr}}$：类目层级与属性字段。
+  \item $\mathbf x_i^{\text{graph}}$：拓扑结构摘要（如 item-item 共现图上的 kNN 邻居结构表示），用作显式拓扑监督。
+\end{itemize}
+
+原版 ReSID 对字段的融合方式比较简单，基本上是投影后直接相加。  
+我这里想加一个轻量级门控，让模型自己决定：当前 item 更应该依赖文本信息，还是更应该依赖协同信息。我们首先为每个字段定义专属的投影层 $\phi_f$ 将其映射到统一的 $d$ 维空间 $\mathbf{v}_i^{(f)} = \phi_f(\mathbf{x}_i^{(f)})$，参考 PRISM \cite{fang2026prism} 中提出的自适应协同去噪（Adaptive Collaborative Denoising）机制。
+具体而言，我们通过一个轻量级门控网络 $\phi_{gate}$ 计算协同特征的置信度向量 $\mathbf{g}_i \in (0, 1)^d$ ：
+$$\mathbf{g}_i = \sigma(\phi_{gate}(\mathbf{v}_i^{\text{cf}}))$$
+利用该门控，我们将高维连续的语义与协同特征进行动态加权，并与其他离散结构化特征叠加，从而得到最终的融合表征 $\mathbf{e}_i$：
+$$\mathbf{e}_i = \underbrace{(1 - \mathbf{g}_i) \odot \mathbf{v}_i^{\text{txt}} + \mathbf{g}_i \odot \mathbf{v}_i^{\text{cf}}}_{\text{动态平衡连续语义与协同}} + \underbrace{\mathbf{v}_i^{\text{cat}} + \mathbf{v}_i^{\text{attr}} + \mathbf{v}_i^{\text{graph}}}_{\text{离散结构化特征}}$$
+接下来，借鉴 ReSID \cite{liang2026resid} 的掩码预测机制构建序列输入。对于用户的历史交互序列样本，历史物品（位置 $1$ 到 $t-1$）直接使用上述完整的融合表征 $\mathbf e_i$。对目标 item，我随机遮掉一部分字段，让模型根据上下文去预测这些被遮掉的信息。我们根据概率分布 $p(\mathcal{M})$ 采样出一个需要被掩码的字段集合 $\mathcal{M}$。将这些字段\textbf{替换为该字段专属的掩码标记}后再次融合，得到带有掩码的目标表征 $\tilde{\mathbf e}_{i_t}$。
+
+该序列被输入到 Transformer 中进行自注意力计算，输出包含用户历史交互上下文的目标隐藏状态 $\mathbf{h}_t$。随后，针对每个被掩码的字段 $f \in \mathcal{M}$，使用其专属的字段解码器得到预测结果 $\hat{\mathbf{x}}_{i_t}^{(f)}$。由于输入特征具有异构性，我们计算不同的损失函数：
+
+离散字段（如类目、属性）计算交叉熵损失：
+\[
+\ell_f = -\log p_\theta \left( \mathbf{x}_{i_t}^{(f)} \mid \mathbf{h}_t \right).
+\]
+连续字段（如文本、CF 向量）计算均方误差（MSE）：
+\[
+\ell_f = \left\|\hat{\mathbf{x}}_{i_t}^{(f)} - \mathbf{x}_{i_t}^{(f)}\right\|_2^2 \quad
+\]
+
+FAMAE 的核心优化目标是最小化这些掩码字段的加权重构损失：
+\[
+\mathcal{L}_{\text{FAMAE}}(\theta) = \mathbb{E}_{(u, i_{1:t})} \, \mathbb{E}_{\mathcal{M} \sim p(\mathcal{M})} \left[ \sum_{f \in \mathcal{M}} w_f \, \ell_f \right].
+\]
+这里引入了模态平衡权重 $w_f$，其目的是在梯度回传时平衡不同模态的信息密度，防止高维文本的重建梯度过度主导网络。
+
+此外，为了进一步将图结构显式注入连续表征中，我们在 FAMAE 训练时加入了一个基于 InfoNCE \cite{oord2018cpc} 的邻域对比损失 $\mathcal{L}_{\text{topo}}$。通过查表获取当前物品在图结构上的正样本邻居 $j^+$ 和负样本 $j^-$，拉近它们在隐空间中的距离：
+\[
+\mathcal{L}_{\text{topo}} = - \mathbb{E}_{i} \log \frac{\exp(\cos(\mathbf e_i,\mathbf e_{j^+})/\tau)}{\exp(\cos(\mathbf e_i,\mathbf e_{j^+})/\tau)+\sum_{j^-}\exp(\cos(\mathbf e_i,\mathbf e_{j^-})/\tau)}.
+\]
+最后，为了确保门控网络真正学习到数据中的流行度先验，我们引入一个辅助损失，强制门控的平均激活值 $\bar{g}_i$ 对齐物品在训练集中的归一化流行度 $p_i \in [0,1]$：
+\[
+\mathcal{L}_{pop} = \mathbb{E}_i\big[(\bar g_i - p_i)^2\big].
+\]
+其中，$\bar{g}_i$ 定义为该 $d$ 维门控向量在所有特征维度上的均值，即 $\bar{g}_i = \frac{1}{d}\sum_{k=1}^d g_{i,k}$；而 $p_i \in [0,1]$ 代表物品 $i$ 的真实流行度标量。在具体计算时，我们统计物品 $i$ 在训练集中的历史交互次数，并通过最大最小归一化（Min-Max Scaling）将其线性映射到 $[0,1]$ 区间。
+
+最终，我们的结构化特征提取器总损失定义为以上三项之和：
+\[
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{FAMAE}} + \lambda_1\mathcal{L}_{\text{topo}} + \lambda_2\mathcal{L}_{\text{pop}}.
+\]
+
+
+
+\subsection{基于树状结构的全局对齐量化与防碰撞正则化（GAOQ \& Anti-Collision Regularization）}
+这一部分主要想解决两个核心问题：
+\begin{enumerate}
+  \item SID 的前缀应具有稳定且可解释的语义；
+  \item 不同 item 不应过于容易被压缩到同一个 SID 上。
+\end{enumerate}
+在通过 FAMAE 提取出融合了多域信息的连续物品表征 $\mathbf{e}_i$ 后，我们需要将其离散化为 MiniOneRec 所需的固定长度（如 3 级）的语义 ID。在原版 MiniOneRec 及早期的生成式推荐模型（如 TIGER \cite{rajput2023tiger}）中，通常直接使用残差量化（RQ-VAE \cite{lee2022rqvae}）或层次 K-Means 。
+
+然而，当我们在连续表征中显式注入了协同信号后，传统的量化方法可能会出现几个问题：
+\begin{itemize}
+    \item \textbf{前缀歧义}：传统残差量化在不同层级是独立分配索引的。这导致同一个数字代码在不同的父节点前缀下，代表完全不同的语义方向，这极大增加了大模型在自回归解码时的条件不确定性。
+    \item \textbf{ID 碰撞与码分配偏置}：引入协同信号后，行为相似的物品在连续空间中会高度聚集。如果缺乏约束，大量不同的物品极易被分配到完全相同的 SID（即发生碰撞）；同时少数热门 Code 会霸占词表，导致长尾物品无法被生成。
+\end{itemize}
+
+为了解决上述问题，我们可以设计一个\textbf{减少碰撞的全局对齐量化模块}来替换传统的RQ-VAE，通过三个关键机制在数学上对 SID 的生成过程进行约束：
+
+\subsubsection{基于匈牙利匹配的全局对齐（GAOQ）}
+借鉴 ReSID \cite{liang2026resid} 中的 GAOQ（Globally Aligned Orthogonal Quantization）思想，我们希望同一层级的相同 Code 在不同前缀下尽量保持一致的语义方向。
+具体而言，第一层采用标准全局聚类；在构建第 $\ell$ 层（$\ell \ge 2$）的量化树时，对于任意父节点 $p$，其下划分的子簇中心集合为 $\{\boldsymbol{\mu}_{p,k}\}$，父簇中心为 $\boldsymbol{\mu}_p$。我们首先计算\textbf{中心化残差方向}：
+$$ \mathbf{d}_{p,k} = \boldsymbol{\mu}_{p,k} - \boldsymbol{\mu}_p $$
+为保证全局对齐的稳定性并支持 mini-batch 训练，子簇中心 $\boldsymbol{\mu}_{p,k}$ 采用指数移动平均（EMA）方式更新。在每个 batch 中，将被路由到该子簇的连续向量 $\mathbf{e}_i$ 做均值聚合，并按动量 $\gamma$ 更新中心：
+$$\mu_{p,k} \leftarrow \gamma\mu_{p,k} + (1 - \gamma) \cdot \text{mean}\{e_i \mid i \in \mathcal{B}_{p,k}\}$$
+其中 $\mathcal{B}_{p,k}$ 表示当前 batch 中被分到父节点 $p$ 的第 $k$ 个子簇的样本集合。
+
+随后，我们在该层全局维护一组数量为 $K$ 的全局参考锚点 $\{\mathbf{a}_{\ell,j}\}_{j=1}^K$。由于通常有 $B_p \le K$，对于每个父节点，我们通过求解匈牙利算法（Hungarian Algorithm），在保证单射的条件下最大化余弦相似度，将各个子簇强制对齐到统一的全局索引上：
+$$ \pi_p = \arg\max_{\pi \in \Pi} \sum_{k=1}^{B_p} \cos(\mathbf{d}_{p,k}, \mathbf{a}_{\ell,\pi(k)}) $$
+其中 $\Pi$ 代表所有从子簇集合 $\{1, \dots, B_p\}$ 到全局锚点集合 $\{1, \dots, K\}$ 的单射函数空间。最后，我们将第 $k$ 个子簇正式分配给 Code 索引 $j = \pi_p(k)$。让同一层的相同 code 在不同前缀下尽量保持一致的语义方向，从而提高 SID 序列的可预测性。
+
+\subsubsection{基于边界的唯一性惩罚（Uniqueness Penalty）}
+为了从连续空间的源头解决 ID 碰撞问题，我们可以参考 HiD-VAE \cite{fang2025hidvae} 引入了唯一性损失。在训练的 mini-batch 中，如果检测到两个不同的物品被分配了完全相同的 SID 序列，我们将它们记录为碰撞对集合 $\mathcal{P}_{\text{col}} = \{(i,j): i<j,\ \text{SID}(i)=\text{SID}(j)\}$。
+对于这些碰撞对，我们在连续空间中施加一个基于 margin 的排斥损失。当两个不同 item 被量化到同一个 SID，且它们的余弦相似度超过安全边界 $m$，就对它们施加惩罚，从而降低后续继续发生碰撞的概率。
+$$ \mathcal{L}_{\text{uniq}} = \sum_{(i,j)\in\mathcal{P}_{\text{col}}} \max\big(0,\ \cos(\mathbf{e}_i, \mathbf{e}_j) - m\big) $$
+
+\subsubsection{码本多样性正则（Diversity Regularization）}
+为缓解码分配偏置，并防止码本坍塌，我们可以借鉴 LETTER \cite{wang2024letter} 的动机，通过最大化每一层 Code 分配分布的熵，强制模型均匀地使用词表中的所有 Code。令 $p_{\ell,k}$ 为第 $\ell$ 层第 $k$ 个 Code 在全局的分配概率，多样性正则项（即分布熵）定义为：
+$$ \mathcal{L}_{\text{ent}} = -\sum_{\ell=1}^L \sum_{k=1}^K p_{\ell,k} \log(p_{\ell,k} + \epsilon) $$
+
+\subsubsection{综合量化目标}
+最终，我们在进行向量离散化与词表构建时，不仅要最小化常规的向量量化与承诺损失（$\mathcal{L}_{\text{vq}}$），还要联合优化上述防碰撞与对齐约束。为保持符号闭合与阅读一致性，模块 B 的输入统一记为 FAMAE 输出的连续表征 $\mathbf{e}_i$。其总损失函数定义为：
+$$ \mathcal{L}_{\text{quant}} = \mathcal{L}_{\text{vq}} + \lambda_{\text{uniq}}\mathcal{L}_{\text{uniq}} - \lambda_{\text{ent}}\mathcal{L}_{\text{ent}} + \lambda_{\text{disp}} \sum_{\ell=1}^L \sum_{1 \le j < k \le K} \cos^2(\mathbf{a}_{\ell,j}, \mathbf{a}_{\ell,k}) $$
+
+\begin{itemize}
+    \item \textbf{向量量化与承诺损失（$\mathcal{L}_{\text{vq}}$）}：在将连续物品表征 $\mathbf{e}_i$ 经匈牙利匹配分配给各层级的全局锚点后，我们得到其离散化向量 $\hat{\mathbf{e}}_i = \sum_{\ell=1}^L \mathbf{a}_{\ell, c_{i,\ell}}$。由于硬量化操作不可导，我们采用标准的量化承诺形式来提供梯度：
+    $$ \mathcal{L}_{\text{vq}} = \|\text{sg}[\mathbf{e}_i] - \hat{\mathbf{e}}_i\|_2^2 + \beta\|\mathbf{e}_i - \text{sg}[\hat{\mathbf{e}}_i]\|_2^2 $$
+    （其中 $\text{sg}[\cdot]$ 为停止梯度操作）。公式的第一项为字典学习损失，用于驱动离散锚点主动逼近连续空间的数据分布；第二项为承诺损失（Commitment Loss），约束底层编码器的输出不要偏离选定的锚点过远。
+    
+    \item \textbf{全局锚点最大散度正则（$\mathcal{L}_{\text{disp}}$）}：尽量让不同锚点彼此分散。具体做法就是惩罚不同锚点之间的余弦相似度平方和。直观上，这会鼓励 codebook 更均匀地被使用，减少少数热门 code 过度拥挤的情况。
+\end{itemize}
+
+
+通过上述设计，我们不仅为 MiniOneRec 提供了一套高度浓缩了协同知识的 SIDs，还预计能够显著降低前缀歧义与碰撞率，并降低 constrained decoding 场景下的解码不确定性。后续我们将重点通过 \textit{collision rate}、\textit{prefix conditional entropy} 以及下游推荐指标三类结果进行定量验证。
+
+\subsection{潜在局限性}
+
+本方案在实际训练与工程落地中仍可能面临以下挑战：
+
+\subsubsection{静态 Tokenizer 与协同信号动态演化的问题}
+本方案采用了两阶段训练范式，即先训练并冻结 Tokenizer，随后将固化的 SID 输入给 LLM 进行自回归生成与强化学习。Tokenizer 是静态的，但协同关系是动态的。
+
+\subsubsection{全局图特征引入的泄露风险与对比公平性}
+在 FAMAE的特征融合阶段，我们显式引入了 LightGCN 提取的高阶协同向量与图拓扑摘要。在严谨的序列推荐评估（如基于时间划分的 Leave-one-out）中，如果构建全图时无意间使用了验证集或测试集的交互边，将会导致严重的“时间泄露”，使评估指标虚高。此外，MiniOneRec 原版 Tokenizer 仅依赖文本特征，如果我们将融合了图特征的本方案直接与之对比，可能会被质疑性能的提升源于“特征信息的增加”而非 Tokenizer 架构本身的优越性。
+
+\subsubsection{防碰撞惩罚的局部稀疏性与扩展能力}
+我们参考 HiD-VAE 引入了基于 Margin 的唯一性排斥损失（Uniqueness Penalty）来解决 ID 碰撞问题。然而，该损失的触发机制高度依赖于在当前训练的 Mini-batch 内同时采样到被分配了相同 SID 的不同物品。在拥有数百万级物品的真实工业场景中，随机采样导致的 Batch 内硬碰撞概率极低。这种触发的稀疏性可能导致该惩罚项在实际训练中实际上没有作用，无法有效将全局潜空间中过度聚集的长尾物品推开。
+
+\clearpage
+
+\begin{thebibliography}{99}
+
+\bibitem{hidasi2016gru4rec}
+Bal\'azs Hidasi, Alexandros Karatzoglou, Linas Baltrunas, and Domonkos Tikk.
+Session-based Recommendations with Recurrent Neural Networks.
+In \textit{Proceedings of ICLR}, 2016.
+
+\bibitem{tang2018caser}
+Jiaxi Tang and Ke Wang.
+Personalized Top-N Sequential Recommendation via Convolutional Sequence Embedding.
+In \textit{Proceedings of WSDM}, 2018.
+
+\bibitem{kang2018sasrec}
+Wang-Cheng Kang and Julian McAuley.
+Self-Attentive Sequential Recommendation.
+In \textit{Proceedings of ICDM}, 2018.
+
+\bibitem{he2020lightgcn}
+Xiangnan He, Kuan Deng, Xiang Wang, Yan Li, Yongdong Zhang, and Meng Wang.
+LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation.
+In \textit{Proceedings of SIGIR}, 2020.
+
+\bibitem{lee2022rqvae}
+Doyup Lee, Chiheon Kim, Saehoon Kim, Minsu Cho, and Wook-Shin Han.
+Autoregressive Image Generation using Residual Quantization.
+In \textit{Proceedings of CVPR}, 2022.
+
+\bibitem{oord2018cpc}
+Aaron van den Oord, Yazhe Li, and Oriol Vinyals.
+Representation Learning with Contrastive Predictive Coding.
+\textit{arXiv preprint arXiv:1807.03748}, 2018.
+
+\bibitem{kuhn1955hungarian}
+Harold W. Kuhn.
+The Hungarian Method for the Assignment Problem.
+\textit{Naval Research Logistics Quarterly}, 2(1--2):83--97, 1955.
+
+\bibitem{shao2024deepseekmath}
+Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Mingchuan Zhang, Y. K. Li, Y. Wu, and Daya Guo.
+DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models.
+\textit{arXiv preprint arXiv:2402.03300}, 2024.
+
+\bibitem{kong2025minionerec}
+Xiaoyu Kong, Leheng Sheng, Junfei Tan, Yuxin Chen, Jiancan Wu, An Zhang, Xiang Wang, and Xiangnan He.
+MiniOneRec: An Open-Source Framework for Scaling Generative Recommendation.
+\textit{arXiv preprint arXiv:2510.24431}, 2025.
+
+\bibitem{zheng2023lcrec}
+Bowen Zheng, Yupeng Hou, Hongyu Lu, Yu Chen, Wayne Xin Zhao, Ming Chen, and Ji-Rong Wen.
+Adapting Large Language Models by Integrating Collaborative Semantics for Recommendation.
+\textit{arXiv preprint arXiv:2311.09049}, 2023.
+
+\bibitem{rajput2023tiger}
+Shashank Rajput, Nikhil Mehta, Anima Singh, Raghunandan Hulikal Keshavan, Trung Vu, Lukasz Heldt, Lichan Hong, Yi Tay, Vinh Q. Tran, Jonah Samost, Maciej Kula, Ed H. Chi, and Mahesh Sathiamoorthy.
+Recommender Systems with Generative Retrieval.
+In \textit{Advances in Neural Information Processing Systems 36 (NeurIPS 2023)}, 2023.
+
+\bibitem{zhai2024hstu}
+Jiaqi Zhai, Lucy Liao, Xing Liu, Yueming Wang, Rui Li, Xuan Cao, Leon Gao, Zhaojie Gong, Fangda Gu, Jiayuan He, Yinghai Lu, and Yu Shi.
+Actions Speak Louder than Words: Trillion-Parameter Sequential Transducers for Generative Recommendations.
+In \textit{Proceedings of ICML}, 2024.
+
+\bibitem{bao2023bigrec}
+Keqin Bao, Jizhi Zhang, Wenjie Wang, Yang Zhang, Zhengyi Yang, Yancheng Luo, Fuli Feng, Xiangnan He, and Qi Tian.
+A Bi-Step Grounding Paradigm for Large Language Models in Recommendation Systems.
+\textit{arXiv preprint arXiv:2308.08434}, 2023.
+
+\bibitem{bao2024d3}
+Keqin Bao, Jizhi Zhang, Yang Zhang, Xinyue Huo, Chong Chen, and Fuli Feng.
+Decoding Matters: Addressing Amplification Bias and Homogeneity Issue in Recommendations for Large Language Models.
+In \textit{Proceedings of EMNLP}, 2024.
+
+\bibitem{chen2024sdpo}
+Yuxin Chen, Junfei Tan, An Zhang, Zhengyi Yang, Leheng Sheng, Enzhi Zhang, Xiang Wang, and Tat-Seng Chua.
+On Softmax Direct Preference Optimization for Recommendation.
+In \textit{Advances in Neural Information Processing Systems 37 (NeurIPS 2024)}, 2024.
+
+\bibitem{liang2026resid}
+Yu Liang, Zhongjin Zhang, Yuxuan Zhu, Kerui Zhang, Zhiluohan Guo, Wenhang Zhou, Zonqi Yang, Kangle Wu, Yabo Ni, Anxiang Zeng, Cong Fu, Jianxin Wang, and Jiazhi Xia.
+Rethinking Generative Recommender Tokenizer: Recsys-Native Encoding and Semantic Quantization Beyond LLMs.
+\textit{arXiv preprint arXiv:2602.02338}, 2026.
+
+\bibitem{fang2025hidvae}
+Dengzhao Fang, Jingtong Gao, Chengcheng Zhu, Yu Li, Xiangyu Zhao, and Yi Chang.
+HiD‑VAE: Interpretable Generative Recommendation via Hierarchical and Disentangled Semantic IDs.
+\textit{arXiv preprint arXiv:2508.04618}, 2025.
+
+\bibitem{wang2024letter}
+Wenjie Wang, Honghui Bao, Xinyu Lin, Jizhi Zhang, Yongqi Li, Fuli Feng, See-Kiong Ng, and Tat-Seng Chua.
+Learnable Item Tokenization for Generative Recommendation.
+In \textit{Proceedings of the 33rd ACM International Conference on Information and Knowledge Management (CIKM 2024)}, 2024.
+
+\bibitem{fang2026prism}
+Dengzhao Fang, Jingtong Gao, Yu Li, Xiangyu Zhao, and Yi Chang.
+PRISM: Purified Representation and Integrated Semantic Modeling for Generative Sequential Recommendation.
+\textit{arXiv preprint arXiv:2601.16556}, 2026.
+
+\end{thebibliography}
+
+
+\end{document}

@@ -37,11 +37,6 @@ AGENTS.md
 .codex
 
 # Local research notes and writeups
-Idea.tex
-project_understanding_report.md
-mini_onerec_reproduction_progress.md
-experiment_results.csv
-legacy_experiment_results.csv
 MiniOneRec An Open-Source Framework for Scaling Generative Recommendation.pdf
 
 # TeX build artifacts
@@ -100,6 +95,3 @@ data/**/*.npy
 # Do not track runtime dataset caches under curated Amazon artifacts
 data/Amazon/**/.cache/
 data/Amazon/**/.cache/**
-
-# Local diagnostic ledgers
-sid_diagnostic_results.csv
