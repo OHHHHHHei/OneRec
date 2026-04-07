@@ -3,7 +3,7 @@
 补充说明：
 
 - 本报告主要回答“这个仓库当前代码到底是怎么工作的”。
-- 如果你想看最新的 MiniOneRec 论文复现状态、实验结果和后续计划，请同时阅读 [MiniOneRec 复现进度表](/home/leejt/OneRec/mini_onerec_reproduction_progress.md)。
+- 如果你想看最新的 MiniOneRec 论文复现状态、实验结果和后续计划，请同时阅读 [MiniOneRec 复现进度表](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/10_project_reports/02_reproduction_progress.md)。
 
 ## 项目整体结论
 

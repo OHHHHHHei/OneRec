@@ -110,17 +110,17 @@ That combination suggests a narrower opening:
 
 ## Refined Proposal
 
-- Proposal: `refine-logs/FINAL_PROPOSAL.md`
-- Review summary: `refine-logs/REVIEW_SUMMARY.md`
-- Experiment plan: `refine-logs/EXPERIMENT_PLAN.md`
-- Tracker: `refine-logs/EXPERIMENT_TRACKER.md`
-- Pipeline summary: `refine-logs/PIPELINE_SUMMARY.md`
+- Proposal: `06_refine_logs_current/FINAL_PROPOSAL.md`
+- Review summary: `06_refine_logs_current/REVIEW_SUMMARY.md`
+- Experiment plan: `06_refine_logs_current/EXPERIMENT_PLAN.md`
+- Tracker: `06_refine_logs_current/EXPERIMENT_TRACKER.md`
+- Pipeline summary: `06_refine_logs_current/PIPELINE_SUMMARY.md`
 
 ## Next Steps
 
 - [ ] Implement the ambiguity profiler and static `cf_top_l2` leaf bias in evaluation first
 - [ ] Add the learned leaf-level auxiliary loss for ambiguous prefixes
-- [ ] Run the claim-driven experiment blocks in `refine-logs/EXPERIMENT_PLAN.md`
+- [ ] Run the claim-driven experiment blocks in `06_refine_logs_current/EXPERIMENT_PLAN.md`
 - [ ] If the local repair saturates, revisit APR as a tokenizer-heavy backup
 
 ## References Used in This Pass

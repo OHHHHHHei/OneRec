@@ -7,10 +7,10 @@
 
 ## Final Deliverables
 
-- Proposal: `refine-logs/FINAL_PROPOSAL.md`
-- Review summary: `refine-logs/REVIEW_SUMMARY.md`
-- Experiment plan: `refine-logs/EXPERIMENT_PLAN.md`
-- Experiment tracker: `refine-logs/EXPERIMENT_TRACKER.md`
+- Proposal: `FINAL_PROPOSAL.md`
+- Review summary: `REVIEW_SUMMARY.md`
+- Experiment plan: `EXPERIMENT_PLAN.md`
+- Experiment tracker: `EXPERIMENT_TRACKER.md`
 
 ## Contribution Snapshot
 

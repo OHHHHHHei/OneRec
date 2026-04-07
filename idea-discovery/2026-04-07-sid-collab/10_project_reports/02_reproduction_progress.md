@@ -3,7 +3,7 @@
 配套文档：
 
 - 这份文档主要记录“当前复现做到哪里、哪些结论已经成立、下一步做什么”。
-- 如果你需要系统理解仓库代码结构、主链路、配置系统和数据契约，请同时阅读 [OneRec 项目理解报告](/home/leejt/OneRec/project_understanding_report.md)。
+- 如果你需要系统理解仓库代码结构、主链路、配置系统和数据契约，请同时阅读 [OneRec 项目理解报告](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/10_project_reports/01_project_understanding_report.md)。
 
 ## 当前目标
 

@@ -55,8 +55,8 @@ flowchart TD
 
 相关基础文档与台账：
 
-- [project_understanding_report.md](/home/leejt/OneRec/project_understanding_report.md)
-- [mini_onerec_reproduction_progress.md](/home/leejt/OneRec/mini_onerec_reproduction_progress.md)
+- [project_understanding_report.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/10_project_reports/01_project_understanding_report.md)
+- [mini_onerec_reproduction_progress.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/10_project_reports/02_reproduction_progress.md)
 - [experiment_results.csv](/home/leejt/OneRec/experiment_results.csv)
 - [legacy_experiment_results.csv](/home/leejt/OneRec/legacy_experiment_results.csv)
 
@@ -228,7 +228,7 @@ CF(j \mid h_{1:T}) = \sum_{r=1}^{K} \frac{P(j \mid h_{T-r+1})}{r}
 
 相关文档：
 
-- [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md)
+- [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md)
 
 ### 7.1 当时的目标
 
@@ -327,8 +327,8 @@ CF(j \mid h_{1:T}) = \sum_{r=1}^{K} \frac{P(j \mid h_{T-r+1})}{r}
 
 主文档：
 
-- [IDEA_REPORT.md](/home/leejt/OneRec/IDEA_REPORT.md)
-- [refine-logs/FINAL_PROPOSAL.md](/home/leejt/OneRec/refine-logs/FINAL_PROPOSAL.md)
+- [IDEA_REPORT.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/03_current_idea_report.md)
+- [refine-logs/FINAL_PROPOSAL.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/06_refine_logs_current/FINAL_PROPOSAL.md)
 
 新的核心方法不是再重建整个 SID，而是：
 

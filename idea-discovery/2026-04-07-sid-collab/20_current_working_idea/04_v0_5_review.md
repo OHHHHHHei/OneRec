@@ -43,19 +43,19 @@ Main reasons:
 
 ### 1. The diagnosed bottleneck and the proposed intervention are not fully aligned
 
-In [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md#L33), the plan correctly notes that collision is not the main issue, and in [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md#L44) it further states that the collaborative evidence is still correlational. But the experimental mainline in [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md#L223) through [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md#L256) still assumes that modifying SID input is the right first lever. A reviewer can reasonably ask why the same evidence does not instead imply a **backend local leaf repair** baseline should come first.
+In [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md#L33), the plan correctly notes that collision is not the main issue, and in [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md#L44) it further states that the collaborative evidence is still correlational. But the experimental mainline in [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md#L223) through [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md#L256) still assumes that modifying SID input is the right first lever. A reviewer can reasonably ask why the same evidence does not instead imply a **backend local leaf repair** baseline should come first.
 
 ### 2. The current design does not yet isolate the causal claim cleanly enough
 
-The current grouped plan in [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md#L349) through [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md#L397) is directionally sensible, but it is still too broad for a first falsification round. In particular:
+The current grouped plan in [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md#L349) through [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md#L397) is directionally sensible, but it is still too broad for a first falsification round. In particular:
 
 - `E2` mixes collaborative features with metadata
 - `E3` introduces structure-level changes too early
-- the current concrete implementation chain in [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md#L488) through [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md#L571) includes `popularity`, which creates an easy reviewer attack: “you only added a popularity prior”
+- the current concrete implementation chain in [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md#L488) through [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md#L571) includes `popularity`, which creates an easy reviewer attack: “you only added a popularity prior”
 
 ### 3. The success metrics are reasonable, but they still risk over-relying on proxies
 
-The plan correctly emphasizes prefix entropy, same-prefix error, and collaborative gap in [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md#L401). But these are still **proxy diagnostics**, not task metrics. A strong reviewer will say:
+The plan correctly emphasizes prefix entropy, same-prefix error, and collaborative gap in [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md#L401). But these are still **proxy diagnostics**, not task metrics. A strong reviewer will say:
 
 > even if the SID diagnostics improve, why should that imply HR/NDCG improves?
 
@@ -63,7 +63,7 @@ So any positive diagnostic movement without clear downstream gains will still le
 
 ### 4. The “先前端、后 ACLR” order is defensible only under a hard stop rule
 
-The logic in [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md#L94) is not wrong, but it is only defensible if `V0.5` is treated as a **strict probe**, not an expandable roadmap. Once `V0.5` becomes `E1 -> E2 -> E3 -> V0.6 -> V0.7`, the project risks drifting into a crowded “collaborative tokenizer tweak” space with weak novelty.
+The logic in [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md#L94) is not wrong, but it is only defensible if `V0.5` is treated as a **strict probe**, not an expandable roadmap. Once `V0.5` becomes `E1 -> E2 -> E3 -> V0.6 -> V0.7`, the project risks drifting into a crowded “collaborative tokenizer tweak” space with weak novelty.
 
 ## Consensus
 
@@ -249,8 +249,8 @@ If you revise `v0_5_experiment_plan.md`, the strongest change is:
 
 ## Sources
 
-- Reviewed plan: [v0_5_experiment_plan.md](/home/leejt/OneRec/v0_5_experiment_plan.md)
-- Brief context: [RESEARCH_BRIEF.md](/home/leejt/OneRec/RESEARCH_BRIEF.md)
-- Reproduction context: [mini_onerec_reproduction_progress.md](/home/leejt/OneRec/mini_onerec_reproduction_progress.md)
+- Reviewed plan: [v0_5_experiment_plan.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/05_v0_5_experiment_plan.md)
+- Brief context: [RESEARCH_BRIEF.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/01_research_brief.md)
+- Reproduction context: [mini_onerec_reproduction_progress.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/10_project_reports/02_reproduction_progress.md)
 - Diagnostics table: [sid_diagnostic_results.csv](/home/leejt/OneRec/sid_diagnostic_results.csv)
-- Follow-on local refinement context: [REVIEW_SUMMARY.md](/home/leejt/OneRec/refine-logs/REVIEW_SUMMARY.md), [FINAL_PROPOSAL.md](/home/leejt/OneRec/refine-logs/FINAL_PROPOSAL.md), [EXPERIMENT_PLAN.md](/home/leejt/OneRec/refine-logs/EXPERIMENT_PLAN.md)
+- Follow-on local refinement context: [REVIEW_SUMMARY.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/06_refine_logs_current/REVIEW_SUMMARY.md), [FINAL_PROPOSAL.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/06_refine_logs_current/FINAL_PROPOSAL.md), [EXPERIMENT_PLAN.md](/home/leejt/OneRec/idea-discovery/2026-04-07-sid-collab/20_current_working_idea/06_refine_logs_current/EXPERIMENT_PLAN.md)
