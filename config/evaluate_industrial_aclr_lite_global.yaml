@@ -1,0 +1,29 @@
+model:
+  base_model: "./output/rl_Industrial_and_Scientific_title_history2sid_off__desc_align_p05_batch256_20260329_152417/final_checkpoint"
+data:
+  test_file: ./data/Amazon/test/Industrial_and_Scientific_5_2016-10-2018-11.csv
+  info_file: ./data/Amazon/info/Industrial_and_Scientific_5_2016-10-2018-11.txt
+  category: Industrial_and_Scientific
+training:
+  seed: 42
+output:
+  output_dir: "./results/final_result_rl_Industrial_and_Scientific_title_history2sid_off__desc_align_p05_batch256_20260329_152417_aclr_lite_global.json"
+batch_size: 8
+K: 0
+num_beams: 50
+max_new_tokens: 256
+length_penalty: 0.0
+temperature: 1.0
+guidance_scale: null
+aclr_lite_enable: true
+aclr_lite_mode: global
+aclr_train_csv: ./data/Amazon/train/Industrial_and_Scientific_5_2016-10-2018-11.csv
+aclr_index_json: ./data/Amazon/index/Industrial_and_Scientific.index.json
+aclr_history_k: 10
+aclr_sid_score_mode: best
+aclr_ambiguity_leaf_threshold: 8
+runtime:
+  launcher: parallel
+  parallel: true
+  cuda_visible_devices: "2,3,4,5"
+  nproc_per_node: 4

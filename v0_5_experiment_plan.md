@@ -57,6 +57,129 @@
 
 这为“在 SID 构建阶段引入协同信息”提供了较强动机。
 
+## 当前状态更新（2026-04-06）
+
+V0.5 的第一轮最小前端实验已经真正落地，并且已经给出了一个明确的 stop 信号。
+
+### 已完成的内容
+
+- `R1` / `R2` 的离线 backend-local 对照已经跑完：
+  - 结果文件：[results/v05_r1_industrial/summary.json](/home/leejt/OneRec/results/v05_r1_industrial/summary.json)
+- `E1` 的前端最小融合 embedding 已生成：
+  - [Industrial_and_Scientific.emb-qwen-tdcf-v05-e1.npy](/home/leejt/OneRec/data/Amazon/index/Industrial_and_Scientific.emb-qwen-tdcf-v05-e1.npy)
+- `C1` 的 `shuffled-collab` 控制组 embedding 已生成：
+  - [Industrial_and_Scientific.emb-qwen-tdcf-v05-c1-shuffled.npy](/home/leejt/OneRec/data/Amazon/index/Industrial_and_Scientific.emb-qwen-tdcf-v05-c1-shuffled.npy)
+- `E1` 与 `C1` 的 `sid-train + sid-generate` 已完成：
+  - [Industrial_and_Scientific.v05_e1.index.json](/home/leejt/OneRec/data/Amazon/index/Industrial_and_Scientific.v05_e1.index.json)
+  - [Industrial_and_Scientific.v05_c1_shuffled.index.json](/home/leejt/OneRec/data/Amazon/index/Industrial_and_Scientific.v05_c1_shuffled.index.json)
+
+### 当前结论
+
+`E1` 没有通过第一轮证伪要求，原因不是“只有轻微退化”，而是 **SID 质量在生成阶段已经发生严重塌缩**。
+
+当前三组最终 SID collision 对比如下：
+
+| 设置 | 最终 collision rate |
+|---|---:|
+| baseline | 0.00434 |
+| `E1` (`text + cf`) | 0.74037 |
+| `C1` (`text + shuffled-cf`) | 0.62832 |
+
+对应解释：
+
+- `E1` 比 baseline 高约 `170x`
+- `C1` 比 baseline 高约 `145x`
+- `E1` 甚至比 `C1` 更差
+
+这说明当前问题不是“协同结构有一点副作用”，而更像：
+
+- 当前这版前端拼接方式本身就会显著破坏量化结构
+- 当前 `text + shallow collaborative vector` 的简单前端融合，在 MiniOneRec 现有 RQ-VAE 上是不稳定的
+
+因此，按照 V0.5 的 hard stop 规则，当前应作如下判断：
+
+- 停止继续扩展这一版前端最小融合路线
+- 不再继续把 `E1/C1` 往 `convert -> SFT -> evaluate` 整条链后推
+- 将下一阶段重心切换到 **backend-local / ACLR-lite**
+
+### ACLR-lite 在线结果（2026-04-06）
+
+在完成前端 `E1/C1` hard stop 后，我们又把 `R2` 从离线代理推进到了**真实在线评测链**，也就是：
+
+- 不改 tokenizer
+- 不重训 SFT / RL
+- 直接在当前最好 Industrial checkpoint 的 `evaluate` 阶段加入 selective `ambiguity_l2` 局部协同修正
+
+对应结果文件：
+
+- [final_result_rl_Industrial_and_Scientific_title_history2sid_off__desc_align_p05_batch256_20260329_152417_aclr_lite.json](/home/leejt/OneRec/results/final_result_rl_Industrial_and_Scientific_title_history2sid_off__desc_align_p05_batch256_20260329_152417_aclr_lite.json)
+
+当前最好 baseline 与 ACLR-lite 对比如下：
+
+| 设置 | NDCG@3 | NDCG@5 | NDCG@10 | HR@3 | HR@5 | HR@10 |
+|---|---:|---:|---:|---:|---:|---:|
+| baseline RL (`off/p05 + batch256`) | 0.08903 | 0.09704 | 0.10726 | 0.10038 | 0.11979 | 0.15133 |
+| ACLR-lite (`ambiguity_l2`) | 0.09459 | 0.10145 | 0.11091 | 0.10589 | 0.12266 | 0.15222 |
+| 差值 | +0.00556 | +0.00440 | +0.00364 | +0.00552 | +0.00287 | +0.00088 |
+
+补充信息：
+
+- `HR@1`：`0.07324 -> 0.07920`
+- 在线 `ACLR-lite` 总激活样本数：`1242 / 4533`
+- `constraint_invalid_total = 0`
+- 这组在线结果与离线 `ambiguity_l2` 代理结果**逐指标完全一致**
+
+这意味着：
+
+- backend-local 这条线不只是“离线看起来有希望”
+- 它已经在真实受约束生成评测里兑现了稳定收益
+- 因而当前主线应明确切换到 **ACLR-lite -> ACLR**
+
+### ACLR-lite 在线 ablation（2026-04-07）
+
+在 `ambiguity_l2` 在线验证成功后，我们继续补齐了另外两条在线对照：
+
+- `same_l2`
+- `global`
+
+三条模式与 baseline 的对比如下：
+
+| 设置 | 激活样本数 | NDCG@3 | NDCG@5 | NDCG@10 | HR@1 | HR@3 | HR@5 | HR@10 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| baseline RL | 0 | 0.08903 | 0.09704 | 0.10726 | 0.07324 | 0.10038 | 0.11979 | 0.15133 |
+| `ambiguity_l2` | 1242 | 0.09459 | 0.10145 | 0.11091 | 0.07920 | 0.10589 | 0.12266 | 0.15222 |
+| `same_l2` | 2605 | 0.09655 | 0.10293 | 0.11218 | 0.08162 | 0.10743 | 0.12310 | 0.15200 |
+| `global` | 4533 | 0.09945 | 0.10573 | 0.11391 | 0.08383 | 0.11074 | 0.12597 | 0.15133 |
+
+相对 baseline：
+
+- `ambiguity_l2`
+  - `HR@1 +0.00596`
+  - `HR@3 +0.00552`
+  - `NDCG@3 +0.00556`
+- `same_l2`
+  - `HR@1 +0.00838`
+  - `HR@3 +0.00706`
+  - `NDCG@3 +0.00752`
+- `global`
+  - `HR@1 +0.01059`
+  - `HR@3 +0.01037`
+  - `NDCG@3 +0.01042`
+
+当前最重要的解读是：
+
+- `global` 最强，但过于粗暴，几乎等于“所有样本都允许协同重排”
+- `same_l2` 在只激活 `57.5%` 样本的情况下，已经拿到了约 `79.2%` 的 `HR@1` 全局增益
+- `ambiguity_l2` 更 selective，只激活 `27.4%` 样本，拿到了约 `56.3%` 的 `HR@1` 全局增益
+
+这说明：
+
+- 真实收益确实主要集中在 leaf-level local repair
+- selective activation 是合理的，但当前 `ambiguity_l2` 还偏保守
+- 下一步正式 ACLR 设计时，最值得围绕的是：
+  - `same_l2` 这类强 local 修正
+  - 再引入更好的 ambiguity gate，而不是直接使用当前简单阈值版 gate
+
 ---
 
 ## V0.5 的核心研究问题

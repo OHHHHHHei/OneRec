@@ -196,6 +196,104 @@
 - `TitleHistory2Sid` 保持关闭
 - `desc alignment` 保持开启
 
+## V0.5 最新进展
+
+当前已经启动并完成了一轮 `V0.5` 最小前端证伪实验，目标是判断：
+
+- 在不改量化器结构的前提下，
+- 仅通过把浅层 train-only 协同向量拼接到当前 text embedding 中，
+- 是否能够改善 SID 质量，并为下游推荐带来 headroom。
+
+### 已完成内容
+
+- backend-local 离线 headroom 测量：
+  - [results/v05_r1_industrial/summary.json](/home/leejt/OneRec/results/v05_r1_industrial/summary.json)
+- `E1` 前端融合 embedding：
+  - [Industrial_and_Scientific.emb-qwen-tdcf-v05-e1.npy](/home/leejt/OneRec/data/Amazon/index/Industrial_and_Scientific.emb-qwen-tdcf-v05-e1.npy)
+- `C1` shuffled control embedding：
+  - [Industrial_and_Scientific.emb-qwen-tdcf-v05-c1-shuffled.npy](/home/leejt/OneRec/data/Amazon/index/Industrial_and_Scientific.emb-qwen-tdcf-v05-c1-shuffled.npy)
+- `E1` 与 `C1` 的 `sid-train + sid-generate`
+
+### 当前结论
+
+这一轮前端最小实验已经触发 hard stop：
+
+| 设置 | 最终 SID collision rate |
+|---|---:|
+| baseline | 0.00434 |
+| `E1` (`text + cf`) | 0.74037 |
+| `C1` (`text + shuffled-cf`) | 0.62832 |
+
+这说明：
+
+- 当前这版前端拼接式协同融合会严重破坏量化结构
+- 问题并不只是“协同结构不够好”，因为 `shuffled-collab` 同样崩坏
+- 当前最合理的解释是：
+  - 在现有 MiniOneRec RQ-VAE 上，简单前端拼接并不是稳定的干预层
+
+因此当前策略更新为：
+
+- 暂停继续推进这版前端 SID 融合路线
+- 不再将 `E1/C1` 往 `convert -> SFT -> evaluate` 继续后推
+- 将下一阶段重心切换到：
+  - backend-local 修正
+  - ACLR-lite
+
+### ACLR-lite 在线验证
+
+在确认前端 `E1/C1` 触发 hard stop 后，我们继续把 `ACLR-lite` 从离线对照推进到了真实在线评测链。
+
+结果文件：
+
+- [final_result_rl_Industrial_and_Scientific_title_history2sid_off__desc_align_p05_batch256_20260329_152417_aclr_lite.json](/home/leejt/OneRec/results/final_result_rl_Industrial_and_Scientific_title_history2sid_off__desc_align_p05_batch256_20260329_152417_aclr_lite.json)
+
+相对当前最好 baseline RL：
+
+| 设置 | NDCG@3 | NDCG@5 | NDCG@10 | HR@3 | HR@5 | HR@10 |
+|---|---:|---:|---:|---:|---:|---:|
+| baseline RL | 0.08903 | 0.09704 | 0.10726 | 0.10038 | 0.11979 | 0.15133 |
+| ACLR-lite (`ambiguity_l2`) | 0.09459 | 0.10145 | 0.11091 | 0.10589 | 0.12266 | 0.15222 |
+| 差值 | +0.00556 | +0.00440 | +0.00364 | +0.00552 | +0.00287 | +0.00088 |
+
+附加观察：
+
+- `HR@1`：`0.07324 -> 0.07920`
+- `constraint_invalid_total = 0`
+- 激活样本数：`1242 / 4533`
+- 在线结果与离线 `ambiguity_l2` proxy 完全对齐
+
+因此当前最稳的方向已经很清楚：
+
+- 前端最小融合路线先停止
+- backend-local / ACLR-lite 可以作为下一阶段主线继续推进
+
+### ACLR-lite 在线 ablation
+
+我们继续补齐了另外两条在线模式：
+
+- `same_l2`
+- `global`
+
+对比如下：
+
+| 设置 | 激活样本数 | NDCG@3 | NDCG@5 | NDCG@10 | HR@1 | HR@3 | HR@5 | HR@10 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| baseline RL | 0 | 0.08903 | 0.09704 | 0.10726 | 0.07324 | 0.10038 | 0.11979 | 0.15133 |
+| `ambiguity_l2` | 1242 | 0.09459 | 0.10145 | 0.11091 | 0.07920 | 0.10589 | 0.12266 | 0.15222 |
+| `same_l2` | 2605 | 0.09655 | 0.10293 | 0.11218 | 0.08162 | 0.10743 | 0.12310 | 0.15200 |
+| `global` | 4533 | 0.09945 | 0.10573 | 0.11391 | 0.08383 | 0.11074 | 0.12597 | 0.15133 |
+
+当前判断：
+
+- `global` 最强，但不够 selective
+- `same_l2` 是当前最有潜力的 local 强基线
+- `ambiguity_l2` 的方向是对的，但当前 gate 还偏保守
+
+因此下一阶段 ACLR 应优先考虑：
+
+- 以 `same_l2` 作为强 local 修正参考
+- 设计比当前 leaf-count 阈值更好的 ambiguity gate
+
 ## 复现成功标准
 
 ### 短期标准

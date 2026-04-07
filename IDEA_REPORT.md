@@ -58,6 +58,13 @@ That combination suggests a narrower opening:
   - Same local rerank: `0.08672`
   - Absolute gain: `+0.00103`
   - Relative gain: about `+1.2%`
+- **Online validation update**:
+  - We further implemented an `ACLR-lite` online evaluator that only activates inside ambiguous `(a,b)` subtrees (`ambiguity_l2` mode).
+  - On Industrial, the real constrained-generation evaluation improved from `HR@1 = 0.07324` to `0.07920`, with `NDCG@3/5/10 = 0.09459 / 0.10145 / 0.11091`.
+  - The online result matched the offline `ambiguity_l2` proxy exactly and kept `constraint_invalid_total = 0`.
+- **Online ablation update**:
+  - `same_l2` was stronger than `ambiguity_l2` (`HR@1 = 0.08162`), while `global` was the strongest upper bound (`HR@1 = 0.08383`).
+  - This suggests the core gain indeed comes from leaf-local collaborative repair, but the current ambiguity gate is still conservative rather than fully optimized.
 - **Interpretation of the pilot**: there is real signal in local behavior-aware correction, and the gain appears without retokenizing all items or widening beam size.
 - **Novelty check**:
   - Too close: full collaborative tokenizer rebuild (`ReSID`, `PRISM`, `PIT`, `DiscRec`, `PRORec`)

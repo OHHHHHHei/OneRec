@@ -1,0 +1,18 @@
+{
+  "base_embedding_path": "data/Amazon/index/Industrial_and_Scientific.emb-qwen-td.npy",
+  "train_csv": "data/Amazon/train/Industrial_and_Scientific_5_2016-10-2018-11.csv",
+  "output_path": "data/Amazon/index/Industrial_and_Scientific.emb-qwen-tdcf-v05-c1-shuffled.npy",
+  "control": "shuffled_cf",
+  "history_k": 10,
+  "svd_rank": 32,
+  "cf_weight": 0.35,
+  "include_popularity": false,
+  "pop_weight": 0.0,
+  "seed": 42,
+  "n_items": 3686,
+  "base_dim": 2560,
+  "cf_dim": 64,
+  "fused_dim": 2624,
+  "transition_nnz": 105702,
+  "pop_nonzero_items": 3636
+}
