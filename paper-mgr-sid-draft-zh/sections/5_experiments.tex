@@ -1,0 +1,93 @@
+\section{实验}
+\label{sec:experiments}
+
+\subsection{实验设置}
+
+\paragraph{数据集。}
+我们使用当前 MiniOneRec 复现主线中已经准备好的 Industrial 和 Office Amazon 数据集。Industrial 包含 $36{,}259$ 条训练交互、$4{,}533$ 条测试交互和 $3{,}686$ 个 item；Office 包含 $38{,}924$ 条训练交互、$4{,}866$ 条测试交互和 $3{,}459$ 个 item。两者都沿用仓库中的时间划分。
+
+\paragraph{Tokenizer backbone。}
+除非特别说明，本文所有训练时 tokenizer 比较都使用与上游 MiniOneRec 对齐的 \rqvae{} 训练制度：三层量化器、每层 codebook 大小为 $256$、量化 embedding 维度为 $32$、AdamW、学习率 $10^{-3}$、训练 $10{,}000$ epochs、batch size 为 $20{,}480$。
+
+\paragraph{评估指标。}
+我们报告三类指标：
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Probe 指标}：不同 ambiguity bucket 上的 target-better rate，重点关注 same-$l_2$；
+  \item \textbf{Tokenizer 指标}：最佳 train-stage collision、最终 \texttt{sid-generate} collision，以及最大冲突大小；
+  \item \textbf{局部歧义指标}：平均目标 $l_2$ 叶子数、目标落入多叶 same-$l_2$ bucket 的比例、目标落入深拥挤 same-$l_2$ bucket 的比例，以及在固定前缀下第三级 code 的条件熵。
+\end{itemize}
+
+\subsection{设计空间 probe：spectral middle view 的必要性}
+
+我们首先做不改 tokenizer 本体的 graph probe。给定一个现有 top-1 SID 错误样本，我们比较某个 graph view 是否更偏向真实 target，而不是当前被错误偏好的候选。这样可以在接入训练之前，直接检查不同图视图对 local ambiguity 的判别力。
+
+\begin{table}[t]
+  \centering
+  \caption{same-$l_2$ bucket 上的最佳 middle-view probe 结果。spectral middle view 明显强于第一版 heuristic middle view，这也是 MGR-SID v1 采用 spectral $G_{\mathrm{mid}}$ 的直接原因。}
+  \label{tab:probe}
+  \begin{tabular}{lccc}
+    \toprule
+    数据集 & 最佳 heuristic middle view & 最佳 spectral middle view & spectral 视图名称 \\
+    \midrule
+    Industrial & 0.2747 & 0.5401 & \texttt{fagsp\_mid\_base} \\
+    Office & 0.2381 & 0.7619 & \texttt{fagsp\_mid\_base} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:probe} 说明，真正值得被显式设计的是 middle-resolution graph structure 本身。对 same-$l_2$ 歧义而言，最佳 spectral middle view 在 Industrial 上几乎把 heuristic middle view 的判别力提升到了两倍，在 Office 上甚至超过三倍。这一结果直接推动我们把 $G_{\mathrm{mid}}$ 从 heuristic proxy 升级为 spectral graph。
+
+\subsection{在 upstream-aligned tokenizer 训练上的正式比较}
+
+接下来我们测试图信号进入 tokenizer 学习后是否仍然成立。这里所有方法都使用 \Cref{tab:provenance} 中已经验证过的 upstream-aligned 训练制度。我们比较 semantic baseline、uniform graph regularization，以及 hierarchy-aware 的 MGR-SID v1。
+
+\begin{table}[t]
+  \centering
+  \caption{Industrial 上的 tokenizer 比较结果。只看 \texttt{sid-train} 会得出误导性结论；真正的排序应当看最终 \texttt{sid-generate} 后的 SID。}
+  \label{tab:main}
+  \begin{tabular}{lccc}
+    \toprule
+    方法 & 最佳 train collision & 最终 index collision & Max conflict \\
+    \midrule
+    Semantic baseline & 0.1066 & 0.00353 & 2 \\
+    Uniform graph regularization & 0.2458 & 0.00597 & 6 \\
+    Hierarchy-aware MGR-SID v1 & 0.1319 & \textbf{0.00326} & 2 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:main} 给出两个重要事实。第一，uniform graph regularization 明显有害，说明“把 graph 加进去”本身并不够。第二，train-stage collision 与最终 tokenizer 质量并不一致。虽然 semantic baseline 在 raw \texttt{sid-train} collision 上最好，但经过官方 \texttt{sid-generate} 后，hierarchy-aware tokenizer 反而得到最好的最终 SID。这也再次说明，tokenizer 比较必须落在最终导出的 index 上。
+
+\subsection{最终 tokenizer 是否真的降低了 local ambiguity}
+
+仅有更低的 final collision 还不够，我们还需要确认它是否真的改善了我们最关心的失败模式。为此，我们直接比较 baseline final index 与 hierarchy final index 在 same-$l_2$ 层面的结构差异。
+
+\begin{table}[t]
+  \centering
+  \caption{Industrial 上最终 SID 的局部歧义比较。Hierarchy-aware tokenizer 在 catalog 级和 test-weighted 两种口径下都降低了 same-$l_2$ 的拥挤程度。}
+  \label{tab:ambiguity}
+  \begin{tabular}{lccc}
+    \toprule
+    指标 & Baseline & Hierarchy & Delta \\
+    \midrule
+    Mean target $l_2$ leaf count & 4.7999 & 4.4498 & -0.3501 \\
+    Fraction targets in multi-leaf $l_2$ & 0.6894 & 0.6131 & -0.0763 \\
+    Fraction targets in $l_2$ with $\ge 4$ leaves & 0.3283 & 0.2828 & -0.0454 \\
+    Mean target level-3 entropy under $l_2$ & 1.4533 & 1.2935 & -0.1598 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:ambiguity} 表明，这不是简单的 code re-permutation。Hierarchy-aware tokenizer 的确让 same-$l_2$ bucket 更干净：目标 item 平均面对的 $l_2$ 叶子数更少，落在多叶与深拥挤 same-$l_2$ bucket 中的比例更低，同时给定 prefix 后第三级 code 的条件熵也更低。在更细的 movement analysis 中，有 $17.32\%$ 的测试目标从多叶 same-$l_2$ bucket 迁移到单叶 bucket，而只有 $9.68\%$ 迁移到更拥挤的方向。这与我们最初关于 local leaf ambiguity 的诊断完全一致。
+
+\subsection{当前结果的解释}
+
+综合来看，当前实验支持一个谨慎但连贯的结论。我们 \emph{还没有} 证明下游 SFT 或 RL 指标已经提升，但我们已经证明：
+\begin{enumerate}[leftmargin=1.4em]
+  \item 公平的 tokenizer 比较必须使用上游 MiniOneRec 的训练制度；
+  \item graph-structured collaborative information 对 local same-$l_2$ disambiguation 确实有信号；
+  \item 其中最关键的图视图是 spectral middle-resolution graph；
+  \item 将这些图结构以 hierarchy-aware regularization 的方式写回 semantic tokenizer 之后，最终生成 SID 质量优于公平 semantic baseline，并且 same-$l_2$ 局部歧义显著降低。
+\end{enumerate}
+
+对当前项目阶段而言，这正是进入 SFT 前最需要的 tokenizer-side 证据：它既验证了方法主张，也保持了论证边界的诚实。

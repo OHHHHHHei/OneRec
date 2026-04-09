@@ -76,6 +76,18 @@ tail -f /home/leejt/OneRec/logs/experiment_mgr_sid_v1_upstream_industrial_hierar
 - `/home/leejt/OneRec/output/experiments/mgr_sid_v1_upstream/industrial_baseline`
 - `/home/leejt/OneRec/output/experiments/mgr_sid_v1_upstream/industrial_uniform_reg`
 - `/home/leejt/OneRec/output/experiments/mgr_sid_v1_upstream/industrial_hierarchy_reg`
+- `/home/leejt/OneRec/output/experiments/mgr_sid_v1_upstream/generated_indices`
+
+## Generate Logs
+
+- `/home/leejt/OneRec/logs/experiment_mgr_sid_v1_upstream_generate_baseline_20260410.log`
+- `/home/leejt/OneRec/logs/experiment_mgr_sid_v1_upstream_generate_uniform_20260410.log`
+- `/home/leejt/OneRec/logs/experiment_mgr_sid_v1_upstream_generate_hierarchy_20260410.log`
+
+## Follow-up Analysis
+
+- [LOCAL_AMBIGUITY_BASELINE_VS_HIERARCHY.md](/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-09_mgr_sid_v1_upstream/LOCAL_AMBIGUITY_BASELINE_VS_HIERARCHY.md)
+- [local_ambiguity_baseline_vs_hierarchy.json](/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-09_mgr_sid_v1_upstream/local_ambiguity_baseline_vs_hierarchy.json)
 
 ## Notes
 

@@ -1,0 +1,17 @@
+\section{相关工作}
+\label{sec:related}
+
+\paragraph{生成式推荐与语义 item ID。}
+近年来，生成式推荐通过离散 item token 序列来重写推荐问题。TIGER 将 generative retrieval 引入推荐场景，证明了通过 item code 序列做自回归生成可以替代传统 ranking \citep{rajput2023tiger}。LCRec 把 collaborative semantics 融入大语言模型适配，说明 tokenized item representation 可以自然接入 language-model pipeline \citep{zheng2023lcrec}。MiniOneRec 则进一步提供了覆盖 semantic ID 构建、SFT、RL 与评估的完整开源框架 \citep{kong2025minionerec}。这些工作共同表明 tokenizer 在生成式推荐里是第一等问题，但它们大多沿用了 semantic-first 的 tokenizer 视角。本文仍然工作在 MiniOneRec 主链内部，只是把问题进一步收紧为：在 \emph{hierarchical semantic ID} 中，协同结构到底应以什么方式进入 tokenizer。
+
+\paragraph{协同感知的 tokenizer 设计。}
+越来越多的工作开始指出，纯文本语义并不足以支撑高质量 item tokenization。ReSID 从 prefix-conditional predictability 的角度论证了 recommendation-native tokenizer 的必要性 \citep{liang2026resid}。PRISM 提出了 purified collaborative representation 与 semantic anchoring，强调 noisy collaboration 会破坏 tokenizer 稳定性 \citep{fang2026prism}。PIT 则进一步指出 collaborative signal 自身具有 volatility，并研究动态个性化 tokenizer \citep{wang2026pit}。DiscRec 将 semantic 与 collaborative factors 解耦后再融合 \citep{liu2025discrec}。这些方法都说明 collaboration 应当进入 tokenizer，但它们仍未真正回答一个对层级 SID 尤其关键的问题：不同 SID level 是否应该使用不同的协同结构，而不是复用同一个全局 collaborative representation。
+
+\paragraph{超越 reconstruction 的 tokenization objective。}
+另一条相关路线开始强调 tokenizer 不应只为 reconstruction 服务，而应直接为推荐结构服务。ETEGRec 提出 end-to-end 可学习 item tokenization，强调 tokenization 与 recommendation objective 应当被联合考虑 \citep{liu2024etegrec}。CoST 利用 contrastive quantization 提升面向生成式推荐的 semantic tokenization \citep{zhu2024cost}。这些工作与本文在精神上很接近，因为它们都把推荐结构写回 tokenization objective 中。不同之处在于，我们使用的是显式的 graph-structured collaborative targets，并试图在不同 SID level 上保留不同类型的结构，而不是通过单一目标统一约束所有关系。
+
+\paragraph{图信号处理与 transition-aware recommendation。}
+MGR-SID 的 graph bank 设计还受到图信号处理工作的启发。GSPRec 通过谱域分解区分不同 graph frequency 对推荐的作用 \citep{rabiah2025gsprec}，FaGSP 则系统研究了 collaborative filtering 中的 frequency-aware graph signal processing \citep{xia2024fagsp}。与此同时，Collaboration and Transition 说明长程 collaborative structure 与短程 transition structure 并不是彼此替代的，它们在 sequential recommendation 中承担不同角色 \citep{zhu2023collaborationtransition}。这些工作本身并不是 semantic ID tokenizer，但它们为本文提供了关键线索：对 hierarchical SID 来说，最有价值的协同信息很可能是 multi-resolution 的，其中 middle-scale graph structure 应当被显式建模，而不是被粗暴地夹在 global 与 local 之间。
+
+\paragraph{本文的位置。}
+MGR-SID 并不试图成为一个更强的通用 graph encoder，也不打算一步到位做成 fully personalized dynamic tokenizer。当前 v1 是刻意收窄的：它继承 MiniOneRec 的 semantic \rqvae{} backbone，借鉴 PRISM 的去噪纪律与 semantic anchor，借鉴 ReSID 的层级可预测性动机，并通过 GSPRec/FaGSP 启发下的 middle-resolution graph 来实例化 graph-aware supervision。因而，本文真正的中心不是“更强的 graph feature”，而是 \emph{level-specific graph supervision for semantic ID learning}。

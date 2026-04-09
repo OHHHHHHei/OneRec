@@ -1,0 +1,22 @@
+\section{引言}
+
+生成式推荐把“在候选集合上做打分排序”改写成“在 item code 序列上做自回归生成”。这一范式越来越受到关注，因为它可以直接继承语言模型的训练与解码机制。TIGER、LCRec 以及 MiniOneRec 等工作已经证明，离散 item tokenizer 可以作为 item 语义与自回归推荐之间的桥梁 \citep{rajput2023tiger,zheng2023lcrec,kong2025minionerec}。一旦 tokenizer 被固定下来，它的结构偏置就会被整个下游链路继承，包括 constrained decoding、SFT 以及推荐导向 RL。
+
+因此，tokenizer 不是简单的预处理步骤，而是会直接限制系统上限的核心模块。在我们当前的 MiniOneRec 复现与后续研究中，持续出现了一个并不符合“collision 是主问题”这一常见叙事的现象。经过官方 \texttt{sid-generate} 冲突修补之后，最终 SID 的 collision 已经处在 sub-percent 水平，但推荐错误仍然大量存在。进一步诊断发现，许多错误并不是模型跑到了完全错误的语义子树，而是已经进入了正确或近似正确的前缀区域，最后却在 leaf token 上出错。换句话说，prefix 经常是对的，但最后一层 leaf 不够稳定。这说明当前真正剩下的 tokenizer 瓶颈更像是 \emph{语义合理前缀内部的局部歧义}。
+
+与此同时，现有 collaborative tokenizer 工作已经表明，协同信息确实应该进入 item tokenization，但它们大多通过一个全局统一的 collaborative representation 来实现 \citep{fang2026prism,liang2026resid,wang2026pit,liu2025discrec}。对于 flat representation，这种处理很自然；但对于 hierarchical semantic ID，它可能仍然过于粗糙。不同 SID level 天生承担不同角色：高层更像粗粒度 routing，中层更像 subgroup organization，底层更像 local leaf discrimination。把同一种协同视图均匀复用到每一层，不仅可能不够精确，还可能引入不必要的不稳定性。
+
+基于这一判断，本文提出 \textbf{MGR-SID}：一种层级感知、图正则化的 semantic ID 方法。MGR-SID 不替换 MiniOneRec 的语义 \rqvae{} tokenizer，而是在其基础上引入一个 train-only graph bank，把图结构作为协同信息的载体。当前 \textbf{v1} 的实现包含三类图视图：净化后的 coarse collaborative graph、spectral middle-resolution graph 以及净化后的 local transition graph。与长期愿景中的“learned allocation”不同，当前 v1 采取一个更保守但清晰的层级实例化方式：level 1 接 coarse graph 正则，level 2 接 spectral middle view，level 3 接 local transition graph。
+
+本文的证据链分三步展开。第一，我们在 Industrial 和 Office 上进行不改 tokenizer 本体的 graph probe，证明 middle-resolution graph 是必须被显式设计的，且 spectral middle view 明显优于 heuristic middle view。第二，我们系统回溯 MiniOneRec tokenizer 的 provenance，证明公平比较必须使用上游官方 \rqvae{} 训练制度，而不是当前本地默认配置。第三，在这一公平设置下，我们验证训练时 graph regularization，发现 hierarchy-aware 版本虽然在 raw \texttt{sid-train} collision 上不占优，却在最终 \texttt{sid-generate} 后的 SID 质量上优于语义 baseline。
+
+当前稿件故意把范围限制在 tokenizer 阶段。我们暂时不主张下游 SFT 或 RL 指标已经得到提升。我们的目标是先把 tokenizer 侧的论证链条建立清楚，再把新 SID 推进到剩余主链中。
+
+\paragraph{本文贡献。}
+\begin{enumerate}[leftmargin=1.4em]
+  \item 我们识别出 MiniOneRec 当前 tokenizer 的主瓶颈：在公平复现上游 tokenizer 之后，剩余难点主要不是全局 collision，而是 local leaf ambiguity。
+  \item 我们提出 MGR-SID，一种将 graph-structured collaborative information 以 level-specific structural supervision 的方式注入 semantic tokenizer 的方法，而不是使用统一的 feature fusion。
+  \item 我们给出当前阶段已完成的实证证据：在 Industrial 上，upstream-aligned 的 hierarchy-aware tokenizer 把最终生成 SID 的 collision 从 $0.00353$ 降到 $0.00326$，并显著改善 same-$l_2$ 局部歧义结构；相比之下，uniform graph regularization 明显有害。
+\end{enumerate}
+
+下文组织如下。\Cref{sec:related} 介绍相关工作。\Cref{sec:background} 总结 tokenizer pipeline 与问题定义。\Cref{sec:method} 介绍当前 MGR-SID v1 方法。\Cref{sec:experiments} 汇报 probe、provenance alignment 与 tokenizer 阶段实验。\Cref{sec:conclusion} 给出结论、限制以及进入 SFT 前的下一步。

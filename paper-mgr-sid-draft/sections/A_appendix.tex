@@ -1,0 +1,86 @@
+\section{Appendix}
+
+\subsection{Current implementation details}
+
+The current MGR-SID v1 implementation lives in an isolated experimental branch of the repository and does not alter the default MiniOneRec tokenizer path. The main training and generation entry points are:
+\begin{itemize}[leftmargin=1.4em]
+  \item \texttt{scripts/experiment\_mgr\_sid\_v1\_train.py}
+  \item \texttt{scripts/experiment\_mgr\_sid\_v1\_generate.py}
+\end{itemize}
+
+The core implementation is in:
+\begin{itemize}[leftmargin=1.4em]
+  \item \texttt{src/onerec/experiments/mgr\_sid/train\_v1.py}
+  \item \texttt{src/onerec/experiments/mgr\_sid/transplanted\_graph\_bank.py}
+  \item \texttt{src/onerec/experiments/mgr\_sid/paper\_transplants.py}
+\end{itemize}
+
+\subsection{Graph construction choices in v1}
+
+\begin{table}[h]
+  \centering
+  \caption{Concrete graph-bank settings used by the current v1 experiments.}
+  \label{tab:appendix-graph}
+  \begin{tabular}{ll}
+    \toprule
+    Component & Setting \\
+    \midrule
+    History window & 10 \\
+    Coarse minimum edge weight & 2.0 \\
+    Local minimum edge weight & 1.0 \\
+    Semantic anchor top-$k$ & 32 \\
+    Semantic anchor mixing weight & 0.35 \\
+    Spectral rank & 48 \\
+    Middle-band eigen ratio & [0.25, 0.65] \\
+    Temporal mixing ratio (alt. middle view) & 0.35 \\
+    Graph top-$k$ per row in training & 32 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Tokenizer training hyperparameters}
+
+\begin{table}[h]
+  \centering
+  \caption{Upstream-aligned tokenizer training regime used for the fair comparison in \Cref{tab:main}.}
+  \label{tab:appendix-train}
+  \begin{tabular}{ll}
+    \toprule
+    Hyperparameter & Value \\
+    \midrule
+    Number of quantizers & 3 \\
+    Codebook sizes & [256, 256, 256] \\
+    Quantized embedding dimension & 32 \\
+    Encoder/decoder widths & [2048, 1024, 512, 256, 128, 64] \\
+    Optimizer & AdamW \\
+    Learning rate & $10^{-3}$ \\
+    Weight decay & 0 \\
+    Scheduler & constant with warmup \\
+    Warmup epochs & 50 \\
+    Epochs & 10000 \\
+    Batch size & 20480 \\
+    Quantization loss weight & 1.0 \\
+    $\beta$ & 0.25 \\
+    Graph loss weights & $(0.05, 0.15, 0.05)$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Additional interpretation of the local ambiguity result}
+
+The local ambiguity analysis compares the final baseline index with the final hierarchy-aware index rather than comparing recommendation outputs. This makes the analysis tokenizer-native. The result is therefore best interpreted as evidence about the structure of the tokenizer itself:
+\begin{itemize}[leftmargin=1.4em]
+  \item the hierarchy-aware tokenizer produces less crowded same-$l_2$ buckets;
+  \item the reduction is visible both at catalog level and when weighted by test targets;
+  \item the structural change is aligned with the motivating failure mode of local leaf ambiguity.
+\end{itemize}
+
+\subsection{Scope of the current draft}
+
+This paper should be read as a tokenizer-stage draft rather than a finished end-to-end paper. The remaining milestones are:
+\begin{enumerate}[leftmargin=1.4em]
+  \item add repeated-seed verification for the final tokenizer comparison;
+  \item evaluate the hierarchy-aware tokenizer on Office under the same upstream-aligned regime;
+  \item feed the improved SID into SFT and then RL;
+  \item compare against more published tokenizer baselines once downstream metrics are available.
+\end{enumerate}

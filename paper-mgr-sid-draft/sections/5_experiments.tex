@@ -1,0 +1,93 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Experimental setup}
+
+\paragraph{Datasets.}
+We use the Industrial and Office Amazon benchmarks already prepared in the MiniOneRec reproduction pipeline. Industrial contains $36{,}259$ training interactions, $4{,}533$ test interactions, and $3{,}686$ items. Office contains $38{,}924$ training interactions, $4{,}866$ test interactions, and $3{,}459$ items. Both use the repository's existing time-based splits.
+
+\paragraph{Tokenizer backbone.}
+Unless otherwise noted, all training-time tokenizer comparisons use the upstream-aligned MiniOneRec \rqvae{} regime established in \Cref{tab:provenance}: three quantizers with codebook size $256$, embedding dimension $32$, AdamW, learning rate $10^{-3}$, $10{,}000$ epochs, and batch size $20{,}480$.
+
+\paragraph{Evaluation metrics.}
+We report three classes of metrics.
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Probe metrics}: target-better rate on ambiguity buckets, especially same-$l_2$.
+  \item \textbf{Tokenizer metrics}: best train-stage collision, final \texttt{sid-generate} collision, and maximum conflict size.
+  \item \textbf{Local ambiguity metrics}: mean target $l_2$ leaf count, the fraction of targets in multi-leaf same-$l_2$ buckets, the fraction of targets in deep crowded same-$l_2$ buckets, and conditional entropy of level 3 under a fixed level-1/2 prefix.
+\end{itemize}
+
+\subsection{Design-space probes: spectral middle views matter}
+
+We began with a non-invasive probe protocol that does not modify the tokenizer. Given an existing top-1 SID error, we ask whether a graph view scores the ground-truth target item above the currently favored wrong candidate. This lets us study which graph view is most informative before injecting it into training.
+
+\begin{table}[t]
+  \centering
+  \caption{Best middle-view probe results on same-$l_2$ buckets. Spectral middle views are much stronger than the first heuristic middle views, which motivated the use of a spectral $G_{\mathrm{mid}}$ in MGR-SID v1.}
+  \label{tab:probe}
+  \begin{tabular}{lccc}
+    \toprule
+    Dataset & Best heuristic middle view & Best spectral middle view & Spectral view name \\
+    \midrule
+    Industrial & 0.2747 & 0.5401 & \texttt{fagsp\_mid\_base} \\
+    Office & 0.2381 & 0.7619 & \texttt{fagsp\_mid\_base} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:probe} provides the first direct justification for the graph bank design. The diagnostic result is not just that graph signals help. Rather, the result is that \emph{middle-resolution graph structure matters enough to deserve explicit design}. The same-$l_2$ gain from the best spectral middle view is nearly doubled on Industrial and more than tripled on Office relative to the first heuristic middle view. This is what led us to instantiate $G_{\mathrm{mid}}$ with a spectral graph rather than a crude diffusion proxy.
+
+\subsection{Training-time comparison under upstream-aligned tokenizer training}
+
+We next test whether the graph signal survives once it is injected into tokenizer learning. All variants here use the fair upstream-aligned training setup from \Cref{tab:provenance}. We compare the semantic baseline, the uniform regularization control, and the hierarchy-aware MGR-SID v1 regularizer.
+
+\begin{table}[t]
+  \centering
+  \caption{Industrial tokenizer results under the upstream-aligned MiniOneRec training regime. Train-stage collision alone is misleading: the hierarchy-aware variant becomes the best tokenizer after \texttt{sid-generate}.}
+  \label{tab:main}
+  \begin{tabular}{lccc}
+    \toprule
+    Method & Best train collision & Final index collision & Max conflict \\
+    \midrule
+    Semantic baseline & 0.1066 & 0.00353 & 2 \\
+    Uniform graph regularization & 0.2458 & 0.00597 & 6 \\
+    Hierarchy-aware MGR-SID v1 & 0.1319 & \textbf{0.00326} & 2 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:main} reveals two important facts. First, uniform graph regularization is clearly harmful. This matters because it shows that adding graph structure per se is not enough. Second, train-stage collision and final tokenizer quality are not aligned. The semantic baseline still has the best raw train-stage collision, but after the official \texttt{sid-generate} stage, the hierarchy-aware tokenizer becomes the best final index. This is exactly why our evaluation protocol treats the final exported SID as the primary tokenizer artifact.
+
+\subsection{Does the final tokenizer actually reduce local ambiguity?}
+
+The main question is whether the better final collision reflects the failure mode we care about. To answer this, we compare the final baseline index and the final hierarchy-aware index at the level of same-$l_2$ crowding.
+
+\begin{table}[t]
+  \centering
+  \caption{Local ambiguity comparison on Industrial final indices. The hierarchy-aware tokenizer reduces both catalog-level and test-weighted same-$l_2$ crowding.}
+  \label{tab:ambiguity}
+  \begin{tabular}{lccc}
+    \toprule
+    Metric & Baseline & Hierarchy & Delta \\
+    \midrule
+    Mean target $l_2$ leaf count & 4.7999 & 4.4498 & -0.3501 \\
+    Fraction targets in multi-leaf $l_2$ & 0.6894 & 0.6131 & -0.0763 \\
+    Fraction targets in $l_2$ with $\ge 4$ leaves & 0.3283 & 0.2828 & -0.0454 \\
+    Mean target level-3 entropy under $l_2$ & 1.4533 & 1.2935 & -0.1598 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:ambiguity} shows that the improvement is structurally meaningful. The hierarchy-aware tokenizer does not merely shuffle code assignments while preserving the same ambiguity. It lowers the average number of competing leaves under the target prefix, reduces the fraction of targets that fall into multi-leaf same-$l_2$ buckets, and lowers the conditional entropy of the third-level code. In the full movement analysis, $17.32\%$ of test targets move from a multi-leaf same-$l_2$ bucket into a singleton bucket, while only $9.68\%$ move in the opposite direction. This strongly supports our original diagnosis that the remaining tokenizer bottleneck is local leaf ambiguity.
+
+\subsection{Current interpretation}
+
+Taken together, the experiments support a cautious but coherent claim. We do \emph{not} yet show downstream recommendation gains after SFT or RL. We do show that:
+\begin{enumerate}[leftmargin=1.4em]
+  \item fair tokenizer comparison requires the upstream MiniOneRec training regime;
+  \item graph-structured collaborative information has real signal for local same-$l_2$ disambiguation;
+  \item this signal is strongest when encoded by a spectral middle-resolution graph;
+  \item hierarchy-aware graph regularization improves the \emph{final generated SID} and makes the tokenizer less locally ambiguous than a fair semantic baseline.
+\end{enumerate}
+
+For the current stage of the project, this is exactly the evidence we need before pushing the new SID into SFT. It validates the tokenizer-side hypothesis while keeping the scope honest.

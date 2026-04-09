@@ -1,0 +1,100 @@
+\section{方法}
+\label{sec:method}
+
+\subsection{方法概览}
+
+MGR-SID 保留 MiniOneRec 的语义 \rqvae{} tokenizer，并在其上增加一个 train-only graph bank。核心直觉很简单：不同 SID level 解决的是不同的结构判别问题，因此它们应当保留不同类型的协同图结构。当前 \textbf{v1} 采用一个固定但非均匀的层级分配方式：
+\begin{itemize}[leftmargin=1.4em]
+  \item level 1 使用 coarse collaborative graph；
+  \item level 2 使用 spectral middle-resolution graph；
+  \item level 3 使用 local transition graph。
+\end{itemize}
+
+这一设计刻意比“完整 learned allocation”更简单。v1 的目标不是直接做到最终形态，而是先验证：\emph{层级感知的图结构监督} 本身是否已经有价值。
+
+\subsection{语义 backbone}
+
+给定 item embedding $\mathbf{x}_i$，encoder 先将其映射到 latent space，然后由三个残差量化器依次离散化。记第 $l$ 层量化器输出为 $\mathbf{q}_i^{(l)}$，则第 $l$ 层之后的累计量化表示为
+\begin{equation}
+\hx_i^{(l)} = \sum_{r=1}^{l} \mathbf{q}_i^{(r)}.
+\end{equation}
+decoder 根据 $\hx_i^{(3)}$ 重构 $\mathbf{x}_i$。这一语义 tokenizer backbone 与 MiniOneRec 保持一致，我们不修改其 reconstruction loss 和 residual quantization loss。
+
+\subsection{Graph bank 构造}
+
+所有图视图都只使用训练交互构造。对于每条训练样本，其最近历史为 $H_t = [i_{t-k}, \dots, i_{t-1}]$，目标 item 为 $y_t$。我们构造三类图。
+
+\paragraph{Coarse collaborative graph.}
+我们把最近窗口内的历史 item 与目标 item 组成无向 item-item 协同图。若两个 item 在同一序列窗口内共现，则按相对距离的倒数给边赋权。这个图描述 broad compatibility 与稳定协同组织。随后我们做 support pruning、popularity debias 和 row normalization：
+\begin{equation}
+\Acoarse = \mathrm{RowNorm}\!\left( \mathrm{Debias}\!\left( \mathrm{Prune}(\Gcoarse) \right)\right).
+\end{equation}
+当前实现中，coarse edge 的最小保留阈值为 $2.0$，popularity debias 指数为 $0.5$。
+
+\paragraph{Local transition graph.}
+我们从最近历史 item 指向目标 item 构造有向转移图。每条边按 inverse-rank 加权，因此越近的历史 item 权重越大。净化后的 local graph 包含 support pruning、target-popularity correction 与 row normalization：
+\begin{equation}
+\Alocal = \mathrm{RowNorm}\!\left( \mathrm{TargetDebias}\!\left( \mathrm{Prune}(\Glocal) \right)\right).
+\end{equation}
+这一视图直接描述短程 next-item preference，但它天然更稀疏、更容易受噪声影响。
+
+\paragraph{Middle-resolution graph.}
+Middle view 是当前方法中最关键的设计点。早期 heuristic probe 已经说明 middle-scale structure 是必要的，但 diffusion residual 和简单 band-pass proxy 仍然偏弱。基于后续 spectral probe，我们在当前 v1 中将 $G_{\mathrm{mid}}$ 实例化为 FaGSP 风格的谱域中尺度视图：
+\begin{equation}
+\Amid = \mathrm{BandReconstruct}\!\left( \mathrm{SymNorm}(\Acoarse)\right).
+\end{equation}
+具体实现上，我们对 purified coarse graph 做谱分解，保留中间频带上的特征分量进行重建。当前设置使用 rank $48$ 和 eigen-ratio 范围 $[0.25, 0.65]$。我们还测试了 GSPRec 风格的 temporal spectral middle view，作为备选 middle candidate，但当前主要结果使用的仍是 FaGSP 风格 spectral graph。
+
+\paragraph{Semantic-anchor purification.}
+受 PRISM 启发，我们还测试了 semantic-anchor purification：先在语义 embedding 上构造 top-$k$ semantic $k$NN graph，再与净化后的协同图做交集与混合。这个模块对部分图视图有帮助，但 probe 结果表明，真正的大幅提升主要来自 middle-resolution graph 本身的质量，而不仅仅是 anchor-only denoising。当前训练版 v1 采用的最终 middle view，是建立在 purified coarse graph 上的 spectral graph。
+
+\subsection{层级感知图正则}
+
+语义 backbone 原本已经优化
+\begin{equation}
+\Lrec + \Lrq,
+\end{equation}
+其中 $\Lrec$ 是 reconstruction loss，$\Lrq$ 是 residual quantization loss。MGR-SID v1 在此基础上，对每层累计量化表示 $\hx_i^{(l)}$ 增加图正则。
+
+对一个 mini-batch $\mathcal{B}$ 及其对应的图子邻接矩阵 $\mathbf{A}_{\mathcal{B}}^{(l)}$，我们定义
+\begin{equation}
+\Lgraph^{(l)} =
+\frac{1}{|\mathcal{B}|}
+\sum_{i \in \mathcal{B}}
+\left\|
+\hx_i^{(l)} -
+\sum_{j \in \mathcal{B}} \mathbf{A}^{(l)}_{\mathcal{B},ij} \hx_j^{(l)}
+\right\|_2^2 .
+\label{eq:graph_smooth}
+\end{equation}
+它鼓励在第 $l$ 层被该图连接的 item 在累计量化表示上保持局部平滑。直观来说，被当前层关注的图结构连接在一起的 item，应当更容易在该层保持一致或相近的离散结构。
+
+于是，hierarchy-aware v1 的总目标为
+\begin{equation}
+\Ltotal =
+\Lrec + \Lrq
+ + \lambda_1 \Lgraph^{(1)}
+ + \lambda_2 \Lgraph^{(2)}
+ + \lambda_3 \Lgraph^{(3)},
+\end{equation}
+其中
+\begin{equation}
+\mathbf{A}^{(1)}_{\mathcal{B}} \leftarrow \Acoarse,\quad
+\mathbf{A}^{(2)}_{\mathcal{B}} \leftarrow \Amid,\quad
+\mathbf{A}^{(3)}_{\mathcal{B}} \leftarrow \Alocal .
+\end{equation}
+当前实现使用 $(\lambda_1,\lambda_2,\lambda_3) = (0.05, 0.15, 0.05)$。
+
+\subsection{控制组}
+
+为了隔离“层级感知”本身的作用，我们设置两个直接对照：
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{语义 baseline}：只保留 upstream-aligned MiniOneRec \rqvae{} tokenizer，不加任何 graph regularization；
+  \item \textbf{uniform regularization}：把 coarse、mid、local 三种图简单平均，只在最终累计表示上加一个统一 graph smoothness loss。
+\end{itemize}
+
+uniform control 保留了相同的图材料，但去掉了层级非均匀分配。因此它是检验“是否真的需要 level-specific supervision”的最直接控制组。
+
+\subsection{当前方法范围}
+
+需要强调的是，当前 MGR-SID v1 仍然是 tokenizer-stage 的实例化，而不是最终形态。它还没有学习 graph allocation 本身，也还没有推进到 SFT 或 RL。本文的目标更窄：先验证 graph-structured collaborative information 作为 \emph{level-specific structural supervision} 是否能真正改善 semantic tokenizer。

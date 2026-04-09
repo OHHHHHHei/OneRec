@@ -28,7 +28,7 @@
 
 \title{MiniOneRec 后续研究\\进度日志}
 \author{工作记录文档}
-\date{最后更新：2026-04-09}
+\date{最后更新：2026-04-10}
 
 \begin{document}
 \begin{CJK*}{UTF8}{gbsn}
@@ -84,6 +84,8 @@
   \item \textbf{中尺度图视图很重要。} 最有价值的协同视图既不是纯 global，也不是纯 last-step local。
   \item \textbf{轻量净化是必要的。} raw collaborative graph 往往弱于 purified graph。
   \item \textbf{论文启发的频域中尺度图比第一版 heuristic middle-view 更强。}
+  \item \textbf{当前仓库默认的 \texttt{sid-train} 超参数与上游 MiniOneRec 不一致。} 真正能复现低 collision SID 的，是 upstream-style 的 \texttt{RQ-VAE} 训练制度，而不是当前默认的 \texttt{epochs=10, batch\_size=256}。
+  \item \textbf{不能只看 \texttt{sid-train} collision。} 最终真正有意义的是 \texttt{sid-generate} 后的 \texttt{index.json} collision；train-stage 排名和 final index 排名可能并不一致。
 \end{enumerate}
 
 \section{被削弱或阶段性放下的方向}
@@ -209,98 +211,116 @@ middle-resolution collaborative structure 值得被当成一个一等设计对�
 semantic-anchor purification 本身是有帮助的，但真正的大幅增益主要来自更强的中尺度结构表达，而不只是 anchor-only denoising。
 \end{quote}
 
-\subsection{阶段 3：训练版接入的第一次尝试（已废弃）}
+\subsection{阶段 3：训练脚手架校准（过渡阶段）}
 
-\subsubsection*{做了什么}
-
-这一轮最早的训练版实验，首次把 graph-structured collaborative signal 以训练时 regularization 的形式接入一个独立实验版 RQ-VAE 训练器，并在 Industrial 上跑了三组对照：
+在进入正式训练验证之前，我们做过几轮训练脚手架和配置校准，用来确认两件事：
 
 \begin{itemize}
-  \item baseline；
-  \item uniform graph regularization；
-  \item hierarchy-aware graph regularization。
+  \item 独立实验分支可以在不破坏 baseline 主链的前提下稳定运行；
+  \item 真正有意义的方法比较必须建立在与 MiniOneRec 上游一致的训练制度上。
 \end{itemize}
 
-这一轮仍然没有修改默认 \texttt{sid-train} 主链，而是通过独立实验脚本来保证 baseline 可回退。
-
-\subsubsection*{主要结果}
-
-这轮结果后来被判定为\textbf{不能作为正式证据使用}。原因不是结果正负，而是训练语义没有和原始 \texttt{sid-train} 对齐：当时的实验分支采用了 full-batch 更新，导致一个 epoch 只包含一次参数更新，而原始主线是 mini-batch 训练。
-
-\subsubsection*{说明了什么}
-
-这轮实验的价值只剩下一点：
+这一阶段的详细过程不再作为当前主线证据保留。对当前研究真正有价值的结论只有一条：
 
 \begin{quote}
-它证明了独立实验脚本可以跑通，但不能证明训练版方法本身是否有效。
+在做 graph-aware SID 对比之前，必须先解决 baseline provenance 与训练制度对齐问题。
 \end{quote}
 
-\subsection{阶段 4：对齐版训练实验与主线 sanity check（2026-04-09）}
+\subsection{阶段 4：SID provenance 追踪与上游风格复现（2026-04-09）}
 
 \subsubsection*{做了什么}
 
-这一轮重新实现了训练版实验分支，使其训练语义与原始 \texttt{sid-train} 主线对齐。对齐项包括：
+为了确认当前正式 Industrial SID 的真实来源，我们专门做了两件事：
 
 \begin{itemize}
-  \item \texttt{epochs = 10}
-  \item \texttt{batch\_size = 256}
-  \item mini-batch \texttt{DataLoader}
-  \item 每个 batch 的 \texttt{optimizer.step()} 与 \texttt{scheduler.step()}
-  \item \texttt{learner = AdamW}
-  \item \texttt{lr\_scheduler\_type = constant}
-  \item \texttt{warmup\_epochs = 50}
-  \item \texttt{eval\_step = 50}
+  \item 对比本地迁移版与上游 MiniOneRec 官方仓库中的 \texttt{rqvae.py}、\texttt{trainer.py}、\texttt{generate\_indices.py} 核心逻辑；
+  \item 在本地主线代码上，按上游官方训练超参数重新跑一遍 Industrial 的 \texttt{RQ-VAE -> sid-generate}。
 \end{itemize}
-
-Industrial 当前有 3686 个 item embedding，因此原始主线每个 epoch 为 15 个 mini-batch；对齐版实验分支也同样为 15 个 mini-batch。
-
-除了重新跑三组实验分支：
-
-\begin{itemize}
-  \item baseline；
-  \item uniform graph regularization；
-  \item hierarchy-aware graph regularization；
-\end{itemize}
-
-我们还额外跑了一条原始主线 \texttt{sid-train} 的真 baseline，作为 sanity check。
 
 \subsubsection*{主要结果}
 
-对齐版实验分支在 Industrial 上得到：
+对比上游后发现：
 
 \begin{itemize}
-  \item baseline：best collision \(\approx 0.9989\)
-  \item uniform\_reg：best collision \(\approx 0.9970\)
-  \item hierarchy\_reg：best collision \(\approx 0.9967\)
+  \item 核心 \texttt{sid-train / sid-generate} 代码逻辑没有被迁移改坏；
+  \item 真正的关键差异在于训练制度：
+  \begin{itemize}
+    \item 上游官方：\texttt{epochs = 10000, batch\_size = 20480}
+    \item 当前本地默认：\texttt{epochs = 10, batch\_size = 256}
+  \end{itemize}
 \end{itemize}
 
-更关键的是，原始主线 sanity baseline 的结果也是：
+随后，按上游风格重跑 Industrial：
 
 \begin{itemize}
-  \item \texttt{sid-train baseline}: best collision \(\approx 0.9989\)
+  \item \texttt{sid-train} 最佳 collision 降到 \(\approx 0.0993\)；
+  \item 继续跑 \texttt{sid-generate} 后，最终 \texttt{index.json} collision 变为 \(\approx 0.0043407488\)；
+  \item 这个值与仓库中当前正式 Industrial index 的 collision 完全一致。
 \end{itemize}
 
 \subsubsection*{说明了什么}
 
-这一轮最重要的结论不是“graph regularization 是否已经有效”，而是：
+这一轮非常关键，因为它修正了我们对基线系统的理解：
 
 \begin{quote}
-当前实验分支 baseline 已经与原始主线 baseline 对齐，说明问题不再是训练步数语义不一致，而是当前 graph integration mechanism 仍然不够合适。
+当前正式 Industrial SID 是可以被当前主线代码复现出来的，问题不在于迁移时改坏了主逻辑，而主要在于本地默认训练超参数偏离了上游 MiniOneRec。
 \end{quote}
 
-目前更可信的解释是：
+这也意味着，后续所有 graph-aware 实验如果还想保持说服力，就必须在 \textbf{upstream-aligned} 训练制度下进行。
+
+\subsection{阶段 6：Upstream-aligned MGR-SID v1 训练与生成（2026-04-09 / 2026-04-10）}
+
+\subsubsection*{做了什么}
+
+在确认基线 provenance 后，我们把 \texttt{MGR-SID v1} 的训练实验也切换到了与上游对齐的训练制度：
 
 \begin{itemize}
-  \item probe 阶段识别出的 spectral \texttt{G\_mid} 确实有强信号；
-  \item 但当前这版 graph regularization 直接作用在 cumulative quantized representation 上，过于粗糙；
-  \item 它没有显式保护 code usage balance，也没有显式约束 prefix predictability，因此很可能把信号过度平滑掉了。
+  \item \texttt{epochs = 10000}
+  \item \texttt{batch\_size = 20480}
+  \item Industrial only
+  \item 三组对照：
+  \begin{itemize}
+    \item baseline
+    \item uniform graph regularization
+    \item hierarchy-aware graph regularization
+  \end{itemize}
 \end{itemize}
 
-因此，这轮对齐版训练实验的结论不是“方向错了”，而是：
+训练结束后，我们没有停留在 \texttt{sid-train} 指标，而是对每个 best checkpoint 单独跑了实验版 generate，比较最终 \texttt{index.json} collision。
+
+\subsubsection*{主要结果}
+
+\paragraph{Generate-stage final collision}
+
+\begin{itemize}
+  \item baseline：\(\approx 0.0035268584\)
+  \item uniform\_reg：\(\approx 0.0059685296\)
+  \item hierarchy\_reg：\(\approx 0.0032555616\)
+\end{itemize}
+
+其中最关键的是：
+
+\begin{itemize}
+  \item \texttt{hierarchy\_reg} 成为三者里最终最好的 SID；
+  \item baseline 也比当前仓库里原有正式 Industrial index 的 \(\approx 0.0043407488\) 更低；
+  \item 说明这轮 upstream-aligned 训练本身已经把语义 baseline 推到了更健康的 regime。
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这是当前研究里最重要的新转折之一：
 
 \begin{quote}
-当前 graph integration 机制在对齐版训练下依然 only marginally helpful，离可支撑主张的正结果还差得很远。
+当前最重要的判断标准应该是 final generated SID，而不是单独盯住 raw \texttt{sid-train} collision；在这个更合理的判据下，当前这版 hierarchy-aware graph regularization 已经给出了第一轮清晰正信号。
 \end{quote}
+
+更具体地说，这一轮至少说明了三件事：
+
+\begin{itemize}
+  \item \texttt{hierarchy-aware} 方向不是空想，它已经在最终 Industrial SID 上给出正结果；
+  \item 后续评估应该优先围绕 \textbf{final generated SID} 展开，而不是再把全部判断压在 train-stage collision 上；
+  \item 当前实验主线已经具备继续推进的依据，不再只是 probe 级别的希望信号。
+\end{itemize}
 
 \section{当前证据的整体解释}
 
@@ -311,7 +331,9 @@ Industrial 当前有 3686 个 item embedding，因此原始主线每个 epoch �
   \item 剩余的主要困难集中在 local leaf-level discrimination；
   \item graph-structured collaborative signal 对这个瓶颈是有帮助的；
   \item 当前最强候选是 \textbf{spectral middle-resolution collaborative graph view}；
-  \item 但第一版训练接入已经表明，图信号本身有用，并不等于当前 integration mechanism 就是对的。
+  \item 当前仓库默认 \texttt{sid-train} 配置不能代表正式 MiniOneRec baseline，所有方法对比必须切到 upstream-aligned regime；
+  \item 在 upstream-aligned regime 下，\texttt{hierarchy-aware} 已经在 final generated SID 上给出了第一轮正信号；
+  \item 这说明图信号本身有用，而且图信号如何与 \texttt{sid-generate} 的 collision resolution 交互，是方法设计里非常关键的一环。
 \end{enumerate}
 
 \section{当前最佳工作假设}
@@ -319,7 +341,7 @@ Industrial 当前有 3686 个 item embedding，因此原始主线每个 epoch �
 当前最可信的工作假设是：
 
 \begin{quote}
-MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierarchy-aware graph regularization；其中 middle-resolution spectral collaborative graph 是降低 local leaf ambiguity 的关键额外信号。
+MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierarchy-aware graph regularization；其中 middle-resolution spectral collaborative graph 是降低 local leaf ambiguity 的关键额外信号，而真正的有效性要通过 \texttt{sid-generate} 后的 final SID 来判断。
 \end{quote}
 
 目前最强的 \texttt{G\_mid v1} 候选是：
@@ -329,17 +351,25 @@ MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierar
   \item 备选：\texttt{gsprec\_mid\_prism}
 \end{itemize}
 
+当前最合理的控制组地位也更清楚了：
+
+\begin{itemize}
+  \item \texttt{hierarchy\_reg}：当前主方法候选
+  \item \texttt{baseline}：强语义基线
+\end{itemize}
+
 \section{当前开放问题}
 
 即使有了新一轮 probe，下面这些问题仍然没有完全解决：
 
 \begin{enumerate}
-  \item probe 上的优势能否在 revised training integration 下稳定迁移到训练版 SID？
-  \item 层级感知应该主要通过 level-wise allocation、level-wise regularization，还是两者一起实现？
+  \item 当前 final-SID 改善是否能在第二个 seed 上保持？
+  \item baseline 与 hierarchy\_reg 的最终 index 差异，是否真的主要集中在 \texttt{same\_l2} / local ambiguity bucket？
+  \item 当前 \texttt{hierarchy\_reg} 的收益究竟来自更好的 leaf disambiguation，还是更好的 collision repair compatibility？
   \item semantic anchoring 在训练时应该如何使用，才能避免把 graph signal 限制得过死？
-  \item graph regularization 应该作用在 encoder latent、quantized residual，还是 cumulative quantized representation？
-  \item 最终方法应该如何与 published baselines 做公平比较？
-  \item probe 增益最终能转化多少到 HR@1、NDCG@10 这类主推荐指标上？
+  \item graph regularization 最佳作用位置到底是 encoder latent、quantized residual，还是 cumulative quantized representation？
+  \item 当前 final-SID 的改进，最终能否转化到 HR@1、NDCG@10 等主推荐指标上？
+  \item 什么时候适合把 published baselines 拉进主表，避免在机制还没站稳前过早铺开大规模复现？
 \end{enumerate}
 
 \section{下一步行动}
@@ -353,20 +383,23 @@ MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierar
     \item \texttt{G\_mid}：\texttt{fagsp\_mid\_base}；
     \item \texttt{G\_local}：purified transition graph。
   \end{itemize}
-  \item 把重点从“再接更多 graph view”转到“重写 integration mechanism”；
-  \item revised training branch 优先比较：
+  \item 优先围绕 final generated SID 做分析，而不是再把注意力只放在 \texttt{sid-train} collision 上；
+  \item 下一轮最优先比较：
   \begin{itemize}
-    \item semantic-only MiniOneRec；
-    \item uniform graph regularization；
+    \item baseline；
     \item hierarchy-aware graph regularization。
   \end{itemize}
-  \item integration 改写的重点优先放在：
+  \item 先补两类低成本但高信息量分析：
   \begin{itemize}
-    \item anti-collapse / code-balance；
-    \item 更 quantization-aware 的约束位置；
-    \item graph loss schedule。
+    \item baseline vs hierarchy 的 final index bucket analysis；
+    \item baseline vs hierarchy 的 item-level changed cases。
   \end{itemize}
-  \item 只有 revised integration 先出现清晰正信号，再把 published baselines 拉进主表。
+  \item 如果第二个 seed 也保持正向，再考虑做：
+  \begin{itemize}
+    \item 更细的 integration 改写；
+    \item downstream recommendation evaluation；
+    \item published baselines 主表准备。
+  \end{itemize}
 \end{enumerate}
 
 \section{当前关键材料位置}
@@ -377,9 +410,13 @@ MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierar
   \item 任务对齐文档：\path{idea-discovery/.../CURRENT_TASK_ALIGNMENT.md}
   \item 第一轮 probe 记录：\path{idea-discovery/.../13_initial_probe_run_2026-04-09.md}
   \item 论文模块移植 probe 记录：\path{idea-discovery/.../14_paper_transplant_probe_run_2026-04-09.md}
-  \item 对齐版训练记录：\path{research-progress-log/experiment_launches/2026-04-09_mgr_sid_v1_aligned_training.md}
+  \item 上游风格 SID 复现记录：\path{research-progress-log/experiment_launches/2026-04-09_upstream_style_rqvae_result.md}
+  \item upstream-aligned MGR-SID v1 总记录：\path{research-progress-log/experiment_launches/2026-04-09_mgr_sid_v1_upstream/README.md}
+  \item upstream-aligned MGR-SID v1 结果记录：\path{research-progress-log/experiment_launches/2026-04-09_mgr_sid_v1_upstream/RESULTS.md}
   \item 第一轮 probe 脚本：\path{scripts/experiment_mgr_sid_graph_bank_probe.py}
   \item 模块移植 probe 脚本：\path{scripts/experiment_mgr_sid_paper_transplant_probe.py}
+  \item 实验版训练脚本：\path{scripts/experiment_mgr_sid_v1_train.py}
+  \item 实验版生成脚本：\path{scripts/experiment_mgr_sid_v1_generate.py}
 \end{itemize}
 
 \end{CJK*}
