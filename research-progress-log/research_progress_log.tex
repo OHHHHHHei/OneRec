@@ -1,0 +1,386 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{CJKutf8}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=blue
+}
+
+\setlist[itemize]{leftmargin=1.5em}
+\setlist[enumerate]{leftmargin=1.8em}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+
+\title{MiniOneRec 后续研究\\进度日志}
+\author{工作记录文档}
+\date{最后更新：2026-04-09}
+
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+\maketitle
+
+\section{文档用途}
+
+这份文档是当前 MiniOneRec 后续研究的持续更新日志，不是正式论文草稿。它的主要目标有四个：
+
+\begin{itemize}
+  \item 持续同步当前研究主线与最新实验结论；
+  \item 记录每一轮实验实际做了什么、改了什么；
+  \item 区分已经比较稳定的事实和仍然开放的想法；
+  \item 为后续正式写论文保留一条清晰、可回溯的叙事链条。
+\end{itemize}
+
+\section{当前研究状态}
+
+\subsection{当前方向}
+
+当前研究方向可以概括为：
+
+\begin{quote}
+用图结构作为协同信息的载体，并以层级感知的方式，把 graph-structured collaborative information 融合进 MiniOneRec 的语义 SID 构建过程。
+\end{quote}
+
+这里的重点不是比较哪一种 graph encoder 更强，而是回答三个核心问题：
+
+\begin{enumerate}
+  \item 什么样的图适合承载协同信息？
+  \item 图结构协同信息应该怎样在不同 SID level 上体现层级感知？
+  \item 图协同信息应该如何进入 MiniOneRec 的纯语义 SID，而不破坏语义 backbone 的稳定性？
+\end{enumerate}
+
+\subsection{为什么转向这个方向}
+
+当前方向主要来自以下几条逐步稳定下来的观察：
+
+\begin{itemize}
+  \item SID collision 存在，但看起来不是主矛盾；
+  \item 当前 SID 主要由文本语义驱动，缺少直接协同约束；
+  \item 大量错误表现为“prefix 对了，但 leaf 错了”，说明 local leaf ambiguity 更像核心瓶颈；
+  \item 早期 naive front-end collaborative fusion 不但没有稳定提升，反而可能破坏量化结构。
+\end{itemize}
+
+\section{当前较稳定的事实}
+
+到目前为止，以下结论已经足够稳定，可以继续指导方法设计：
+
+\begin{enumerate}
+  \item \textbf{局部歧义是真问题。} 模型在进入正确语义区域后，最后一层 leaf 仍然经常选错。
+  \item \textbf{图协同信号是有用的。} 即使还没有改训练版 SID，graph-structured collaborative signal 已经能在 top-1 SID error 上提供额外判别力。
+  \item \textbf{中尺度图视图很重要。} 最有价值的协同视图既不是纯 global，也不是纯 last-step local。
+  \item \textbf{轻量净化是必要的。} raw collaborative graph 往往弱于 purified graph。
+  \item \textbf{论文启发的频域中尺度图比第一版 heuristic middle-view 更强。}
+\end{enumerate}
+
+\section{被削弱或阶段性放下的方向}
+
+\subsection{Naive 前端协同融合}
+
+之前的实验说明，粗糙的前端语义加协同融合会破坏 SID 结构并伤害量化稳定性。这并不意味着所有前端协同融合都是错的，只是否掉了那一版过于粗糙的融合方式。
+
+\subsection{把后验局部修正当成最终论文主线}
+
+局部后验修正仍然是很有用的诊断工具和原型验证工具，但单独作为最终论文主方法太弱。更有价值的主线，还是把图结构协同信息以层级感知方式写回 SID 构建本身。
+
+\section{实验时间线}
+
+\subsection{阶段 0：问题收敛}
+
+这一阶段的主要贡献还是概念层面的。项目从一个较宽泛的“往 SID 里加协同信息”方向，逐渐收敛到更明确的表述：
+
+\begin{quote}
+图结构承载的协同信息，应该以层级感知且保结构的方式进入 SID 构建。
+\end{quote}
+
+这一阶段同时也固定了三个核心问题，并明确了图在当前研究中的身份：
+
+\begin{quote}
+图不是主要比较对象，而是 collaborative information 的结构化载体。
+\end{quote}
+
+\subsection{阶段 1：初始 Graph-Bank Probe（2026-04-09）}
+
+\subsubsection*{做了什么}
+
+我们新增了一套独立 probe，不修改 MiniOneRec 原有训练或评测主链，只在已有 top-1 SID 错误样本上测试不同 graph view 的判别能力。测试的视图包括：
+
+\begin{itemize}
+  \item coarse collaborative graph；
+  \item local transition graph；
+  \item heuristic middle-resolution views：
+  \begin{itemize}
+    \item diffusion residual；
+    \item band-pass proxy；
+    \item community-aware view。
+  \end{itemize}
+\end{itemize}
+
+其中适用时分别比较 raw 与 purified 版本。
+
+\subsubsection*{主要结论}
+
+第一轮里最有价值的 middle-resolution views 来自 purified heuristic views：
+
+\begin{itemize}
+  \item Industrial：最好的 middle view 是 \texttt{mid\_band\_pass\_purified}，\texttt{same\_l2 = 0.2747}
+  \item Office：最好的 middle view 是 \texttt{mid\_diffusion\_purified}，\texttt{same\_l2 = 0.2381}
+\end{itemize}
+
+这一轮的意义是明确了：
+
+\begin{quote}
+middle-resolution collaborative structure 值得被当成一个一等设计对象，而不是顺手派生出来的附属信号。
+\end{quote}
+
+\subsubsection*{说明了什么}
+
+这轮结果支持下面这个解释：
+
+\begin{quote}
+对深层 leaf ambiguity 最有用的协同信息，既不是纯 global，也不是纯 local。中尺度视图是必要的。
+\end{quote}
+
+\subsection{阶段 2：论文模块移植 Probe（2026-04-09）}
+
+\subsubsection*{做了什么}
+
+第二轮 probe 依然保持为独立实验模块，但移植了两类更接近相关工作的思想：
+
+\begin{itemize}
+  \item \textbf{PRISM 风格的 semantic-anchor purification}
+  \item \textbf{GSPRec / FaGSP 风格的频域 middle-resolution graph views}
+\end{itemize}
+
+这一轮仍然没有改 SID 训练本体，而是在同样的 top-1 error probe 框架下测试更强的 graph carrier。
+
+\subsubsection*{主要结果}
+
+\begin{longtable}{p{0.26\linewidth}p{0.16\linewidth}p{0.16\linewidth}p{0.24\linewidth}}
+\toprule
+视图类型 & Industrial 最好 \texttt{same\_l2} & Office 最好 \texttt{same\_l2} & 说明 \\
+\midrule
+第一版 heuristic middle-view & 0.2747 & 0.2381 & 上一轮最强 purified proxy \\
+移植后的 spectral middle-view & 0.5401 & 0.7619 & 都来自 \texttt{fagsp\_mid\_base} \\
+\bottomrule
+\end{longtable}
+
+更具体地说：
+
+\begin{itemize}
+  \item Industrial：
+  \begin{itemize}
+    \item 上一轮最强中尺度视图：\texttt{mid\_band\_pass\_purified = 0.2747}
+    \item 当前最强移植视图：\texttt{fagsp\_mid\_base = 0.5401}
+    \item 第二强移植视图：\texttt{gsprec\_mid\_prism = 0.5247}
+  \end{itemize}
+  \item Office：
+  \begin{itemize}
+    \item 上一轮最强中尺度视图：\texttt{mid\_diffusion\_purified = 0.2381}
+    \item 当前最强移植视图：\texttt{fagsp\_mid\_base = 0.7619}
+    \item 第二强移植视图：\texttt{gsprec\_mid\_prism = 0.6429}
+  \end{itemize}
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这一轮是目前为止最强的一次正信号：
+
+\begin{quote}
+当前的 \texttt{G\_mid} 很可能应该被设计为一个真正的 graph-spectral middle-resolution collaborative view，而不是只依赖 heuristic diffusion / band-pass proxy。
+\end{quote}
+
+同时，这轮结果也说明：
+
+\begin{quote}
+semantic-anchor purification 本身是有帮助的，但真正的大幅增益主要来自更强的中尺度结构表达，而不只是 anchor-only denoising。
+\end{quote}
+
+\subsection{阶段 3：训练版接入的第一次尝试（已废弃）}
+
+\subsubsection*{做了什么}
+
+这一轮最早的训练版实验，首次把 graph-structured collaborative signal 以训练时 regularization 的形式接入一个独立实验版 RQ-VAE 训练器，并在 Industrial 上跑了三组对照：
+
+\begin{itemize}
+  \item baseline；
+  \item uniform graph regularization；
+  \item hierarchy-aware graph regularization。
+\end{itemize}
+
+这一轮仍然没有修改默认 \texttt{sid-train} 主链，而是通过独立实验脚本来保证 baseline 可回退。
+
+\subsubsection*{主要结果}
+
+这轮结果后来被判定为\textbf{不能作为正式证据使用}。原因不是结果正负，而是训练语义没有和原始 \texttt{sid-train} 对齐：当时的实验分支采用了 full-batch 更新，导致一个 epoch 只包含一次参数更新，而原始主线是 mini-batch 训练。
+
+\subsubsection*{说明了什么}
+
+这轮实验的价值只剩下一点：
+
+\begin{quote}
+它证明了独立实验脚本可以跑通，但不能证明训练版方法本身是否有效。
+\end{quote}
+
+\subsection{阶段 4：对齐版训练实验与主线 sanity check（2026-04-09）}
+
+\subsubsection*{做了什么}
+
+这一轮重新实现了训练版实验分支，使其训练语义与原始 \texttt{sid-train} 主线对齐。对齐项包括：
+
+\begin{itemize}
+  \item \texttt{epochs = 10}
+  \item \texttt{batch\_size = 256}
+  \item mini-batch \texttt{DataLoader}
+  \item 每个 batch 的 \texttt{optimizer.step()} 与 \texttt{scheduler.step()}
+  \item \texttt{learner = AdamW}
+  \item \texttt{lr\_scheduler\_type = constant}
+  \item \texttt{warmup\_epochs = 50}
+  \item \texttt{eval\_step = 50}
+\end{itemize}
+
+Industrial 当前有 3686 个 item embedding，因此原始主线每个 epoch 为 15 个 mini-batch；对齐版实验分支也同样为 15 个 mini-batch。
+
+除了重新跑三组实验分支：
+
+\begin{itemize}
+  \item baseline；
+  \item uniform graph regularization；
+  \item hierarchy-aware graph regularization；
+\end{itemize}
+
+我们还额外跑了一条原始主线 \texttt{sid-train} 的真 baseline，作为 sanity check。
+
+\subsubsection*{主要结果}
+
+对齐版实验分支在 Industrial 上得到：
+
+\begin{itemize}
+  \item baseline：best collision \(\approx 0.9989\)
+  \item uniform\_reg：best collision \(\approx 0.9970\)
+  \item hierarchy\_reg：best collision \(\approx 0.9967\)
+\end{itemize}
+
+更关键的是，原始主线 sanity baseline 的结果也是：
+
+\begin{itemize}
+  \item \texttt{sid-train baseline}: best collision \(\approx 0.9989\)
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这一轮最重要的结论不是“graph regularization 是否已经有效”，而是：
+
+\begin{quote}
+当前实验分支 baseline 已经与原始主线 baseline 对齐，说明问题不再是训练步数语义不一致，而是当前 graph integration mechanism 仍然不够合适。
+\end{quote}
+
+目前更可信的解释是：
+
+\begin{itemize}
+  \item probe 阶段识别出的 spectral \texttt{G\_mid} 确实有强信号；
+  \item 但当前这版 graph regularization 直接作用在 cumulative quantized representation 上，过于粗糙；
+  \item 它没有显式保护 code usage balance，也没有显式约束 prefix predictability，因此很可能把信号过度平滑掉了。
+\end{itemize}
+
+因此，这轮对齐版训练实验的结论不是“方向错了”，而是：
+
+\begin{quote}
+当前 graph integration 机制在对齐版训练下依然 only marginally helpful，离可支撑主张的正结果还差得很远。
+\end{quote}
+
+\section{当前证据的整体解释}
+
+把目前的证据串起来，可以得到一个更清楚的图景：
+
+\begin{enumerate}
+  \item 当前 semantic SID 足以提供较强的 coarse routing；
+  \item 剩余的主要困难集中在 local leaf-level discrimination；
+  \item graph-structured collaborative signal 对这个瓶颈是有帮助的；
+  \item 当前最强候选是 \textbf{spectral middle-resolution collaborative graph view}；
+  \item 但第一版训练接入已经表明，图信号本身有用，并不等于当前 integration mechanism 就是对的。
+\end{enumerate}
+
+\section{当前最佳工作假设}
+
+当前最可信的工作假设是：
+
+\begin{quote}
+MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierarchy-aware graph regularization；其中 middle-resolution spectral collaborative graph 是降低 local leaf ambiguity 的关键额外信号。
+\end{quote}
+
+目前最强的 \texttt{G\_mid v1} 候选是：
+
+\begin{itemize}
+  \item 主候选：\texttt{fagsp\_mid\_base}
+  \item 备选：\texttt{gsprec\_mid\_prism}
+\end{itemize}
+
+\section{当前开放问题}
+
+即使有了新一轮 probe，下面这些问题仍然没有完全解决：
+
+\begin{enumerate}
+  \item probe 上的优势能否在 revised training integration 下稳定迁移到训练版 SID？
+  \item 层级感知应该主要通过 level-wise allocation、level-wise regularization，还是两者一起实现？
+  \item semantic anchoring 在训练时应该如何使用，才能避免把 graph signal 限制得过死？
+  \item graph regularization 应该作用在 encoder latent、quantized residual，还是 cumulative quantized representation？
+  \item 最终方法应该如何与 published baselines 做公平比较？
+  \item probe 增益最终能转化多少到 HR@1、NDCG@10 这类主推荐指标上？
+\end{enumerate}
+
+\section{下一步行动}
+
+当前最合理的 next actions 是：
+
+\begin{enumerate}
+  \item 保留当前 graph bank，不再频繁改 carrier：
+  \begin{itemize}
+    \item \texttt{G\_coarse}：purified coarse collaborative graph；
+    \item \texttt{G\_mid}：\texttt{fagsp\_mid\_base}；
+    \item \texttt{G\_local}：purified transition graph。
+  \end{itemize}
+  \item 把重点从“再接更多 graph view”转到“重写 integration mechanism”；
+  \item revised training branch 优先比较：
+  \begin{itemize}
+    \item semantic-only MiniOneRec；
+    \item uniform graph regularization；
+    \item hierarchy-aware graph regularization。
+  \end{itemize}
+  \item integration 改写的重点优先放在：
+  \begin{itemize}
+    \item anti-collapse / code-balance；
+    \item 更 quantization-aware 的约束位置；
+    \item graph loss schedule。
+  \end{itemize}
+  \item 只有 revised integration 先出现清晰正信号，再把 published baselines 拉进主表。
+\end{enumerate}
+
+\section{当前关键材料位置}
+
+当前阶段最关键的材料包括：
+
+\begin{itemize}
+  \item 任务对齐文档：\path{idea-discovery/.../CURRENT_TASK_ALIGNMENT.md}
+  \item 第一轮 probe 记录：\path{idea-discovery/.../13_initial_probe_run_2026-04-09.md}
+  \item 论文模块移植 probe 记录：\path{idea-discovery/.../14_paper_transplant_probe_run_2026-04-09.md}
+  \item 对齐版训练记录：\path{research-progress-log/experiment_launches/2026-04-09_mgr_sid_v1_aligned_training.md}
+  \item 第一轮 probe 脚本：\path{scripts/experiment_mgr_sid_graph_bank_probe.py}
+  \item 模块移植 probe 脚本：\path{scripts/experiment_mgr_sid_paper_transplant_probe.py}
+\end{itemize}
+
+\end{CJK*}
+\end{document}

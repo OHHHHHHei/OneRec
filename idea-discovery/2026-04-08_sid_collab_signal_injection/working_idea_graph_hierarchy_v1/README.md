@@ -15,6 +15,7 @@ It is intentionally separated from `working_idea_hierarchy_aware_v1/` because th
 3. `refine-logs/FINAL_PROPOSAL.md`
 4. `refine-logs/EXPERIMENT_PLAN.md`
 5. `11_arxiv_related_work_by_question.md`
+6. `12_modules_mapped_to_core_questions.md`
 
 If you want the intermediate thinking trail:
 
