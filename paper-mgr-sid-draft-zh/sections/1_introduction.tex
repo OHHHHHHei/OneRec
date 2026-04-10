@@ -8,15 +8,15 @@
 
 基于这一判断，本文提出 \textbf{MGR-SID}：一种层级感知、图正则化的 semantic ID 方法。MGR-SID 不替换 MiniOneRec 的语义 \rqvae{} tokenizer，而是在其基础上引入一个 train-only graph bank，把图结构作为协同信息的载体。当前 \textbf{v1} 的实现包含三类图视图：净化后的 coarse collaborative graph、spectral middle-resolution graph 以及净化后的 local transition graph。与长期愿景中的“learned allocation”不同，当前 v1 采取一个更保守但清晰的层级实例化方式：level 1 接 coarse graph 正则，level 2 接 spectral middle view，level 3 接 local transition graph。
 
-本文的证据链分三步展开。第一，我们在 Industrial 和 Office 上进行不改 tokenizer 本体的 graph probe，证明 middle-resolution graph 是必须被显式设计的，且 spectral middle view 明显优于 heuristic middle view。第二，我们系统回溯 MiniOneRec tokenizer 的 provenance，证明公平比较必须使用上游官方 \rqvae{} 训练制度，而不是当前本地默认配置。第三，在这一公平设置下，我们验证训练时 graph regularization，发现 hierarchy-aware 版本虽然在 raw \texttt{sid-train} collision 上不占优，却在最终 \texttt{sid-generate} 后的 SID 质量上优于语义 baseline。
+本文的证据链分四步展开。第一，我们在 Industrial 和 Office 上进行不改 tokenizer 本体的 graph probe，证明 middle-resolution graph 是必须被显式设计的，且 spectral middle view 明显优于 heuristic middle view。第二，我们系统回溯 MiniOneRec tokenizer 的 provenance，证明公平比较必须使用上游官方 \rqvae{} 训练制度，而不是当前本地默认配置。第三，在这一公平设置下，我们验证训练时 graph regularization，发现 hierarchy-aware 版本虽然在 raw \texttt{sid-train} collision 上不占优，却在最终 \texttt{sid-generate} 后的 SID 质量上优于语义 baseline。第四，我们将新的 SID 推进到 Industrial SFT，发现其收益可以部分传递到下游：短程排序和 same-prefix 错误分布出现改善，但广义的 end-to-end 指标还没有形成全面优势。
 
-当前稿件故意把范围限制在 tokenizer 阶段。我们暂时不主张下游 SFT 或 RL 指标已经得到提升。我们的目标是先把 tokenizer 侧的论证链条建立清楚，再把新 SID 推进到剩余主链中。
+当前稿件仍然以 tokenizer 阶段为中心，但已经包含了第一轮下游 SFT 传递实验。我们暂时不主张已经得到新的 end-to-end 最优系统，也不主张 RL 阶段已经受益。我们的目标是先把 tokenizer 侧的因果链条建立清楚，再定位这些结构收益在下游为什么只得到了部分保留。
 
 \paragraph{本文贡献。}
 \begin{enumerate}[leftmargin=1.4em]
   \item 我们识别出 MiniOneRec 当前 tokenizer 的主瓶颈：在公平复现上游 tokenizer 之后，剩余难点主要不是全局 collision，而是 local leaf ambiguity。
   \item 我们提出 MGR-SID，一种将 graph-structured collaborative information 以 level-specific structural supervision 的方式注入 semantic tokenizer 的方法，而不是使用统一的 feature fusion。
-  \item 我们给出当前阶段已完成的实证证据：在 Industrial 上，upstream-aligned 的 hierarchy-aware tokenizer 把最终生成 SID 的 collision 从 $0.00353$ 降到 $0.00326$，并显著改善 same-$l_2$ 局部歧义结构；相比之下，uniform graph regularization 明显有害。
+  \item 我们给出当前阶段已完成的实证证据：在 Industrial 上，upstream-aligned 的 hierarchy-aware tokenizer 把最终生成 SID 的 collision 从 $0.00353$ 降到 $0.00326$，并显著改善 same-$l_2$ 局部歧义结构；相比之下，uniform graph regularization 明显有害。把该 tokenizer 推进到 SFT 后，短程排序和 same-prefix 错误分布进一步改善，但整体 $@10+$ 指标尚未形成全面优势。
 \end{enumerate}
 
-下文组织如下。\Cref{sec:related} 介绍相关工作。\Cref{sec:background} 总结 tokenizer pipeline 与问题定义。\Cref{sec:method} 介绍当前 MGR-SID v1 方法。\Cref{sec:experiments} 汇报 probe、provenance alignment 与 tokenizer 阶段实验。\Cref{sec:conclusion} 给出结论、限制以及进入 SFT 前的下一步。
+下文组织如下。\Cref{sec:related} 介绍相关工作。\Cref{sec:background} 总结 tokenizer pipeline 与问题定义。\Cref{sec:method} 介绍当前 MGR-SID v1 方法。\Cref{sec:experiments} 汇报 probe、provenance alignment、tokenizer 阶段实验以及第一轮下游 SFT 分析。\Cref{sec:conclusion} 给出结论、限制以及后续如何改进 tokenizer-to-SFT transfer。

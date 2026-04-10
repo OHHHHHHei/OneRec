@@ -80,14 +80,63 @@
 
 \Cref{tab:ambiguity} 表明，这不是简单的 code re-permutation。Hierarchy-aware tokenizer 的确让 same-$l_2$ bucket 更干净：目标 item 平均面对的 $l_2$ 叶子数更少，落在多叶与深拥挤 same-$l_2$ bucket 中的比例更低，同时给定 prefix 后第三级 code 的条件熵也更低。在更细的 movement analysis 中，有 $17.32\%$ 的测试目标从多叶 same-$l_2$ bucket 迁移到单叶 bucket，而只有 $9.68\%$ 迁移到更拥挤的方向。这与我们最初关于 local leaf ambiguity 的诊断完全一致。
 
+\subsection{Tokenizer 收益是否传递到了下游 SFT}
+
+接下来我们把两套最终 Industrial tokenizer 推进到下游 SFT，并比较得到的推荐结果。除了当前 semantic baseline 和 hierarchy-aware tokenizer，我们还加入项目历史 CSV 中最接近当前设定的一条 Industrial SFT 记录，以及历史最强的一条 Industrial SFT 记录，用来判断当前结果在仓库内部的大致位置。
+
+\begin{table}[t]
+  \centering
+  \caption{Industrial 上的 SFT 结果。Hierarchy-aware tokenizer 提升了短程排序，但还没有形成广义的 $@10+$ 优势，也没有超过历史最强 SFT 设定。}
+  \label{tab:sft}
+  \begin{tabular}{lcccccc}
+    \toprule
+    运行 & N@1 & N@3 & N@10 & H@1 & H@3 & H@10 \\
+    \midrule
+    历史最近设置 & 0.0624 & 0.0798 & 0.0987 & 0.0624 & 0.0929 & 0.1471 \\
+    历史最强设置 & \textbf{0.0671} & \textbf{0.0850} & \textbf{0.1037} & \textbf{0.0671} & \textbf{0.0984} & \textbf{0.1509} \\
+    当前 baseline & 0.0631 & 0.0777 & 0.0943 & 0.0631 & 0.0882 & 0.1343 \\
+    当前 hierarchy & 0.0627 & 0.0802 & 0.0936 & 0.0627 & 0.0929 & 0.1304 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:sft} 给出了一个很重要的限定。Hierarchy-aware tokenizer 并没有直接把系统推成新的 end-to-end 最优 SFT。相对于当前 upstream-aligned baseline，它提升了 $\mathrm{NDCG}@3$ 和 $\mathrm{HR}@3$，在 $@5$ 上也有轻微增益，但在 $@10+$ 上仍然落后。这说明 tokenizer 侧收益 \emph{已经} 可以传到下游，只不过目前主要停留在短程排序，而不是全面增益。
+
+\subsection{Evaluate 阶段的错误分布发生了什么变化}
+
+为了理解这种“局部有提升、整体未全面提升”的现象，我们进一步比较两套 SFT 模型在 evaluate 阶段的 SID-aware 诊断结果。这里关注的不是单纯的 aggregate metric，而是错误类型本身是否发生了预期中的变化。
+
+\begin{table}[t]
+  \centering
+  \caption{Industrial 上的 evaluate 错误分布。Hierarchy-aware tokenizer 明显减少了 same-prefix 错误，并且在拥挤局部目标上更有优势；但与此同时，beam 更少停留在 baseline 的局部语义邻域中。}
+  \label{tab:error}
+  \begin{tabular}{lccc}
+    \toprule
+    指标 & Baseline & Hierarchy & Delta \\
+    \midrule
+    Top-1 error same-$l_1$ rate & 0.1815 & 0.1236 & -0.0580 \\
+    Top-1 error same-$l_2$ rate & 0.0525 & 0.0370 & -0.0156 \\
+    Beam contains same-$l_1$ & 0.6724 & 0.5248 & -0.1476 \\
+    Beam contains same-$l_2$ & 0.3272 & 0.3077 & -0.0194 \\
+    Top-1 hit on targets with $l_2 \ge 4$ & 0.0475 & 0.0521 & +0.0047 \\
+    Recovery on baseline same-$l_2$ errors & -- & 0.0538 & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:error} 说明，下游变化是高度结构化的。积极的一面是，hierarchy-aware tokenizer 确实减少了局部 same-prefix 错误：剩余 top-1 miss 中，发生在 same-$l_1$ 或 same-$l_2$ 子树里的比例都明显下降；同时在 $l_2$ fanout 至少为 $4$ 的拥挤目标上，它的 top-1 命中率更高。更重要的是，baseline 的 same-$l_2$ 错误是 hierarchy 最容易恢复的一类错误。这与“hierarchy 正在解决 local leaf ambiguity”这一方法动机完全一致。
+
+但诊断同时揭示了另一面：hierarchy-aware tokenizer 的 beam 更不容易停留在 baseline 的局部语义邻域内。从逐样本比较看，hierarchy 修复了 $63$ 个 baseline 的 top-1 miss，但也打坏了 $65$ 个 baseline 原本正确的 top-1 hit。被修复的样本往往更难、更拥挤：在 baseline 下它们的平均目标 $l_2$ fanout 为 $7.32$，而且 target 往往已经在 top-3 或 top-5 中，只是没有被推到 top-1。相反，被打坏的样本往往是 baseline 本来就已经进入了正确局部子树的例子。这也就解释了为什么 hierarchy 在局部 reranking 和短程指标上有帮助，却还没有形成广义的 $@10+$ 增益。
+
 \subsection{当前结果的解释}
 
-综合来看，当前实验支持一个谨慎但连贯的结论。我们 \emph{还没有} 证明下游 SFT 或 RL 指标已经提升，但我们已经证明：
+综合来看，当前实验支持一个谨慎但连贯的结论。我们 \emph{还没有} 证明已经得到新的 end-to-end 最优系统，也还没有涉及 RL，但我们已经证明：
 \begin{enumerate}[leftmargin=1.4em]
   \item 公平的 tokenizer 比较必须使用上游 MiniOneRec 的训练制度；
   \item graph-structured collaborative information 对 local same-$l_2$ disambiguation 确实有信号；
   \item 其中最关键的图视图是 spectral middle-resolution graph；
-  \item 将这些图结构以 hierarchy-aware regularization 的方式写回 semantic tokenizer 之后，最终生成 SID 质量优于公平 semantic baseline，并且 same-$l_2$ 局部歧义显著降低。
+  \item 将这些图结构以 hierarchy-aware regularization 的方式写回 semantic tokenizer 之后，最终生成 SID 质量优于公平 semantic baseline，并且 same-$l_2$ 局部歧义显著降低；
+  \item 这些 tokenizer 收益能够以“局部、结构化”的形式传到下游 SFT，但当前 tokenizer-to-SFT 的接口仍然会牺牲一部分 baseline 已经正确的局部 routing。
 \end{enumerate}
 
-对当前项目阶段而言，这正是进入 SFT 前最需要的 tokenizer-side 证据：它既验证了方法主张，也保持了论证边界的诚实。
+对当前项目阶段而言，这比简单宣称“下游赢了”更有价值。因为我们现在已经知道：方法真正带来的，是对 crowded local ambiguity 的修复；而下游没能全面变强的关键，不是方向错了，而是这些结构收益还没有被 SFT 充分接住。

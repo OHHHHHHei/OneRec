@@ -75,12 +75,32 @@
   \item 它与本文的核心动机，即 local leaf ambiguity，直接对应。
 \end{itemize}
 
+\subsection{初步下游 SFT 结果的解释}
+
+第一轮下游 SFT 应被理解为“部分传递证据”，而不是最终 end-to-end claim。
+\begin{itemize}[leftmargin=1.4em]
+  \item hierarchy-aware tokenizer 在 Industrial 上提升了短程指标：$\mathrm{NDCG}@3$ 从 $0.0777$ 升到 $0.0802$，$\mathrm{HR}@3$ 从 $0.0882$ 升到 $0.0929$；
+  \item 但在 $@10+$ 上，它仍然弱于当前 semantic baseline；
+  \item 和项目历史 CSV 中最强的 Industrial SFT 设定相比，当前两条新实验都还没有达到新的最优。
+\end{itemize}
+
+\subsection{Evaluate 错误分布的附加解读}
+
+下游错误分析说明，当前 SFT 结果之所以是“局部提升、整体未全面提升”，核心在于两类相反效应同时存在：
+\begin{itemize}[leftmargin=1.4em]
+  \item hierarchy-aware tokenizer 降低了 same-$l_1$ 与 same-$l_2$ 类型的 top-1 错误；
+  \item 它对拥挤目标，尤其是 target $l_2$ fanout 至少为 $4$ 的样本，更有帮助；
+  \item baseline 的 same-$l_2$ 错误是最容易被 hierarchy 恢复的一类错误；
+  \item 但与此同时，一部分 baseline 原本已经进入正确局部子树的样本，会在 hierarchy-aware SID 下被打坏，从而影响更广义的 $@10+$ 排序。
+\end{itemize}
+
 \subsection{当前稿件的范围}
 
 这份稿件应被视为 tokenizer-stage draft，而不是完整 end-to-end paper。接下来最直接的里程碑包括：
 \begin{enumerate}[leftmargin=1.4em]
   \item 对 final tokenizer comparison 补做 repeated seed 验证；
   \item 在 Office 上补齐 upstream-aligned tokenizer 实验；
-  \item 将新的 hierarchy-aware SID 推进到 SFT 再到 RL；
-  \item 等下游指标具备后，再与更多已发表 tokenizer 方法做主表比较。
+  \item 改进 tokenizer-to-SFT transfer，让 local ambiguity 的收益不要打坏原本已经正确的局部 routing；
+  \item 在 SFT 接口更稳定后，再将新的 hierarchy-aware SID 推进到 RL；
+  \item 等下游指标更强后，再与更多已发表 tokenizer 方法做主表比较。
 \end{enumerate}

@@ -75,12 +75,32 @@ The local ambiguity analysis compares the final baseline index with the final hi
   \item the structural change is aligned with the motivating failure mode of local leaf ambiguity.
 \end{itemize}
 
+\subsection{Preliminary downstream SFT result}
+
+The first downstream SFT study should be interpreted as \emph{partial transfer evidence}, not as a finished end-to-end claim.
+\begin{itemize}[leftmargin=1.4em]
+  \item The hierarchy-aware tokenizer improves short-range metrics on Industrial: $\mathrm{NDCG}@3$ rises from $0.0777$ to $0.0802$, and $\mathrm{HR}@3$ rises from $0.0882$ to $0.0929$.
+  \item The same tokenizer remains weaker than the semantic baseline at $@10+$.
+  \item Relative to historical SFT runs in the project CSV, both current runs still trail the strongest historical Industrial configuration.
+\end{itemize}
+
+\subsection{Evaluate-time error-distribution summary}
+
+The downstream error analysis shows why the SFT result is mixed.
+\begin{itemize}[leftmargin=1.4em]
+  \item same-$l_1$ and same-$l_2$ top-1 error rates both decrease under the hierarchy-aware tokenizer;
+  \item the gain is strongest on crowded targets with target $l_2$ fanout at least $4$;
+  \item baseline same-$l_2$ errors are the most recoverable bucket under the new tokenizer;
+  \item however, some examples that the baseline already routed into the correct local subtree are broken by the hierarchy-aware SID, which hurts broader $@10+$ ranking.
+\end{itemize}
+
 \subsection{Scope of the current draft}
 
 This paper should be read as a tokenizer-stage draft rather than a finished end-to-end paper. The remaining milestones are:
 \begin{enumerate}[leftmargin=1.4em]
   \item add repeated-seed verification for the final tokenizer comparison;
   \item evaluate the hierarchy-aware tokenizer on Office under the same upstream-aligned regime;
-  \item feed the improved SID into SFT and then RL;
-  \item compare against more published tokenizer baselines once downstream metrics are available.
+  \item improve the tokenizer-to-SFT transfer so that local ambiguity gains do not break already-correct local routing;
+  \item feed the improved SID into RL after the SFT interface is stabilized;
+  \item compare against more published tokenizer baselines once stronger downstream metrics are available.
 \end{enumerate}

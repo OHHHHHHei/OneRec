@@ -12,7 +12,7 @@ Use a fresh discovery round to answer a sharper question than the previous `MRC-
 ## Inputs used
 
 - current direction note: `../RESEARCH_DIRECTION.md`
-- previous working idea: `../working_idea_hierarchy_aware_v1/`
+- previous working idea: `../archive/2026-04-08_working_idea_hierarchy_aware_v1_superseded/`
 - repo evidence:
   - `results/v05_r1_industrial/summary.json`
   - `results/collaborative_diagnostics/industrial_best_summary.json`

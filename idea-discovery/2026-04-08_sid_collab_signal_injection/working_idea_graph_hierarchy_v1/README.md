@@ -1,34 +1,42 @@
 # Working Idea: Graph Hierarchy v1
 
-This folder contains a fresh `idea-discovery` round focused on:
+This folder now keeps only the active materials for the current mainline:
 
-- graph-structured collaborative signals
-- view-specific denoising
-- hierarchy-aware collaborative allocation for 3-level SID tokenization
+- hierarchy-aware graph-structured collaborative integration into semantic SID
+- graphs as collaborative-information carriers, not graph-encoder benchmarks
+- tokenizer-first `MGR-SID v2` design and validation
 
-It is intentionally separated from `working_idea_hierarchy_aware_v1/` because this round shifts from simple multi-view fusion toward a more graph-native tokenizer design.
+It is intentionally separated from the archived `../archive/2026-04-08_working_idea_hierarchy_aware_v1_superseded/` because this round shifts from simple multi-view fusion toward graph-native SID supervision.
 
-## Recommended reading order
+## Active reading order
 
 1. `CURRENT_TASK_ALIGNMENT.md`
-2. `IDEA_REPORT.md`
-3. `refine-logs/FINAL_PROPOSAL.md`
-4. `refine-logs/EXPERIMENT_PLAN.md`
-5. `11_arxiv_related_work_by_question.md`
-6. `12_modules_mapped_to_core_questions.md`
+2. `13_initial_probe_run_2026-04-09.md`
+3. `14_paper_transplant_probe_run_2026-04-09.md`
+4. `11_arxiv_related_work_by_question.md`
+5. `12_modules_mapped_to_core_questions.md`
+6. `17_ambiguity_proxy_literature_scan.md`
+7. `18_mgr_sid_v2_ambiguity_aware_method.md`
+8. `refine-logs/EXPERIMENT_PLAN_TOKENIZER_V2.md`
+9. `refine-logs/EXPERIMENT_TRACKER_TOKENIZER_V2.md`
 
-If you want the intermediate thinking trail:
+Optional running log:
 
-1. `01_graph_pilot.md`
-2. `02_literature_landscape.md`
-3. `03_idea_candidates.md`
-4. `04_novelty_check.md`
-5. `05_review_round1.md`
-6. `06_revision_after_round1.md`
-7. `07_review_round2.md`
+- `PROCESS_LOG.md`
+
+## Archived Inside This Folder
+
+- `archive/2026-04-11_doc_cleanup_v1_superseded/`
+  - early discovery trail
+  - original `v1` proposal and pre-`v2` experiment plan / tracker
+- `archive/2026-04-11_doc_cleanup_duplicates/`
+  - overlapping related-work and module-review notes
+  - broader `v2` ambiguity-aware full-pipeline plan / tracker that is no longer the active execution path
 
 ## Current status
 
-- top recommendation: `MGR-SID`
-- positioning: stronger than simple level-wise feature fusion, but still much more feasible than full graph-defined item tokenization
-- key open design question: what is the best `mid-scale` graph view for Level 2 SID
+- active mainline: `MGR-SID v2` tokenizer-first
+- role of graphs: collaborative-information carriers for hierarchy-aware SID supervision
+- strongest current `G_mid` candidate: `fagsp_mid_base`
+- current bottleneck: tokenizer-to-SFT transfer and semantic-structure retention
+- current evidence is still tokenizer / probe-stage support, not a final downstream paper result

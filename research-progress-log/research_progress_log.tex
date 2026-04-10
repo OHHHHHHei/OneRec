@@ -86,6 +86,9 @@
   \item \textbf{论文启发的频域中尺度图比第一版 heuristic middle-view 更强。}
   \item \textbf{当前仓库默认的 \texttt{sid-train} 超参数与上游 MiniOneRec 不一致。} 真正能复现低 collision SID 的，是 upstream-style 的 \texttt{RQ-VAE} 训练制度，而不是当前默认的 \texttt{epochs=10, batch\_size=256}。
   \item \textbf{不能只看 \texttt{sid-train} collision。} 最终真正有意义的是 \texttt{sid-generate} 后的 \texttt{index.json} collision；train-stage 排名和 final index 排名可能并不一致。
+  \item \textbf{Hierarchy-aware graph regularization 已经在 final SID 上给出正信号。} 在 upstream-aligned regime 下，Industrial 上 \texttt{hierarchy\_reg} 的 final generated SID collision 低于强语义 baseline。
+  \item \textbf{这种 tokenizer 改进已经部分传到 SFT。} 当前 hierarchy 版本在 Industrial 上提升了 \(\mathrm{NDCG}@3\) 和 \(\mathrm{HR}@3\)，但还没有形成全面的 \( @10+ \) 优势。
+  \item \textbf{下游收益主要集中在 crowded local ambiguity。} evaluate 诊断表明，hierarchy 主要修复的是 same-\(l_2\) 与高 fanout 目标上的局部错误，而不是一个均匀的全局收益。
 \end{enumerate}
 
 \section{被削弱或阶段性放下的方向}
@@ -322,6 +325,131 @@ semantic-anchor purification 本身是有帮助的，但真正的大幅增益主
   \item 当前实验主线已经具备继续推进的依据，不再只是 probe 级别的希望信号。
 \end{itemize}
 
+\subsection{阶段 7：实验数据转换与第一轮 SFT + Evaluate（2026-04-10）}
+
+\subsubsection*{做了什么}
+
+在确认 final generated SID 上已经有正信号之后，我们先没有进入 RL，而是做了最小下游验证。具体分成两步：
+
+\begin{itemize}
+  \item 基于两套 Industrial tokenizer 结果，建立隔离的 \texttt{data\_experiment} 目录，保持与现有 \texttt{data/Amazon} 相同的结构，只替换：
+  \begin{itemize}
+    \item \texttt{history\_item\_sid}
+    \item \texttt{item\_sid}
+  \end{itemize}
+  \item 然后对两套数据分别跑平行的 \texttt{SFT -> evaluate}：
+  \begin{itemize}
+    \item \texttt{mgr\_upstream\_baseline}
+    \item \texttt{mgr\_upstream\_hierarchy}
+  \end{itemize}
+\end{itemize}
+
+\subsubsection*{主要结果}
+
+两条链最终都完整跑通。Industrial 上的关键指标如下：
+
+\begin{itemize}
+  \item baseline：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@1 = 0.06309\)
+    \item \(\mathrm{NDCG}@3 = 0.07772\)
+    \item \(\mathrm{NDCG}@10 = 0.09430\)
+    \item \(\mathrm{HR}@1 = 0.06309\)
+    \item \(\mathrm{HR}@3 = 0.08824\)
+    \item \(\mathrm{HR}@10 = 0.13435\)
+  \end{itemize}
+  \item hierarchy：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@1 = 0.06265\)
+    \item \(\mathrm{NDCG}@3 = 0.08025\)
+    \item \(\mathrm{NDCG}@10 = 0.09360\)
+    \item \(\mathrm{HR}@1 = 0.06265\)
+    \item \(\mathrm{HR}@3 = 0.09287\)
+    \item \(\mathrm{HR}@10 = 0.13038\)
+  \end{itemize}
+\end{itemize}
+
+最直接的 delta 是：
+
+\begin{itemize}
+  \item \(\mathrm{NDCG}@3 = +0.00253\)
+  \item \(\mathrm{HR}@3 = +0.00463\)
+  \item \(\mathrm{NDCG}@5 / \mathrm{HR}@5\) 也有轻微提升
+  \item 但 \(\mathrm{NDCG}@1 / \mathrm{HR}@1\) 和 \( @10+ \) 仍然弱于 baseline
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这一轮的意义不是“hierarchy 已经全面赢了”，而是更细的：
+
+\begin{quote}
+tokenizer 侧的结构收益已经可以部分传到下游，但目前主要体现为短程排序增益，而不是全面的 end-to-end 优势。
+\end{quote}
+
+这说明两件事：
+
+\begin{itemize}
+  \item 当前方向不是只在 tokenizer 原地自嗨，它确实会影响下游行为；
+  \item 但当前 tokenizer-to-SFT 的传递还不够理想，仍然存在一部分收益在下游被抵消。
+\end{itemize}
+
+\subsection{阶段 8：SFT 历史对比与 Evaluate 错误分布分析（2026-04-10）}
+
+\subsubsection*{做了什么}
+
+在拿到第一轮 SFT 结果后，我们又补了两类分析：
+
+\begin{itemize}
+  \item 与项目内历史 Industrial SFT 记录做主指标对比；
+  \item 对 baseline 与 hierarchy 的最终 evaluate 输出做 SID-aware 错误分布诊断。
+\end{itemize}
+
+\subsubsection*{主要结果}
+
+\paragraph{与历史 CSV 的对比}
+
+结果显示，当前两条新实验都还没有超过历史最强 Industrial SFT 设定：
+
+\begin{itemize}
+  \item 历史最强：\texttt{title\_history2sid\_off + desc\_align\_p05}
+  \item 当前 hierarchy：只在 \(\mathrm{NDCG}@3\) 上略高于“最接近当前设定”的历史 baseline，并在 \(\mathrm{HR}@3\) 上持平
+  \item 但在 \( @10+ \) 指标上，当前 baseline 与 hierarchy 都还偏弱
+\end{itemize}
+
+\paragraph{Evaluate 错误分布}
+
+这轮分析给出了目前最重要的机制性证据。核心数字包括：
+
+\begin{itemize}
+  \item top-1 error same-\(l_1\) rate：\(0.1815 \rightarrow 0.1236\)
+  \item top-1 error same-\(l_2\) rate：\(0.0525 \rightarrow 0.0370\)
+  \item crowded targets（target \(l_2\) fanout \(\ge 4\)）上的 top-1 hit：\(0.0475 \rightarrow 0.0521\)
+  \item baseline same-\(l_2\) errors 的恢复率：\(0.0538\)
+\end{itemize}
+
+逐样本对比还显示：
+
+\begin{itemize}
+  \item hierarchy 修复了 \(63\) 个 baseline top-1 miss；
+  \item 但也打坏了 \(65\) 个 baseline 原本正确的 top-1 hit；
+  \item fixed cases 的平均 target \(l_2\) fanout 高达 \(7.32\)，说明它们大多是更拥挤、更难的局部歧义样本；
+  \item broken cases 则往往是 baseline 本来就已经进入正确局部子树的样本。
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这一轮把“为什么 hierarchy 只在短程指标上更好”解释清楚了：
+
+\begin{quote}
+hierarchy-aware SID 的确在修我们关心的 crowded local ambiguity，但它当前也会打掉一部分 baseline 原本已经正确的局部 routing。
+\end{quote}
+
+也就是说，当前瓶颈已经不再是“tokenizer 方向对不对”，而更像是：
+
+\begin{quote}
+如何让 tokenizer 侧的局部歧义收益，在 SFT 阶段被更完整地保留下来，而不是同时损伤 coarse/local retention。
+\end{quote}
+
 \section{当前证据的整体解释}
 
 把目前的证据串起来，可以得到一个更清楚的图景：
@@ -333,7 +461,9 @@ semantic-anchor purification 本身是有帮助的，但真正的大幅增益主
   \item 当前最强候选是 \textbf{spectral middle-resolution collaborative graph view}；
   \item 当前仓库默认 \texttt{sid-train} 配置不能代表正式 MiniOneRec baseline，所有方法对比必须切到 upstream-aligned regime；
   \item 在 upstream-aligned regime 下，\texttt{hierarchy-aware} 已经在 final generated SID 上给出了第一轮正信号；
-  \item 这说明图信号本身有用，而且图信号如何与 \texttt{sid-generate} 的 collision resolution 交互，是方法设计里非常关键的一环。
+  \item 把新的 SID 推进到 SFT 之后，收益主要先体现在短程排序和 crowded local ambiguity 样本上；
+  \item 当前没有形成全面下游增益的主要原因，不像是 tokenizer 方向错误，而更像是 tokenizer-to-SFT transfer 仍然会牺牲一部分 baseline 已经正确的局部 routing；
+  \item 这说明图信号本身有用，而且图信号如何同时与 \texttt{sid-generate} 的 collision resolution 以及 SFT 阶段的排序行为交互，是方法设计里非常关键的两道接口。
 \end{enumerate}
 
 \section{当前最佳工作假设}
@@ -341,7 +471,7 @@ semantic-anchor purification 本身是有帮助的，但真正的大幅增益主
 当前最可信的工作假设是：
 
 \begin{quote}
-MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierarchy-aware graph regularization；其中 middle-resolution spectral collaborative graph 是降低 local leaf ambiguity 的关键额外信号，而真正的有效性要通过 \texttt{sid-generate} 后的 final SID 来判断。
+MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierarchy-aware graph regularization；其中 middle-resolution spectral collaborative graph 是降低 local leaf ambiguity 的关键额外信号，而真正的有效性需要分两层判断：先看 \texttt{sid-generate} 后的 final SID，再看这些结构收益能否在 SFT 中被尽量无损地保留下来。
 \end{quote}
 
 目前最强的 \texttt{G\_mid v1} 候选是：
@@ -368,7 +498,8 @@ MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierar
   \item 当前 \texttt{hierarchy\_reg} 的收益究竟来自更好的 leaf disambiguation，还是更好的 collision repair compatibility？
   \item semantic anchoring 在训练时应该如何使用，才能避免把 graph signal 限制得过死？
   \item graph regularization 最佳作用位置到底是 encoder latent、quantized residual，还是 cumulative quantized representation？
-  \item 当前 final-SID 的改进，最终能否转化到 HR@1、NDCG@10 等主推荐指标上？
+  \item 当前 SFT 中被打坏的那批 baseline-correct local routing，究竟来自 SID 分布变化、训练目标不匹配，还是 decoding/beam 行为变化？
+  \item 如何保住 hierarchy 在 crowded same-\(l_2\) case 上的收益，同时减少对 baseline 已正确局部邻域的破坏？
   \item 什么时候适合把 published baselines 拉进主表，避免在机制还没站稳前过早铺开大规模复现？
 \end{enumerate}
 
@@ -389,15 +520,20 @@ MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierar
     \item baseline；
     \item hierarchy-aware graph regularization。
   \end{itemize}
-  \item 先补两类低成本但高信息量分析：
+  \item 下一阶段不要先扩更多 tokenizer idea，而应优先改 tokenizer-to-SFT transfer，目标是：
   \begin{itemize}
-    \item baseline vs hierarchy 的 final index bucket analysis；
-    \item baseline vs hierarchy 的 item-level changed cases。
+    \item 保住 hierarchy 对 crowded local ambiguity 的修复；
+    \item 尽量不打坏 baseline 已经正确的 coarse/local routing。
   \end{itemize}
-  \item 如果第二个 seed 也保持正向，再考虑做：
+  \item 在此基础上，再补：
   \begin{itemize}
-    \item 更细的 integration 改写；
-    \item downstream recommendation evaluation；
+    \item second seed 的 final SID 验证；
+    \item SFT 下的重复运行或小范围机制改写；
+    \item 必要时再进入 RL。
+  \end{itemize}
+  \item 如果 transfer 问题开始被解决，再考虑做：
+  \begin{itemize}
+    \item Office 上的对应实验；
     \item published baselines 主表准备。
   \end{itemize}
 \end{enumerate}
@@ -413,10 +549,16 @@ MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierar
   \item 上游风格 SID 复现记录：\path{research-progress-log/experiment_launches/2026-04-09_upstream_style_rqvae_result.md}
   \item upstream-aligned MGR-SID v1 总记录：\path{research-progress-log/experiment_launches/2026-04-09_mgr_sid_v1_upstream/README.md}
   \item upstream-aligned MGR-SID v1 结果记录：\path{research-progress-log/experiment_launches/2026-04-09_mgr_sid_v1_upstream/RESULTS.md}
+  \item SFT 数据转换记录：\path{research-progress-log/experiment_launches/2026-04-10_mgr_sid_data_experiment_convert/README.md}
+  \item Industrial SFT + evaluate 结果：\path{research-progress-log/experiment_launches/2026-04-10_mgr_sid_sft_eval_industrial/RESULTS.md}
+  \item 与历史结果对比：\path{research-progress-log/experiment_launches/2026-04-10_mgr_sid_sft_eval_industrial/COMPARE_TO_HISTORY.md}
+  \item evaluate 错误分布分析：\path{research-progress-log/experiment_launches/2026-04-10_mgr_sid_sft_eval_industrial/EVAL_ERROR_DISTRIBUTION.md}
   \item 第一轮 probe 脚本：\path{scripts/experiment_mgr_sid_graph_bank_probe.py}
   \item 模块移植 probe 脚本：\path{scripts/experiment_mgr_sid_paper_transplant_probe.py}
   \item 实验版训练脚本：\path{scripts/experiment_mgr_sid_v1_train.py}
   \item 实验版生成脚本：\path{scripts/experiment_mgr_sid_v1_generate.py}
+  \item 实验版数据转换脚本：\path{scripts/experiment_mgr_sid_prepare_data.py}
+  \item 实验版局部歧义分析脚本：\path{scripts/experiment_mgr_sid_v1_local_ambiguity_analysis.py}
 \end{itemize}
 
 \end{CJK*}

@@ -1,11 +1,11 @@
 \section{结论与局限}
 \label{sec:conclusion}
 
-本文聚焦 MiniOneRec 的 tokenizer 阶段，提出了一个更精确的问题：相比统一的 feature fusion，graph-structured collaboration 是否应当以 level-specific structural supervision 的方式进入 hierarchical semantic ID 学习。基于这一问题，我们提出了 MGR-SID v1，它保留 semantic \rqvae{} backbone，构建 coarse/mid/local 三种图视图，并在不同 SID level 上施加层级感知图正则。实验表明，在 upstream-aligned 的 tokenizer 训练制度下，这一设计能够改善最终生成的 Industrial SID，并显著降低 same-$l_2$ 局部歧义。
+本文聚焦 MiniOneRec 的 tokenizer 阶段，提出了一个更精确的问题：相比统一的 feature fusion，graph-structured collaboration 是否应当以 level-specific structural supervision 的方式进入 hierarchical semantic ID 学习。基于这一问题，我们提出了 MGR-SID v1，它保留 semantic \rqvae{} backbone，构建 coarse/mid/local 三种图视图，并在不同 SID level 上施加层级感知图正则。实验表明，在 upstream-aligned 的 tokenizer 训练制度下，这一设计能够改善最终生成的 Industrial SID，并显著降低 same-$l_2$ 局部歧义。把该 SID 推进到 Industrial SFT 后，我们进一步看到一种“部分传递”的现象：短程排序和拥挤局部样本得到改善，但更广义的 $@10+$ 推荐质量还没有稳定提升。
 
-当前结果仍有三个明显局限。第一，正式训练时结果目前只在 Industrial 上完成。第二，当前 v1 使用的是固定 level-to-view assignment，而不是 learned allocation。第三，我们还没有把新的 tokenizer 推进到 SFT、RL 与完整推荐评测中。这些局限是刻意保留的，因为当前阶段的目标不是一次性做完所有东西，而是先把 tokenizer-side 的主张站稳。
+当前结果仍有三个明显局限。第一，正式训练时结果目前只在 Industrial 上完成。第二，当前 v1 使用的是固定 level-to-view assignment，而不是 learned allocation。第三，虽然我们已经完成了第一轮 SFT 传递实验，但它还没有把 tokenizer 收益转化为新的 end-to-end 最优系统，RL 也仍然没有启动。这些局限是刻意保留的，因为当前阶段更重要的是先定位“哪里已经对了，哪里还没接住”。
 
-因此，下一步也很明确：在当前最优 hierarchy-aware SID 的基础上，进入 SFT 阶段，验证 tokenizer 侧更低的 local ambiguity 是否会进一步转化为更少的 same-prefix recommendation errors 和更好的下游推荐指标。
+因此，下一步也比之前更具体：不是简单把实验继续堆大，而是优先改进 tokenizer-to-SFT transfer。本质上，我们需要保住 hierarchy-aware tokenizer 对 local ambiguity 的修复，同时尽量不牺牲 baseline 原有的 coarse-prefix stability。等这一步更稳之后，再继续做 repeated-seed SFT、Office 验证以及 RL。
 
 \paragraph{可复现性说明。}
 本文中所有实验都以增量方式实现于现有 OneRec 仓库之上。默认 baseline 主链保持不变；graph-aware tokenizer 分支使用独立脚本、配置、日志与输出目录，不会破坏现有流程。

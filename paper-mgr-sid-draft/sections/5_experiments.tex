@@ -80,6 +80,54 @@ The main question is whether the better final collision reflects the failure mod
 
 \Cref{tab:ambiguity} shows that the improvement is structurally meaningful. The hierarchy-aware tokenizer does not merely shuffle code assignments while preserving the same ambiguity. It lowers the average number of competing leaves under the target prefix, reduces the fraction of targets that fall into multi-leaf same-$l_2$ buckets, and lowers the conditional entropy of the third-level code. In the full movement analysis, $17.32\%$ of test targets move from a multi-leaf same-$l_2$ bucket into a singleton bucket, while only $9.68\%$ move in the opposite direction. This strongly supports our original diagnosis that the remaining tokenizer bottleneck is local leaf ambiguity.
 
+\subsection{Does the tokenizer gain transfer to downstream SFT?}
+
+We next push the two final Industrial tokenizers into downstream SFT and evaluate the resulting recommenders. We compare the current semantic baseline and the hierarchy-aware tokenizer, and also report the closest historical Industrial SFT run and the historical best SFT run stored in our experiment CSV.
+
+\begin{table}[t]
+  \centering
+  \caption{Industrial SFT results. The hierarchy-aware tokenizer improves short-range ranking but does not yet produce a broad $@10+$ gain or surpass the historical best SFT setting.}
+  \label{tab:sft}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Run & N@1 & N@3 & N@10 & H@1 & H@3 & H@10 \\
+    \midrule
+    Historical closest & 0.0624 & 0.0798 & 0.0987 & 0.0624 & 0.0929 & 0.1471 \\
+    Historical best & \textbf{0.0671} & \textbf{0.0850} & \textbf{0.1037} & \textbf{0.0671} & \textbf{0.0984} & \textbf{0.1509} \\
+    Current baseline & 0.0631 & 0.0777 & 0.0943 & 0.0631 & 0.0882 & 0.1343 \\
+    Current hierarchy & 0.0627 & 0.0802 & 0.0936 & 0.0627 & 0.0929 & 0.1304 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:sft} adds an important qualification to the tokenizer story. The hierarchy-aware tokenizer does not turn into a new end-to-end best SFT system by itself. Relative to the current upstream-aligned baseline, it improves $\mathrm{NDCG}@3$ and $\mathrm{HR}@3$, and slightly improves $@5$, but it remains weaker at $@10+$ and still trails the best historical Industrial SFT result. This means that the tokenizer gain \emph{does} transfer downstream, but only partially and mostly at short range.
+
+\subsection{What changes in the evaluate error distribution?}
+
+To understand the partial transfer, we compare the final evaluate outputs of the two SFT models using SID-aware diagnostics. The main question is whether the hierarchy-aware tokenizer changes the \emph{type} of downstream errors rather than just the aggregate metric.
+
+\begin{table}[t]
+  \centering
+  \caption{Evaluate-time error distribution on Industrial. The hierarchy-aware tokenizer reduces same-prefix error rates and helps more on crowded local targets, but the beam also stays in the baseline local neighborhood less often.}
+  \label{tab:error}
+  \begin{tabular}{lccc}
+    \toprule
+    Metric & Baseline & Hierarchy & Delta \\
+    \midrule
+    Top-1 error same-$l_1$ rate & 0.1815 & 0.1236 & -0.0580 \\
+    Top-1 error same-$l_2$ rate & 0.0525 & 0.0370 & -0.0156 \\
+    Beam contains same-$l_1$ & 0.6724 & 0.5248 & -0.1476 \\
+    Beam contains same-$l_2$ & 0.3272 & 0.3077 & -0.0194 \\
+    Top-1 hit on targets with $l_2 \ge 4$ & 0.0475 & 0.0521 & +0.0047 \\
+    Recovery on baseline same-$l_2$ errors & -- & 0.0538 & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:error} shows that the downstream effect is highly structured. On the positive side, the hierarchy-aware tokenizer clearly reduces local same-prefix misses: top-1 errors that remain inside the same $l_1$ or same $l_2$ subtree become less frequent, and the gain is strongest on crowded targets with $l_2$ fanout at least $4$. Moreover, baseline same-$l_2$ errors are the most recoverable error bucket under the new tokenizer. This is exactly the pattern expected from a tokenizer that reduces local leaf ambiguity.
+
+At the same time, the diagnostics reveal a second effect. The beam under the hierarchy-aware tokenizer is less likely to remain in the baseline local neighborhood, as shown by lower same-prefix beam overlap and lower average common-prefix length. In a direct per-example comparison, the hierarchy-aware model fixes $63$ baseline top-1 misses but breaks $65$ baseline top-1 hits. The fixed cases are usually harder and more crowded: under the baseline, they have average target $l_2$ fanout $7.32$, and the target is often already present in top-3 or top-5 but not at rank $1$. By contrast, the broken cases are those where the baseline was already exactly inside the right local subtree. This explains why the new tokenizer helps local reranking and short-range ranking while still failing to deliver a broad $@10+$ gain.
+
 \subsection{Current interpretation}
 
 Taken together, the experiments support a cautious but coherent claim. We do \emph{not} yet show downstream recommendation gains after SFT or RL. We do show that:
@@ -87,7 +135,8 @@ Taken together, the experiments support a cautious but coherent claim. We do \em
   \item fair tokenizer comparison requires the upstream MiniOneRec training regime;
   \item graph-structured collaborative information has real signal for local same-$l_2$ disambiguation;
   \item this signal is strongest when encoded by a spectral middle-resolution graph;
-  \item hierarchy-aware graph regularization improves the \emph{final generated SID} and makes the tokenizer less locally ambiguous than a fair semantic baseline.
+  \item hierarchy-aware graph regularization improves the \emph{final generated SID} and makes the tokenizer less locally ambiguous than a fair semantic baseline;
+  \item these tokenizer gains transfer to downstream SFT mainly on crowded local cases, but the current tokenizer-to-SFT interface still sacrifices some already-correct local routing.
 \end{enumerate}
 
-For the current stage of the project, this is exactly the evidence we need before pushing the new SID into SFT. It validates the tokenizer-side hypothesis while keeping the scope honest.
+For the current stage of the project, this is a stronger and more realistic claim than a simple ``downstream win'' statement. The tokenizer-side hypothesis is supported, and the first downstream analysis explains both why the gain is real and why it is not yet broad enough.
