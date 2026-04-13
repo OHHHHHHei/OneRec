@@ -9,6 +9,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn.functional as F
 from tqdm import tqdm
 
 from onerec.sid.models.rqvae import RQVAE
@@ -83,6 +84,9 @@ class MgrSidV2TrainConfig:
     graph_scale_max: float = 1.5
     semantic_scale_min: float = 0.5
     semantic_scale_max: float = 1.5
+    hierarchy_stopgrad_previous_levels: bool = False
+    semantic_retention_mode: str = "smoothness"
+    semantic_retention_temperature: float = 0.1
 
 
 def load_train_config(config_path: str, overrides: dict[str, Any] | None = None) -> MgrSidV2TrainConfig:
@@ -129,8 +133,57 @@ def _weighted_graph_smoothness_loss(
     return torch.sum(per_item * item_weights) / denom
 
 
+def _weighted_batch_local_neighbor_kl_loss(
+    teacher_repr: torch.Tensor,
+    student_repr: torch.Tensor,
+    item_weights: torch.Tensor,
+    temperature: float,
+) -> torch.Tensor:
+    if teacher_repr.size(0) <= 1:
+        return teacher_repr.new_tensor(0.0)
+
+    if temperature <= 0:
+        raise ValueError(f"semantic_retention_temperature must be positive, got {temperature}")
+
+    teacher_repr = F.normalize(teacher_repr.float(), p=2, dim=1)
+    student_repr = F.normalize(student_repr.float(), p=2, dim=1)
+
+    teacher_logits = teacher_repr @ teacher_repr.T
+    student_logits = student_repr @ student_repr.T
+    teacher_logits = teacher_logits / temperature
+    student_logits = student_logits / temperature
+
+    mask = torch.eye(teacher_logits.size(0), dtype=torch.bool, device=teacher_logits.device)
+    teacher_logits = teacher_logits.masked_fill(mask, -1e9)
+    student_logits = student_logits.masked_fill(mask, -1e9)
+
+    teacher_probs = F.softmax(teacher_logits, dim=1)
+    student_log_probs = F.log_softmax(student_logits, dim=1)
+    per_item = torch.sum(teacher_probs * (torch.log(teacher_probs.clamp_min(1e-12)) - student_log_probs), dim=1)
+
+    item_weights = item_weights.float()
+    denom = item_weights.sum().clamp(min=1e-6)
+    return torch.sum(per_item * item_weights) / denom
+
+
 def _scale_from_prior(prior: torch.Tensor, low: float, high: float) -> torch.Tensor:
     return low + (high - low) * prior
+
+
+def _build_level_representations(
+    cumulative_outputs: list[torch.Tensor],
+    level_outputs: list[torch.Tensor],
+    stopgrad_previous_levels: bool,
+) -> list[torch.Tensor]:
+    if not stopgrad_previous_levels:
+        return cumulative_outputs
+
+    level_reps: list[torch.Tensor] = []
+    detached_prefix = torch.zeros_like(level_outputs[0])
+    for level_q in level_outputs:
+        level_reps.append(detached_prefix + level_q)
+        detached_prefix = detached_prefix + level_q.detach()
+    return level_reps
 
 
 def _build_graph_tensors(cfg: MgrSidV2TrainConfig, device: torch.device, n_items: int) -> dict[str, torch.Tensor]:
@@ -265,6 +318,11 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             optimizer.zero_grad()
             pack = _forward_hierarchy(model, batch_embeddings, use_sk=True)
             loss_total, loss_recon = model.compute_loss(pack["recon"], pack["rq_loss"], xs=batch_embeddings)
+            level_representations = _build_level_representations(
+                cumulative_outputs=pack["cumulative_outputs"],
+                level_outputs=pack["level_outputs"],
+                stopgrad_previous_levels=cfg.hierarchy_stopgrad_previous_levels,
+            )
 
             prior_batch = ambiguity_prior.index_select(0, batch_indices)
             graph_item_scale = _scale_from_prior(prior_batch, cfg.graph_scale_min, cfg.graph_scale_max)
@@ -280,12 +338,34 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             semantic_subgraph = _select_subgraph(graph_tensors["semantic"], batch_indices)
 
             graph_losses = {
-                "coarse": _weighted_graph_smoothness_loss(pack["cumulative_outputs"][0], coarse_subgraph, graph_item_scale),
-                "mid": _weighted_graph_smoothness_loss(pack["cumulative_outputs"][1], mid_subgraph, graph_item_scale),
-                "local": _weighted_graph_smoothness_loss(pack["cumulative_outputs"][2], local_subgraph, graph_item_scale),
-                "semantic_coarse": _weighted_graph_smoothness_loss(pack["cumulative_outputs"][0], semantic_subgraph, semantic_item_scale),
-                "semantic_mid": _weighted_graph_smoothness_loss(pack["cumulative_outputs"][1], semantic_subgraph, semantic_item_scale),
+                "coarse": _weighted_graph_smoothness_loss(level_representations[0], coarse_subgraph, graph_item_scale),
+                "mid": _weighted_graph_smoothness_loss(level_representations[1], mid_subgraph, graph_item_scale),
+                "local": _weighted_graph_smoothness_loss(level_representations[2], local_subgraph, graph_item_scale),
             }
+            if cfg.semantic_retention_mode == "smoothness":
+                graph_losses["semantic_coarse"] = _weighted_graph_smoothness_loss(
+                    level_representations[0], semantic_subgraph, semantic_item_scale
+                )
+                graph_losses["semantic_mid"] = _weighted_graph_smoothness_loss(
+                    level_representations[1], semantic_subgraph, semantic_item_scale
+                )
+            elif cfg.semantic_retention_mode == "batch_local_kl":
+                graph_losses["semantic_coarse"] = _weighted_batch_local_neighbor_kl_loss(
+                    teacher_repr=batch_embeddings.detach(),
+                    student_repr=level_representations[0],
+                    item_weights=semantic_item_scale,
+                    temperature=cfg.semantic_retention_temperature,
+                )
+                graph_losses["semantic_mid"] = _weighted_batch_local_neighbor_kl_loss(
+                    teacher_repr=batch_embeddings.detach(),
+                    student_repr=level_representations[1],
+                    item_weights=semantic_item_scale,
+                    temperature=cfg.semantic_retention_temperature,
+                )
+            else:
+                raise ValueError(
+                    f"Unsupported semantic_retention_mode: {cfg.semantic_retention_mode}"
+                )
 
             loss_total = (
                 loss_total

@@ -28,7 +28,7 @@
 
 \title{MiniOneRec 后续研究\\进度日志}
 \author{工作记录文档}
-\date{最后更新：2026-04-10}
+\date{最后更新：2026-04-13}
 
 \begin{document}
 \begin{CJK*}{UTF8}{gbsn}
@@ -89,6 +89,12 @@
   \item \textbf{Hierarchy-aware graph regularization 已经在 final SID 上给出正信号。} 在 upstream-aligned regime 下，Industrial 上 \texttt{hierarchy\_reg} 的 final generated SID collision 低于强语义 baseline。
   \item \textbf{这种 tokenizer 改进已经部分传到 SFT。} 当前 hierarchy 版本在 Industrial 上提升了 \(\mathrm{NDCG}@3\) 和 \(\mathrm{HR}@3\)，但还没有形成全面的 \( @10+ \) 优势。
   \item \textbf{下游收益主要集中在 crowded local ambiguity。} evaluate 诊断表明，hierarchy 主要修复的是 same-\(l_2\) 与高 fanout 目标上的局部错误，而不是一个均匀的全局收益。
+  \item \textbf{当前的 \texttt{mgr\_upstream\_baseline} 应被视为 internal control，而不是主 baseline。} 真正需要锚定的主 baseline 应该是原版 MiniOneRec 的 recipe-aligned 结果，以及最强的原版 MiniOneRec SFT / RL 结果。
+  \item \textbf{ambiguity-aware tokenizer v2 已经在原版 MiniOneRec 上给出 recipe-sensitive 的下游正信号。} 当前最优的 \texttt{v2} 下游 recipe 不是 \texttt{title\_history2sid\_on + desc\_align\_off}，而是 \texttt{title\_history2sid\_on + desc\_align\_p05}；在这条 recipe 上，\texttt{v2} 相对原版 MiniOneRec 的同配方版本在 \(\mathrm{NDCG}@1/3/5/10\) 和 \(\mathrm{HR}@1/3/5\) 上都更好。
+  \item \textbf{当前 v2 还没有超过最强原版 MiniOneRec recipe，但差距已经很小。} Industrial 上最强原版 MiniOneRec SFT 仍是 \texttt{title\_history2sid\_off + desc\_align\_p05}；当前最优 \texttt{v2\_on\_p05} 与其相比，\(\mathrm{NDCG}@10\) 只差约 \(0.0010\)，\(\mathrm{HR}@10\) 只差约 \(0.0046\)。
+  \item \textbf{strongest-recipe 失配的主因已经拆清。} 当前 strongest original MiniOneRec recipe 与 \texttt{v2} 的主要冲突不是 \texttt{desc\_align\_p05}，而是 \texttt{title\_history2sid\_off}；在 \texttt{title\_history2sid\_on} 保持开启时，\texttt{desc\_align\_p05} 对 \texttt{v2} 是净正增益。
+  \item \textbf{stage-2 第一轮 retention-targeted tokenizer refinement 已完成首轮筛选。} \texttt{R202a}（\texttt{stop-gradient} hierarchy isolation）是当前唯一在 retention-oriented 结构指标上给出干净正信号的分支；\texttt{R202b-r075} 与 \texttt{R205} 虽然都把 final generated collision 从 \(13/3686\) 压到 \(12/3686\)，但都显著恶化了 local ambiguity structure。
+  \item \textbf{当前没有任何 stage-2 分支在下游超过 \texttt{v2\_on\_p05} 主线。} \texttt{R208}（\texttt{R202a -> SFT/evaluate}）已经完成，但 \(\mathrm{NDCG}@10\) 与 \(\mathrm{HR}@10\) 都低于当前最佳 \texttt{v2\_on\_p05}；因此当前最强 end-to-end 主线仍然是 \texttt{v2\_on\_p05 -> RL}。
 \end{enumerate}
 
 \section{被削弱或阶段性放下的方向}
@@ -450,20 +456,351 @@ hierarchy-aware SID 的确在修我们关心的 crowded local ambiguity，但它
 如何让 tokenizer 侧的局部歧义收益，在 SFT 阶段被更完整地保留下来，而不是同时损伤 coarse/local retention。
 \end{quote}
 
+\subsection{阶段 9：Ambiguity-aware tokenizer v2（2026-04-11）}
+
+\subsubsection*{做了什么}
+
+在看清 v1 的长处与副作用之后，我们没有继续做后验 patch，而是回到 tokenizer 训练本体，提出并实现了 \texttt{MGR-SID v2}。这一版的核心变化有两点：
+
+\begin{itemize}
+  \item 用 \textbf{offline ambiguity prior} 去调节 graph regularization 强度，而不是对所有 item 一刀切；
+  \item 用 \textbf{semantic-structure retention} 保护训练前就可见的原始语义几何，避免图正则在低歧义区域过度改写 semantic neighborhood。
+\end{itemize}
+
+在进入训练前，我们先做了最小 proxy sanity：
+
+\begin{itemize}
+  \item \texttt{R001}：离线 combined ambiguity prior，由 semantic density、semantic-collaborative disagreement 和 graph competition strength 组成；
+  \item \texttt{R002}：在 \texttt{R001} 基础上加入当前量化过程里的 online uncertainty。
+\end{itemize}
+
+\subsubsection*{主要结果}
+
+\paragraph{Proxy sanity}
+
+\begin{itemize}
+  \item \texttt{R001}：\(\mathrm{AUC} = 0.7187\)
+  \item hard-item base rate：\(0.2580\)
+  \item proxy top \(10\%\) 中的 hard-item 比例：\(0.6141\)
+  \item \texttt{R002}：\(\mathrm{AUC} = 0.5859\)
+\end{itemize}
+
+因此，当前 first v2 run 只采用 \texttt{R001} 的 offline combined proxy，而不采用当前这版 online uncertainty。
+
+\paragraph{Tokenizer 训练与生成}
+
+Industrial 上，\texttt{v2 offline\_combined} 的结果为：
+
+\begin{itemize}
+  \item best train collision：\(\approx 0.1226261530\)
+  \item final generated collision：\(\approx 0.0035268584\)
+  \item max conflict：\(2\)
+\end{itemize}
+
+如果只看 final collision，\texttt{v2} 打平了 internal control baseline，但没有超过 \texttt{v1 hierarchy}。然而结构诊断却更强：
+
+\begin{itemize}
+  \item 相比 internal control baseline，mean target \(l_2\) leaf count：\(4.7999 \rightarrow 4.3422\)
+  \item targets in multi-leaf same-\(l_2\)：\(0.6894 \rightarrow 0.4873\)
+  \item targets in \(l_2 \ge 4\)：\(0.3283 \rightarrow 0.2228\)
+  \item mean target level-3 entropy：\(1.4533 \rightarrow 1.1001\)
+\end{itemize}
+
+即使与 \texttt{v1 hierarchy} 相比，\texttt{v2} 的局部结构仍然更干净：
+
+\begin{itemize}
+  \item mean target \(l_2\) leaf count：\(4.4498 \rightarrow 4.3422\)
+  \item targets in multi-leaf same-\(l_2\)：\(0.6131 \rightarrow 0.4873\)
+  \item mean target level-3 entropy：\(1.2935 \rightarrow 1.1001\)
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这一阶段最重要的更新是：
+
+\begin{quote}
+\texttt{v2} 不是“collision 更低”的 tokenizer，而是“局部结构更干净”的 tokenizer。当前真正卡住它的，不像是 ambiguity-aware 思路本身，而更像是 train-to-generate 接口还没有把这种结构收益完整兑现成 final collision。
+\end{quote}
+
+换句话说，\texttt{v2} 已经把“hard case 强化 graph supervision、easy case 保护 semantic structure”这条思路，落实成了可见的 tokenizer 结构收益。
+
+\subsection{阶段 10：v2 tokenizer 接入 SFT + Evaluate（2026-04-11）}
+
+\subsubsection*{做了什么}
+
+在确认 \texttt{v2} 的 final SID 虽然没有更低 collision、但局部结构明显更干净之后，我们继续把它推进到下游：
+
+\begin{itemize}
+  \item 仍然使用隔离的 \texttt{data\_experiment} 路径；
+  \item 将 \texttt{v2 offline} SID 写入新的 Industrial 数据根目录；
+  \item 使用四卡 \texttt{torchrun} 跑完整的 \texttt{SFT -> evaluate}；
+  \item 同时把实验台账更新为以原版 MiniOneRec 为主 baseline，以 \texttt{mgr\_upstream\_baseline} 作为 internal control。
+\end{itemize}
+
+\subsubsection*{主要结果}
+
+\paragraph{相对 internal control}
+
+相对 \texttt{mgr\_upstream\_baseline}，\texttt{v2} 在所有报告 cutoff 上都更好。例如：
+
+\begin{itemize}
+  \item \(\mathrm{NDCG}@10 = 0.09430 \rightarrow 0.10082\)
+  \item \(\mathrm{HR}@10 = 0.13435 \rightarrow 0.14251\)
+\end{itemize}
+
+\paragraph{相对 recipe-aligned 的原版 MiniOneRec}
+
+更关键的是，在相同 task recipe：
+
+\begin{itemize}
+  \item \texttt{title\_history2sid = on}
+  \item \texttt{desc\_align = off}
+\end{itemize}
+
+下，\texttt{v2} 已经优于原版 MiniOneRec：
+
+\begin{itemize}
+  \item \(\mathrm{NDCG}@1: 0.06243 \rightarrow 0.07037\)
+  \item \(\mathrm{NDCG}@3: 0.07982 \rightarrow 0.08393\)
+  \item \(\mathrm{NDCG}@5: 0.08688 \rightarrow 0.09053\)
+  \item \(\mathrm{NDCG}@10: 0.09872 \rightarrow 0.10082\)
+  \item \(\mathrm{HR}@1: 0.06243 \rightarrow 0.07037\)
+  \item \(\mathrm{HR}@3: 0.09287 \rightarrow 0.09420\)
+  \item \(\mathrm{HR}@5: 0.11008 \rightarrow 0.11030\)
+  \item 只有 \(\mathrm{HR}@10\) 略低：\(0.14714 \rightarrow 0.14251\)
+\end{itemize}
+
+\paragraph{相对最强原版 MiniOneRec}
+
+当前 \texttt{v2} 还没有超过最强的原版 MiniOneRec SFT / RL：
+
+\begin{itemize}
+  \item 最强 Industrial SFT：\texttt{title\_history2sid\_off + desc\_align\_p05}
+  \item 最强 Industrial RL：\texttt{title\_history2sid\_off + desc\_align\_p05 + batch256}
+\end{itemize}
+
+在这两个主 baseline 面前，\texttt{v2} 当前仍然落后：
+
+\begin{itemize}
+  \item 相对最强 SFT，\(\mathrm{NDCG}@10\) 仍差 \(\approx 0.00290\)
+  \item 相对最强 SFT，\(\mathrm{HR}@10\) 仍差 \(\approx 0.00838\)
+  \item 相对最强 RL，差距更大一些
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这一阶段把当前研究的真实位置钉得更清楚了：
+
+\begin{quote}
+\texttt{v2} 已经不是一个只在内部控制线上有效的 tokenizer 改动。它在 recipe-aligned 的原版 MiniOneRec 上已经给出正信号；但它还没有超过最强的原版 MiniOneRec recipe，因此下一步需要继续查明 strongest recipe 的哪一部分在与 \texttt{v2} 发生冲突，而不是重新回到 carrier 设计本身。
+\end{quote}
+
+\subsection{阶段 11：v2 recipe isolation 与 strongest-recipe 拆因子（2026-04-11 / 2026-04-12）}
+
+\subsubsection*{做了什么}
+
+在完成 stage 10 后，我们没有直接进入 RL，而是先把 strongest original MiniOneRec SFT recipe 拆成两个因子，补齐 \texttt{v2} 的四格 task matrix。此前已经有两格：
+
+\begin{itemize}
+  \item \texttt{title\_history2sid\_on + desc\_align\_off}
+  \item \texttt{title\_history2sid\_off + desc\_align\_p05}
+\end{itemize}
+
+这一轮新增两格：
+
+\begin{itemize}
+  \item \texttt{title\_history2sid\_on + desc\_align\_p05}
+  \item \texttt{title\_history2sid\_off + desc\_align\_off}
+\end{itemize}
+
+每一格都使用与 strongest original MiniOneRec SFT 对齐的四卡 \texttt{torchrun} 训练制度，跑完整的 \texttt{SFT -> evaluate}，并继续补 \texttt{top-k / error distribution} 诊断。
+
+\subsubsection*{主要结果}
+
+\paragraph{四格结果}
+
+\begin{itemize}
+  \item \texttt{v2\_on\_off}：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10 = 0.10082\)
+    \item \(\mathrm{HR}@10 = 0.14251\)
+  \end{itemize}
+  \item \texttt{v2\_on\_p05}：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10 = 0.10271\)
+    \item \(\mathrm{HR}@10 = 0.14626\)
+  \end{itemize}
+  \item \texttt{v2\_off\_off}：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10 = 0.09125\)
+    \item \(\mathrm{HR}@10 = 0.13391\)
+  \end{itemize}
+  \item \texttt{v2\_off\_p05}：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10 = 0.08993\)
+    \item \(\mathrm{HR}@10 = 0.13082\)
+  \end{itemize}
+\end{itemize}
+
+\paragraph{因子效应}
+
+\begin{itemize}
+  \item 固定 \texttt{title\_history2sid = on} 时，\texttt{desc\_align\_p05} 是正增益：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10: 0.10082 \rightarrow 0.10271\)
+    \item \(\mathrm{HR}@10: 0.14251 \rightarrow 0.14626\)
+  \end{itemize}
+  \item 固定 \texttt{desc\_align = off} 时，\texttt{title\_history2sid\_off} 是明显负增益：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10: 0.10082 \rightarrow 0.09125\)
+    \item \(\mathrm{HR}@10: 0.14251 \rightarrow 0.13391\)
+  \end{itemize}
+  \item 固定 \texttt{desc\_align = p05} 时，\texttt{title\_history2sid\_off} 的伤害更大：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10: 0.10271 \rightarrow 0.08993\)
+    \item \(\mathrm{HR}@10: 0.14626 \rightarrow 0.13082\)
+  \end{itemize}
+\end{itemize}
+
+\paragraph{与 strongest original SFT 的位置}
+
+当前最优 \texttt{v2\_on\_p05} 与 strongest original MiniOneRec SFT 的差距已缩小到：
+
+\begin{itemize}
+  \item \(\mathrm{NDCG}@10: 0.10271 \text{ vs } 0.10372\)，差约 \(0.00101\)
+  \item \(\mathrm{HR}@10: 0.14626 \text{ vs } 0.15089\)，差约 \(0.00463\)
+\end{itemize}
+
+\paragraph{Top-k 与错误分布}
+
+进一步的 \texttt{top-k / error distribution} 分析说明：
+
+\begin{itemize}
+  \item strongest original SFT 相对 \texttt{v2\_on\_p05} 的主要优势，不在 top-1，而在 \texttt{top3 / top5 / top10} 的中段 beam retention；
+  \item \texttt{v2\_on\_p05} 的 \(\mathrm{NDCG}@1\) 更高，same-prefix top-1 error 也明显更低；
+  \item strongest original SFT 更擅长把正确目标保在 beam 里，而 \texttt{v2\_on\_p05} 更像一个更干净、更尖锐的 local disambiguation tokenizer；
+  \item \texttt{desc\_align\_p05} 在 \texttt{title\_history2sid\_on} 下会改善 \texttt{v2} 的中段 beam 表现，而不是伤害它。
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这一阶段把 strongest-recipe mismatch 的来源真正拆清楚了：
+
+\begin{quote}
+当前 strongest original MiniOneRec recipe 与 \texttt{v2} 的主冲突不是 \texttt{desc\_align\_p05}，而是 \texttt{title\_history2sid\_off}。当 \texttt{title\_history2sid} 保持开启时，\texttt{desc\_align\_p05} 反而会把 \texttt{v2} 推到当前最优的下游 recipe：\texttt{v2\_on\_p05}。
+\end{quote}
+
+因此，当前最可信的 downstream interpretation 已经从“\texttt{v2} 还要去 strongest recipe 里验证”更新为：
+
+\begin{quote}
+\texttt{v2} 已经完成了 strongest recipe 的拆因子验证，并且当前最优下游 recipe 是 \texttt{title\_history2sid\_on + desc\_align\_p05}。它与 strongest original MiniOneRec SFT 的差距已经很小，剩余差距主要表现为中段 beam retention，而不是头部排序或 same-prefix disambiguation 能力不足。
+\end{quote}
+
+\subsection{阶段 12：Retention-targeted tokenizer refinement 第一轮结果（2026-04-13，已完成首轮筛选）}
+
+\subsubsection*{做了什么}
+
+在完成 \texttt{v2\_on\_p05 -> RL} 的 end-to-end 验证后，我们没有立刻重新设计 graph bank，也没有直接扩展更复杂的 gate / joint training，而是把当前主问题收束为：
+
+\begin{quote}
+如何在不重新打开大设计空间的前提下，专门补当前剩余的 \texttt{top5/top10} mid-beam retention gap？
+\end{quote}
+
+围绕这个目标，我们完成了 stage-2 第一批 tokenizer 微调实验：
+
+\begin{itemize}
+  \item \texttt{R202a}：\texttt{stop-gradient} hierarchy isolation
+  \item \texttt{R202b}：\texttt{stop-gradient} hierarchy isolation + level-1 compensation
+  \item \texttt{R205}：\texttt{R202a} 基础上的 batch-local semantic neighborhood KL retention
+  \item \texttt{R208}：\texttt{R202a -> data conversion -> SFT -> evaluate}
+\end{itemize}
+
+这一轮实验的共同原则是：
+
+\begin{itemize}
+  \item graph bank 固定不动；
+  \item ambiguity prior 固定为 current offline combined proxy；
+  \item 下游固定 recipe 为 \texttt{title\_history2sid\_on + desc\_align\_p05}；
+  \item 只测试最小、最可诊断的 retention-targeted tokenizer 改动。
+\end{itemize}
+
+\subsubsection*{主要结果}
+
+\paragraph{Block 2：Stop-gradient hierarchy isolation}
+
+\begin{itemize}
+  \item \texttt{R202a} 是唯一的 clean structural winner：
+  \begin{itemize}
+    \item best train collision：\(0.10065\)
+    \item final generated collision：\(13/3686\)
+    \item mean target \(l_2\) leaf count：\(4.3422 \rightarrow 3.6148\)
+    \item target-weighted entropy：\(1.1001 \rightarrow 1.0308\)
+    \item deep crowded \(l_2 \ge 4\) target ratio：\(0.2228 \rightarrow 0.1994\)
+  \end{itemize}
+  \item \texttt{R202b}（\(\lambda_c = 0.10\)）训练直接回归，best collision 达到 \(0.95849\)。
+  \item \texttt{R202b-r075}（\(\lambda_c = 0.075\)）恢复了训练稳定性，并把 final generated collision 压到 \(12/3686\)，但明显恶化了 local ambiguity structure：
+  \begin{itemize}
+    \item multi-leaf same-\(l_2\)：\(0.4873 \rightarrow 0.5831\)
+    \item deep crowded \(l_2 \ge 4\)：\(0.2228 \rightarrow 0.2585\)
+    \item target-weighted entropy：\(1.1001 \rightarrow 1.2128\)
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Block 3：Semantic retention KL}
+
+\begin{itemize}
+  \item \texttt{R205} 的 batch-local KL 分支数值上稳定，但 tokenizer 训练结果弱于 \texttt{R202a}：
+  \begin{itemize}
+    \item best train collision：\(0.11367\)
+  \end{itemize}
+  \item 生成后，\texttt{R205} 也把 final generated collision 压到 \(12/3686\)，但结构回归更明显：
+  \begin{itemize}
+    \item mean target \(l_2\) leaf count：\(4.3422 \rightarrow 4.9572\)
+    \item multi-leaf same-\(l_2\)：\(0.4873 \rightarrow 0.5449\)
+    \item deep crowded \(l_2 \ge 4\)：\(0.2228 \rightarrow 0.2621\)
+    \item target-weighted entropy：\(1.1001 \rightarrow 1.2623\)
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Block 4：R202a 下游筛选}
+
+\begin{itemize}
+  \item \texttt{R208}（\texttt{R202a -> SFT/evaluate}）已完成：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10 = 0.09974\)
+    \item \(\mathrm{HR}@10 = 0.14251\)
+  \end{itemize}
+  \item 相对当前最优 \texttt{v2\_on\_p05}，这条分支回退：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10: 0.10271 \rightarrow 0.09974\)
+    \item \(\mathrm{HR}@10: 0.14626 \rightarrow 0.14251\)
+  \end{itemize}
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这一阶段的首轮筛选给出了一个很明确的结论：
+
+\begin{quote}
+\texttt{stop-gradient} hierarchy isolation 确实触及了一个真实瓶颈：跨层梯度干扰；但 current stage-2 的 tokenizer 微调还没有把这种结构收益稳定兑现成更强的下游结果。当前最强主线仍然是 \texttt{v2\_on\_p05 -> RL}，而不是任何已完成的 stage-2 分支。
+\end{quote}
+
 \section{当前证据的整体解释}
 
 把目前的证据串起来，可以得到一个更清楚的图景：
 
 \begin{enumerate}
-  \item 当前 semantic SID 足以提供较强的 coarse routing；
-  \item 剩余的主要困难集中在 local leaf-level discrimination；
-  \item graph-structured collaborative signal 对这个瓶颈是有帮助的；
-  \item 当前最强候选是 \textbf{spectral middle-resolution collaborative graph view}；
-  \item 当前仓库默认 \texttt{sid-train} 配置不能代表正式 MiniOneRec baseline，所有方法对比必须切到 upstream-aligned regime；
-  \item 在 upstream-aligned regime 下，\texttt{hierarchy-aware} 已经在 final generated SID 上给出了第一轮正信号；
-  \item 把新的 SID 推进到 SFT 之后，收益主要先体现在短程排序和 crowded local ambiguity 样本上；
-  \item 当前没有形成全面下游增益的主要原因，不像是 tokenizer 方向错误，而更像是 tokenizer-to-SFT transfer 仍然会牺牲一部分 baseline 已经正确的局部 routing；
-  \item 这说明图信号本身有用，而且图信号如何同时与 \texttt{sid-generate} 的 collision resolution 以及 SFT 阶段的排序行为交互，是方法设计里非常关键的两道接口。
+  \item 当前 semantic SID 足以提供较强的 coarse routing，而真正持续暴露出来的困难集中在 local leaf-level discrimination；
+  \item graph-structured collaborative signal 对这个瓶颈是有帮助的，而且其中最强的载体是 \textbf{spectral middle-resolution collaborative graph view}；
+  \item 如果图约束均匀地作用在所有 item 上，确实会出现过度修正，因此真正需要的不是“更强 graph”，而是 ambiguity-aware 的 graph supervision；
+  \item 当前仓库默认 \texttt{sid-train} 配置不能代表正式 MiniOneRec baseline，所有方法比较都必须建立在 upstream-aligned tokenizer regime 上；
+  \item \texttt{v1 hierarchy-aware} 已经证明：graph regularization 能在 final generated SID 和 crowded local ambiguity 上给出真实收益，但这份收益在下游只部分保留；
+  \item \texttt{v2 ambiguity-aware tokenizer} 进一步证明：如果 graph supervision 只在高歧义区域更强、在低歧义区域更多保留 semantic structure，最终 SID 的局部层级结构可以明显更干净；
+  \item 当前 \texttt{v2} 在原版 MiniOneRec 上给出的下游正信号是 recipe-sensitive 的：\texttt{title\_history2sid\_on + desc\_align\_p05} 已经成为 \texttt{v2} 的最佳下游 recipe；
+  \item strongest original recipe 与 \texttt{v2} 的主冲突并不来自 \texttt{desc\_align\_p05}，而主要来自 \texttt{title\_history2sid\_off}；
+  \item 当前 \texttt{v2\_on\_p05} 与 strongest original MiniOneRec SFT 已经非常接近，剩余差距主要表现为中段 beam retention，而不是 top-1 或 same-prefix disambiguation 的能力不足。
+  \item stage-2 第一轮结果表明：\texttt{R202a} 的 stop-gradient 能改善 retention-oriented tokenizer structure，但 \texttt{R205} 这版 semantic retention KL 和 \texttt{R202b-r075} 这类 level-1 compensation 都更像“collision 更好但结构更差”的 tradeoff 分支；
+  \item 因此，当前的关键事实已经从“是否需要 stage-2 微调”推进到“为什么 tokenizer 侧的结构收益没有稳定保留到下游 \texttt{SFT/evaluate}”。
 \end{enumerate}
 
 \section{当前最佳工作假设}
@@ -471,21 +808,23 @@ hierarchy-aware SID 的确在修我们关心的 crowded local ambiguity，但它
 当前最可信的工作假设是：
 
 \begin{quote}
-MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierarchy-aware graph regularization；其中 middle-resolution spectral collaborative graph 是降低 local leaf ambiguity 的关键额外信号，而真正的有效性需要分两层判断：先看 \texttt{sid-generate} 后的 final SID，再看这些结构收益能否在 SFT 中被尽量无损地保留下来。
+MiniOneRec 应该继续保留 semantic tokenizer 作为 backbone，同时引入 \textbf{ambiguity-aware graph supervision + semantic-structure retention}。其中 middle-resolution spectral collaborative graph 仍然是最关键的协同载体，而 downstream 最优 recipe 当前更像是 \texttt{title\_history2sid\_on + desc\_align\_p05}。在这条 recipe 上，\texttt{v2} 已经把主要问题压缩成一个中段 beam retention gap；但 stage-2 第一轮说明，这个 gap 还不能靠当前版本的 stop-gradient 或 semantic-retention KL 直接补平。因此当前最强 end-to-end 主线仍然是 \texttt{v2\_on\_p05 -> RL}，而 stage-2 更像是在暴露“结构收益为何没有下游兑现”的接口问题。
 \end{quote}
 
-目前最强的 \texttt{G\_mid v1} 候选是：
+当前最强的 \texttt{G\_mid} 候选仍然是：
 
 \begin{itemize}
   \item 主候选：\texttt{fagsp\_mid\_base}
   \item 备选：\texttt{gsprec\_mid\_prism}
 \end{itemize}
 
-当前最合理的控制组地位也更清楚了：
+当前最合理的 baseline 分层也更清楚了：
 
 \begin{itemize}
-  \item \texttt{hierarchy\_reg}：当前主方法候选
-  \item \texttt{baseline}：强语义基线
+  \item 主 baseline：原版 MiniOneRec 的最强 SFT / RL 结果；
+  \item recipe-aligned baseline：\texttt{title\_history2sid\_on + desc\_align\_off} 的原版 MiniOneRec；
+  \item internal control：\texttt{mgr\_upstream\_baseline} 与 \texttt{mgr\_upstream\_hierarchy}，用于机制分析与消融，而不是主表锚点；
+  \item 当前主方法候选：\texttt{v2\_on\_p05}（tokenizer 为 \texttt{v2 offline\_combined}，下游 recipe 为 \texttt{title\_history2sid\_on + desc\_align\_p05}）。
 \end{itemize}
 
 \section{当前开放问题}
@@ -493,14 +832,13 @@ MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierar
 即使有了新一轮 probe，下面这些问题仍然没有完全解决：
 
 \begin{enumerate}
-  \item 当前 final-SID 改善是否能在第二个 seed 上保持？
-  \item baseline 与 hierarchy\_reg 的最终 index 差异，是否真的主要集中在 \texttt{same\_l2} / local ambiguity bucket？
-  \item 当前 \texttt{hierarchy\_reg} 的收益究竟来自更好的 leaf disambiguation，还是更好的 collision repair compatibility？
-  \item semantic anchoring 在训练时应该如何使用，才能避免把 graph signal 限制得过死？
-  \item graph regularization 最佳作用位置到底是 encoder latent、quantized residual，还是 cumulative quantized representation？
-  \item 当前 SFT 中被打坏的那批 baseline-correct local routing，究竟来自 SID 分布变化、训练目标不匹配，还是 decoding/beam 行为变化？
-  \item 如何保住 hierarchy 在 crowded same-\(l_2\) case 上的收益，同时减少对 baseline 已正确局部邻域的破坏？
-  \item 什么时候适合把 published baselines 拉进主表，避免在机制还没站稳前过早铺开大规模复现？
+  \item 当前 \texttt{v2\_on\_p05} 相对 strongest original MiniOneRec SFT 的中段 beam retention gap，究竟来自下游训练目标、解码行为，还是更深层的 representation transfer 问题？
+  \item \texttt{v2} 更干净的 local hierarchy，为什么没有通过 \texttt{sid-generate} 继续转化成更低的 final collision？
+  \item 为什么 \texttt{R202a} 这类 tokenizer-side 的 clean structural gain，到了 \texttt{R208} 的 \texttt{SFT/evaluate} 并没有继续转化成更强的 \(\mathrm{NDCG}@10 / \mathrm{HR}@10\)？
+  \item 当前 semantic-structure retention 的更合理最小实现到底是什么？第一版 batch-local neighborhood KL 已经给出负结果，那么下一步应该往更弱的 KL、pairwise ranking，还是其他邻域保持形式收缩？
+  \item 当前 offline ambiguity prior 是否已经足够，还是需要在不破坏 clean logic 的前提下补一版更稳的 online uncertainty？
+  \item 如果 tokenizer 微调在 SFT 上只给出很小增益，这个增益是否能够在第二个 seed 上稳定复现？
+  \item 什么时候再把 internal control、Office、完整消融和 published baselines 拉回主线，避免过早扩展。
 \end{enumerate}
 
 \section{下一步行动}
@@ -508,33 +846,37 @@ MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierar
 当前最合理的 next actions 是：
 
 \begin{enumerate}
-  \item 保留当前 graph bank，不再频繁改 carrier：
+  \item 暂时冻结当前 graph carrier 与 \texttt{v2 tokenizer} 主体设计，不再频繁改 graph bank：
   \begin{itemize}
     \item \texttt{G\_coarse}：purified coarse collaborative graph；
     \item \texttt{G\_mid}：\texttt{fagsp\_mid\_base}；
     \item \texttt{G\_local}：purified transition graph。
   \end{itemize}
-  \item 优先围绕 final generated SID 做分析，而不是再把注意力只放在 \texttt{sid-train} collision 上；
-  \item 下一轮最优先比较：
+  \item 将当前最佳 downstream 组合固定为 \texttt{v2\_on\_p05}，继续作为后续任何 tokenizer 调整的固定下游 recipe：
   \begin{itemize}
-    \item baseline；
-    \item hierarchy-aware graph regularization。
+    \item \texttt{title\_history2sid\_on}
+    \item \texttt{desc\_align\_p05}
   \end{itemize}
-  \item 下一阶段不要先扩更多 tokenizer idea，而应优先改 tokenizer-to-SFT transfer，目标是：
+  \item 暂时将 stage-2 第一轮结论固定为：
   \begin{itemize}
-    \item 保住 hierarchy 对 crowded local ambiguity 的修复；
-    \item 尽量不打坏 baseline 已经正确的 coarse/local routing。
+    \item \texttt{R202a}：当前最干净的 tokenizer-side candidate
+    \item \texttt{R202b-r075}：保留为 collision-vs-structure tradeoff 证据
+    \item \texttt{R205}：保留为 semantic-retention KL 的首轮负结果
+    \item \texttt{R208}：确认 \texttt{R202a} 尚未在下游超过当前 \texttt{v2\_on\_p05}
   \end{itemize}
-  \item 在此基础上，再补：
+  \item 后续如果继续 stage-2，优先考虑的是更克制的第二轮 retention refinement，而不是继续推当前 \texttt{R205} 配方直接下游：
   \begin{itemize}
-    \item second seed 的 final SID 验证；
-    \item SFT 下的重复运行或小范围机制改写；
-    \item 必要时再进入 RL。
+    \item 更弱的 semantic retention 强度；
+    \item 更高 temperature；
+    \item 或者更保守的 pairwise / neighborhood-order preservation 形式。
   \end{itemize}
-  \item 如果 transfer 问题开始被解决，再考虑做：
+  \item 在出现新的 tokenizer-side 候选之前，不继续启动 \texttt{R209/R210}；当前最强 end-to-end 记录仍以 \texttt{v2\_on\_p05 -> RL} 为准；
+  \item internal control、完整机制消融、Office 与 published baselines 暂时后置，只保留在必要时用于解释的地位；
+  \item 在新的 stage-2 候选出现之前，更值得优先做的是：
   \begin{itemize}
-    \item Office 上的对应实验；
-    \item published baselines 主表准备。
+    \item tokenizer-to-SFT transfer 的更细机制分析；
+    \item 判断当前 gap 更像 recipe interface 问题、训练目标问题，还是 decode / beam retention 问题；
+    \item 必要时再决定是否补 second seed 或开启下一轮小修。
   \end{itemize}
 \end{enumerate}
 
@@ -544,21 +886,37 @@ MiniOneRec 应该继续保留 semantic SID 作为 backbone，同时加入 hierar
 
 \begin{itemize}
   \item 任务对齐文档：\path{idea-discovery/.../CURRENT_TASK_ALIGNMENT.md}
-  \item 第一轮 probe 记录：\path{idea-discovery/.../13_initial_probe_run_2026-04-09.md}
-  \item 论文模块移植 probe 记录：\path{idea-discovery/.../14_paper_transplant_probe_run_2026-04-09.md}
-  \item 上游风格 SID 复现记录：\path{research-progress-log/experiment_launches/2026-04-09_upstream_style_rqvae_result.md}
+  \item 当前方法上下文总览：\path{idea-discovery/.../working_idea_graph_hierarchy_v1/00_ACTIVE_CONTEXT.md}
+  \item probe 合并总记录：\path{idea-discovery/.../working_idea_graph_hierarchy_v1/01_PROBE_AND_EARLY_EVIDENCE.md}
+  \item 2026-04-09 provenance / reproduction 合并记录：\path{research-progress-log/experiment_launches/2026-04-09_pipeline_alignment_and_reproduction/README.md}
   \item upstream-aligned MGR-SID v1 总记录：\path{research-progress-log/experiment_launches/2026-04-09_mgr_sid_v1_upstream/README.md}
   \item upstream-aligned MGR-SID v1 结果记录：\path{research-progress-log/experiment_launches/2026-04-09_mgr_sid_v1_upstream/RESULTS.md}
   \item SFT 数据转换记录：\path{research-progress-log/experiment_launches/2026-04-10_mgr_sid_data_experiment_convert/README.md}
   \item Industrial SFT + evaluate 结果：\path{research-progress-log/experiment_launches/2026-04-10_mgr_sid_sft_eval_industrial/RESULTS.md}
   \item 与历史结果对比：\path{research-progress-log/experiment_launches/2026-04-10_mgr_sid_sft_eval_industrial/COMPARE_TO_HISTORY.md}
   \item evaluate 错误分布分析：\path{research-progress-log/experiment_launches/2026-04-10_mgr_sid_sft_eval_industrial/EVAL_ERROR_DISTRIBUTION.md}
+  \item v2 ambiguity proxy sanity：\path{research-progress-log/experiment_launches/2026-04-11_mgr_sid_v2_proxy_sanity/README.md}
+  \item v2 tokenizer 训练与生成：\path{research-progress-log/experiment_launches/2026-04-11_mgr_sid_tokenizer_v2_r005/RESULTS.md}
+  \item v2 结构比较：\path{research-progress-log/experiment_launches/2026-04-11_mgr_sid_tokenizer_v2_r005/STRUCTURE_COMPARISON.md}
+  \item v2 SFT + evaluate：\path{research-progress-log/experiment_launches/2026-04-11_mgr_sid_v2_sft_eval_industrial/RESULTS.md}
+  \item v2 与 recipe-aligned / strongest MiniOneRec 对比：\path{research-progress-log/experiment_launches/2026-04-11_mgr_sid_v2_sft_eval_industrial/RESULTS.md}
+  \item v2 recipe isolation：\path{research-progress-log/experiment_launches/2026-04-11_mgr_sid_v2_recipe_isolation_industrial/README.md}
+  \item v2 recipe isolation 的 top-k / error distribution：\path{research-progress-log/experiment_launches/2026-04-11_mgr_sid_v2_recipe_isolation_industrial/TOPK_ERROR_DISTRIBUTION_COMPARISON.md}
+  \item v2 RL 结果总记录：\path{research-progress-log/experiment_launches/2026-04-12_mgr_sid_v2_rl_on_p05_industrial/RESULTS.md}
+  \item v2 RL evaluate 分析：\path{research-progress-log/experiment_launches/2026-04-12_mgr_sid_v2_rl_on_p05_industrial/EVAL_ANALYSIS.md}
+  \item stage-2 retention 计划：\path{idea-discovery/.../refine-logs/EXPERIMENT_PLAN_STAGE2_RETENTION.md}
+  \item stage-2 retention tracker：\path{idea-discovery/.../refine-logs/EXPERIMENT_TRACKER_STAGE2_RETENTION.md}
+  \item stage-2 stop-gradient 记录：\path{research-progress-log/experiment_launches/2026-04-13_mgr_sid_stage2_stopgrad_industrial/README.md}
+  \item stage-2 semantic retention 记录：\path{research-progress-log/experiment_launches/2026-04-13_mgr_sid_stage2_semantic_retention_industrial/README.md}
+  \item stage-2 \texttt{R202a -> SFT/evaluate}：\path{research-progress-log/experiment_launches/2026-04-13_mgr_sid_stage2_r202a_sft_eval_industrial/RESULTS.md}
   \item 第一轮 probe 脚本：\path{scripts/experiment_mgr_sid_graph_bank_probe.py}
   \item 模块移植 probe 脚本：\path{scripts/experiment_mgr_sid_paper_transplant_probe.py}
   \item 实验版训练脚本：\path{scripts/experiment_mgr_sid_v1_train.py}
   \item 实验版生成脚本：\path{scripts/experiment_mgr_sid_v1_generate.py}
   \item 实验版数据转换脚本：\path{scripts/experiment_mgr_sid_prepare_data.py}
   \item 实验版局部歧义分析脚本：\path{scripts/experiment_mgr_sid_v1_local_ambiguity_analysis.py}
+  \item v2 proxy sanity 脚本：\path{scripts/experiment_mgr_sid_v2_proxy_sanity.py}
+  \item v2 训练脚本：\path{scripts/experiment_mgr_sid_v2_train.py}
 \end{itemize}
 
 \end{CJK*}

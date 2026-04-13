@@ -80,63 +80,154 @@ The main question is whether the better final collision reflects the failure mod
 
 \Cref{tab:ambiguity} shows that the improvement is structurally meaningful. The hierarchy-aware tokenizer does not merely shuffle code assignments while preserving the same ambiguity. It lowers the average number of competing leaves under the target prefix, reduces the fraction of targets that fall into multi-leaf same-$l_2$ buckets, and lowers the conditional entropy of the third-level code. In the full movement analysis, $17.32\%$ of test targets move from a multi-leaf same-$l_2$ bucket into a singleton bucket, while only $9.68\%$ move in the opposite direction. This strongly supports our original diagnosis that the remaining tokenizer bottleneck is local leaf ambiguity.
 
-\subsection{Does the tokenizer gain transfer to downstream SFT?}
+\subsection{First downstream test: v1 transfers only partially}
 
-We next push the two final Industrial tokenizers into downstream SFT and evaluate the resulting recommenders. We compare the current semantic baseline and the hierarchy-aware tokenizer, and also report the closest historical Industrial SFT run and the historical best SFT run stored in our experiment CSV.
+We first pushed the final Industrial tokenizers from \Cref{tab:main,tab:ambiguity} into downstream SFT. Here, the internal comparison uses the upstream-aligned semantic run and the hierarchy-aware v1 run under the same controlled pipeline. We emphasize that this \emph{internal control} is useful for diagnosis, but it is not our final baseline anchor.
 
 \begin{table}[t]
   \centering
-  \caption{Industrial SFT results. The hierarchy-aware tokenizer improves short-range ranking but does not yet produce a broad $@10+$ gain or surpass the historical best SFT setting.}
-  \label{tab:sft}
+  \caption{Industrial SFT results for the internal control comparison. MGR-SID v1 improves short-range ranking but does not yet form a broad $@10+$ gain.}
+  \label{tab:sft_v1}
   \begin{tabular}{lcccccc}
     \toprule
     Run & N@1 & N@3 & N@10 & H@1 & H@3 & H@10 \\
     \midrule
-    Historical closest & 0.0624 & 0.0798 & 0.0987 & 0.0624 & 0.0929 & 0.1471 \\
-    Historical best & \textbf{0.0671} & \textbf{0.0850} & \textbf{0.1037} & \textbf{0.0671} & \textbf{0.0984} & \textbf{0.1509} \\
-    Current baseline & 0.0631 & 0.0777 & 0.0943 & 0.0631 & 0.0882 & 0.1343 \\
-    Current hierarchy & 0.0627 & 0.0802 & 0.0936 & 0.0627 & 0.0929 & 0.1304 \\
+    Internal semantic control & 0.0631 & 0.0777 & 0.0943 & 0.0631 & 0.0882 & 0.1343 \\
+    Internal hierarchy-aware v1 & 0.0627 & 0.0802 & 0.0936 & 0.0627 & 0.0929 & 0.1304 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\Cref{tab:sft} adds an important qualification to the tokenizer story. The hierarchy-aware tokenizer does not turn into a new end-to-end best SFT system by itself. Relative to the current upstream-aligned baseline, it improves $\mathrm{NDCG}@3$ and $\mathrm{HR}@3$, and slightly improves $@5$, but it remains weaker at $@10+$ and still trails the best historical Industrial SFT result. This means that the tokenizer gain \emph{does} transfer downstream, but only partially and mostly at short range.
+\Cref{tab:sft_v1} was the first indication that tokenizer gains do transfer downstream, but only partially. Relative to the internal semantic control, v1 improves $\mathrm{NDCG}@3$ and $\mathrm{HR}@3$, and slightly improves $@5$, but remains weaker at $@10+$. This pattern motivated the next step: instead of further changing the graph carrier, we redesigned the training interface itself.
 
-\subsection{What changes in the evaluate error distribution?}
+\subsection{Ambiguity-aware tokenizer v2}
 
-To understand the partial transfer, we compare the final evaluate outputs of the two SFT models using SID-aware diagnostics. The main question is whether the hierarchy-aware tokenizer changes the \emph{type} of downstream errors rather than just the aggregate metric.
+The top-$k$ and error-distribution analysis of v1 suggested that graph regularization was helpful on crowded local ambiguity cases but over-corrected already-stable semantic regions. We therefore introduced an ambiguity-aware v2 tokenizer with two changes:
+\begin{itemize}[leftmargin=1.4em]
+  \item an \emph{offline ambiguity prior} built from semantic density, semantic-collaborative disagreement, and graph competition strength;
+  \item a \emph{semantic-structure retention} regularizer that preserves the original semantic neighborhood in low-ambiguity regions.
+\end{itemize}
+
+The first v2 tokenizer run used only the offline combined ambiguity prior, because the current online uncertainty proxy was not reliable enough in preliminary sanity checks.
 
 \begin{table}[t]
   \centering
-  \caption{Evaluate-time error distribution on Industrial. The hierarchy-aware tokenizer reduces same-prefix error rates and helps more on crowded local targets, but the beam also stays in the baseline local neighborhood less often.}
-  \label{tab:error}
-  \begin{tabular}{lccc}
+  \caption{Tokenizer-side comparison after introducing ambiguity-aware supervision. The v2 tokenizer does not further reduce final collision, but produces the cleanest local structure.}
+  \label{tab:v2tok}
+  \begin{tabular}{lcccc}
     \toprule
-    Metric & Baseline & Hierarchy & Delta \\
+    Method & Final collision & Mean target $l_2$ leaves & Multi-leaf same-$l_2$ & Mean level-3 entropy \\
     \midrule
-    Top-1 error same-$l_1$ rate & 0.1815 & 0.1236 & -0.0580 \\
-    Top-1 error same-$l_2$ rate & 0.0525 & 0.0370 & -0.0156 \\
-    Beam contains same-$l_1$ & 0.6724 & 0.5248 & -0.1476 \\
-    Beam contains same-$l_2$ & 0.3272 & 0.3077 & -0.0194 \\
-    Top-1 hit on targets with $l_2 \ge 4$ & 0.0475 & 0.0521 & +0.0047 \\
-    Recovery on baseline same-$l_2$ errors & -- & 0.0538 & -- \\
+    Internal semantic control & 0.00353 & 4.7999 & 0.6894 & 1.4533 \\
+    Hierarchy-aware v1 & \textbf{0.00326} & 4.4498 & 0.6131 & 1.2935 \\
+    Ambiguity-aware v2 & 0.00353 & \textbf{4.3422} & \textbf{0.4873} & \textbf{1.1001} \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\Cref{tab:error} shows that the downstream effect is highly structured. On the positive side, the hierarchy-aware tokenizer clearly reduces local same-prefix misses: top-1 errors that remain inside the same $l_1$ or same $l_2$ subtree become less frequent, and the gain is strongest on crowded targets with $l_2$ fanout at least $4$. Moreover, baseline same-$l_2$ errors are the most recoverable error bucket under the new tokenizer. This is exactly the pattern expected from a tokenizer that reduces local leaf ambiguity.
+\Cref{tab:v2tok} is important for two reasons. First, it shows that collision is not the whole tokenizer story: v2 only ties the internal semantic control on final collision, yet it yields the cleanest local hierarchy among all tested tokenizers. Second, the ambiguity-aware design does exactly what it was intended to do: it reduces the fraction of targets that remain trapped in multi-leaf same-$l_2$ buckets without simply increasing graph pressure everywhere.
 
-At the same time, the diagnostics reveal a second effect. The beam under the hierarchy-aware tokenizer is less likely to remain in the baseline local neighborhood, as shown by lower same-prefix beam overlap and lower average common-prefix length. In a direct per-example comparison, the hierarchy-aware model fixes $63$ baseline top-1 misses but breaks $65$ baseline top-1 hits. The fixed cases are usually harder and more crowded: under the baseline, they have average target $l_2$ fanout $7.32$, and the target is often already present in top-3 or top-5 but not at rank $1$. By contrast, the broken cases are those where the baseline was already exactly inside the right local subtree. This explains why the new tokenizer helps local reranking and short-range ranking while still failing to deliver a broad $@10+$ gain.
+\subsection{Downstream SFT under the recipe-aligned original MiniOneRec setting}
+
+We first evaluate whether this cleaner v2 tokenizer helps in a fair downstream comparison against the \emph{original} MiniOneRec under the same task recipe. The first v2 downstream run uses:
+\begin{itemize}[leftmargin=1.4em]
+  \item \texttt{title\_history2sid = on}
+  \item \texttt{SID-description alignment = off}
+\end{itemize}
+Hence the recipe-aligned original MiniOneRec comparison is the historical run with the same task setting. For context, we also report the strongest original MiniOneRec SFT and RL results in the repository.
+
+\begin{table}[t]
+  \centering
+  \caption{Industrial downstream comparison for v2. V2 already surpasses the recipe-aligned original MiniOneRec on all reported NDCG cutoffs and on HR@1/3/5, but does not yet surpass the strongest original MiniOneRec recipe.}
+  \label{tab:v2sft}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Run & N@1 & N@3 & N@10 & H@1 & H@3 & H@10 \\
+    \midrule
+    Recipe-aligned original MiniOneRec & 0.0624 & 0.0798 & 0.0987 & 0.0624 & 0.0929 & \textbf{0.1471} \\
+    Strongest original MiniOneRec SFT & 0.0671 & \textbf{0.0850} & \textbf{0.1037} & 0.0671 & \textbf{0.0984} & 0.1509 \\
+    Strongest original MiniOneRec RL & \textbf{0.0732} & 0.0890 & 0.1073 & \textbf{0.0732} & 0.1004 & 0.1513 \\
+    Ambiguity-aware v2 & 0.0704 & 0.0839 & 0.1008 & 0.0704 & 0.0942 & 0.1425 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:v2sft} establishes the current position of our method much more clearly than the earlier internal control. Relative to the \emph{recipe-aligned original MiniOneRec}, v2 improves all reported NDCG cutoffs:
+\[
+\Delta \mathrm{NDCG}@1 = +0.0079,\;
+\Delta \mathrm{NDCG}@3 = +0.0041,\;
+\Delta \mathrm{NDCG}@5 = +0.0036,\;
+\Delta \mathrm{NDCG}@10 = +0.0021.
+\]
+It also improves $\mathrm{HR}@1$, $\mathrm{HR}@3$, and $\mathrm{HR}@5$, while trailing slightly on $\mathrm{HR}@10$.
+
+This means the ambiguity-aware tokenizer is no longer just ``working on an internal control.'' It already improves downstream recommendation quality against the original MiniOneRec under the same task recipe. At this stage, however, it still does \emph{not} surpass the strongest original MiniOneRec recipe, which disables \texttt{title\_history2sid} and enables description alignment with probability $0.5$.
+
+\subsection{Recipe isolation: the main mismatch is \texttt{title\_history2sid\_off}}
+
+To understand why the strongest original recipe did not transfer cleanly to v2, we completed the missing cells of the v2 recipe matrix on Industrial:
+\begin{itemize}[leftmargin=1.4em]
+  \item \texttt{title\_history2sid\_on + desc\_align\_off}
+  \item \texttt{title\_history2sid\_on + desc\_align\_p05}
+  \item \texttt{title\_history2sid\_off + desc\_align\_off}
+  \item \texttt{title\_history2sid\_off + desc\_align\_p05}
+\end{itemize}
+
+\begin{table}[t]
+  \centering
+  \caption{Recipe isolation for the v2 tokenizer on Industrial. The best downstream recipe for v2 is \texttt{title\_history2sid\_on + desc\_align\_p05}, and the dominant negative factor is turning \texttt{title\_history2sid} off.}
+  \label{tab:v2recipe}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Run & N@1 & N@3 & N@10 & H@1 & H@3 & H@10 \\
+    \midrule
+    \texttt{v2\_on\_off} & 0.0704 & 0.0839 & 0.1008 & 0.0704 & 0.0942 & 0.1425 \\
+    \texttt{v2\_on\_p05} & \textbf{0.0706} & \textbf{0.0845} & \textbf{0.1027} & \textbf{0.0706} & \textbf{0.0951} & \textbf{0.1463} \\
+    \texttt{v2\_off\_off} & 0.0589 & 0.0741 & 0.0913 & 0.0589 & 0.0854 & 0.1339 \\
+    \texttt{v2\_off\_p05} & 0.0591 & 0.0737 & 0.0899 & 0.0591 & 0.0843 & 0.1308 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:v2recipe} resolves the strongest-recipe mismatch. When \texttt{title\_history2sid} stays on, adding description alignment with probability $0.5$ is beneficial:
+\[
+\Delta \mathrm{NDCG}@10 = +0.0019,\qquad
+\Delta \mathrm{HR}@10 = +0.0038.
+\]
+By contrast, turning \texttt{title\_history2sid} off causes a large drop regardless of whether description alignment is enabled. Under \texttt{desc\_align\_off}, the drop is
+\[
+\Delta \mathrm{NDCG}@10 = -0.0096,\qquad
+\Delta \mathrm{HR}@10 = -0.0086,
+\]
+and under \texttt{desc\_align\_p05} it becomes even larger:
+\[
+\Delta \mathrm{NDCG}@10 = -0.0128,\qquad
+\Delta \mathrm{HR}@10 = -0.0154.
+\]
+
+This means the main negative factor is not description alignment itself. The real source of mismatch is \texttt{title\_history2sid\_off}. For the current v2 tokenizer, the best downstream setting is therefore \texttt{title\_history2sid\_on + desc\_align\_p05}.
+
+We also compared this best v2 setting against the strongest original MiniOneRec SFT. The remaining gap is now very small:
+\[
+\Delta \mathrm{NDCG}@10 = -0.0010,\qquad
+\Delta \mathrm{HR}@10 = -0.0046.
+\]
+Further top-$k$ analysis shows that v2 already wins at rank 1 and produces much cleaner same-prefix error behavior, while the strongest original SFT still has an advantage in mid-beam neighborhood retention at \texttt{top3/top5/top10}. In other words, the remaining issue is no longer a tokenizer-collapse problem; it is a downstream interaction gap.
 
 \subsection{Current interpretation}
 
-Taken together, the experiments support a cautious but coherent claim. We do \emph{not} yet show downstream recommendation gains after SFT or RL. We do show that:
+Taken together, the experiments support a more precise claim than our earlier v1-only narrative:
 \begin{enumerate}[leftmargin=1.4em]
   \item fair tokenizer comparison requires the upstream MiniOneRec training regime;
-  \item graph-structured collaborative information has real signal for local same-$l_2$ disambiguation;
-  \item this signal is strongest when encoded by a spectral middle-resolution graph;
-  \item hierarchy-aware graph regularization improves the \emph{final generated SID} and makes the tokenizer less locally ambiguous than a fair semantic baseline;
-  \item these tokenizer gains transfer to downstream SFT mainly on crowded local cases, but the current tokenizer-to-SFT interface still sacrifices some already-correct local routing.
+  \item graph-structured collaborative information has real signal for local same-$l_2$ disambiguation, and this signal is strongest when encoded by a spectral middle-resolution graph;
+  \item uniform hierarchy-aware graph injection is insufficient because it over-corrects already-stable semantic regions;
+  \item ambiguity-aware graph supervision plus semantic-structure retention yields a tokenizer with a cleaner local hierarchy than both the internal semantic control and v1;
+  \item this cleaner tokenizer already improves downstream recommendation against the recipe-aligned original MiniOneRec;
+  \item after recipe isolation, the best downstream setting for the current v2 tokenizer is \texttt{title\_history2sid\_on + desc\_align\_p05};
+  \item the strongest original MiniOneRec recipe remains slightly better overall, but the remaining gap is now small and is best described as a mid-beam neighborhood-retention gap rather than a tokenizer-side failure.
 \end{enumerate}
 
-For the current stage of the project, this is a stronger and more realistic claim than a simple ``downstream win'' statement. The tokenizer-side hypothesis is supported, and the first downstream analysis explains both why the gain is real and why it is not yet broad enough.
+At the current stage, the main conclusion is therefore not ``we already beat the whole system.'' The stronger conclusion is:
+\begin{quote}
+the tokenizer-side method is now supported by structural evidence, recipe-aligned downstream evidence, and recipe-isolation evidence. The current best v2 setting is already very close to the strongest original MiniOneRec SFT, and the remaining gap is primarily a downstream retention issue rather than a failure of the ambiguity-aware tokenizer itself.
+\end{quote}

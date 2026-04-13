@@ -1,0 +1,495 @@
+{
+  "inputs": {
+    "baseline_index": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_stage2_retention_20260413/generated_indices/Industrial_and_Scientific.stage2_r202a_stopgrad.index.json",
+    "compare_index": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_stage2_retention_20260413/generated_indices/Industrial_and_Scientific.stage2_r202b_retry075.index.json",
+    "test_csv": "/home/leejt/OneRec/data/Amazon/test/Industrial_and_Scientific_5_2016-10-2018-11.csv",
+    "item_json": "/home/leejt/OneRec/data/Amazon/index/Industrial_and_Scientific.item.json"
+  },
+  "baseline": {
+    "catalog": {
+      "item_count": 3686,
+      "l2_prefix_count": 2643,
+      "item_weighted_mean_l2_item_count": 2.3521432447097124,
+      "item_weighted_median_l2_item_count": 1.0,
+      "item_weighted_mean_l2_leaf_count": 2.3402061855670104,
+      "item_weighted_median_l2_leaf_count": 1.0,
+      "item_fraction_multileaf_l2": 0.44465545306565385,
+      "item_fraction_multileaf_l2_ge4": 0.12506782419967444,
+      "item_fraction_multileaf_l2_ge8": 0.04666304937601736,
+      "weighted_l3_entropy_given_l2_bits": 0.7282114274183588,
+      "top_crowded_l2_prefixes": [
+        {
+          "prefix": "<a_191><b_151>",
+          "item_count": 23,
+          "leaf_count": 23,
+          "entropy_bits": 4.523561956057013
+        },
+        {
+          "prefix": "<a_191><b_83>",
+          "item_count": 21,
+          "leaf_count": 21,
+          "entropy_bits": 4.39231742277876
+        },
+        {
+          "prefix": "<a_38><b_146>",
+          "item_count": 16,
+          "leaf_count": 16,
+          "entropy_bits": 4.0
+        },
+        {
+          "prefix": "<a_140><b_33>",
+          "item_count": 15,
+          "leaf_count": 15,
+          "entropy_bits": 3.906890595608518
+        },
+        {
+          "prefix": "<a_29><b_92>",
+          "item_count": 12,
+          "leaf_count": 12,
+          "entropy_bits": 3.584962500721156
+        },
+        {
+          "prefix": "<a_140><b_113>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_191><b_12>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_191><b_92>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_232><b_130>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_238><b_98>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_69><b_90>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_225><b_101>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_4><b_79>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_78><b_58>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_13><b_106>",
+          "item_count": 8,
+          "leaf_count": 7,
+          "entropy_bits": 2.75
+        }
+      ]
+    },
+    "test_weighted": {
+      "example_count": 4533,
+      "covered_count": 4533,
+      "missing_count": 0,
+      "target_weighted_mean_l2_item_count": 3.675490844915067,
+      "target_weighted_median_l2_item_count": 2,
+      "target_weighted_mean_l2_leaf_count": 3.614824619457313,
+      "target_weighted_median_l2_leaf_count": 1,
+      "target_fraction_multileaf_l2": 0.49878667549084493,
+      "target_fraction_multileaf_l2_ge4": 0.19942642841385397,
+      "target_fraction_multileaf_l2_ge8": 0.12883300242664902,
+      "target_weighted_mean_l3_entropy_bits": 1.030771840436369
+    }
+  },
+  "hierarchy": {
+    "catalog": {
+      "item_count": 3686,
+      "l2_prefix_count": 2448,
+      "item_weighted_mean_l2_item_count": 2.5849158979924036,
+      "item_weighted_median_l2_item_count": 2.0,
+      "item_weighted_mean_l2_leaf_count": 2.574877916440586,
+      "item_weighted_median_l2_leaf_count": 2.0,
+      "item_fraction_multileaf_l2": 0.5192620727075421,
+      "item_fraction_multileaf_l2_ge4": 0.17498643516006512,
+      "item_fraction_multileaf_l2_ge8": 0.04042322300596853,
+      "weighted_l3_entropy_given_l2_bits": 0.8696278905461909,
+      "top_crowded_l2_prefixes": [
+        {
+          "prefix": "<a_115><b_242>",
+          "item_count": 22,
+          "leaf_count": 22,
+          "entropy_bits": 4.459431618637295
+        },
+        {
+          "prefix": "<a_115><b_5>",
+          "item_count": 21,
+          "leaf_count": 21,
+          "entropy_bits": 4.39231742277876
+        },
+        {
+          "prefix": "<a_191><b_238>",
+          "item_count": 19,
+          "leaf_count": 19,
+          "entropy_bits": 4.247927513443583
+        },
+        {
+          "prefix": "<a_211><b_202>",
+          "item_count": 18,
+          "leaf_count": 18,
+          "entropy_bits": 4.169925001442312
+        },
+        {
+          "prefix": "<a_83><b_237>",
+          "item_count": 12,
+          "leaf_count": 12,
+          "entropy_bits": 3.584962500721156
+        },
+        {
+          "prefix": "<a_232><b_182>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_115><b_211>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_76><b_80>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_154><b_205>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_69><b_5>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_251><b_135>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_113><b_155>",
+          "item_count": 7,
+          "leaf_count": 7,
+          "entropy_bits": 2.807354922057604
+        },
+        {
+          "prefix": "<a_183><b_98>",
+          "item_count": 7,
+          "leaf_count": 7,
+          "entropy_bits": 2.807354922057604
+        },
+        {
+          "prefix": "<a_191><b_66>",
+          "item_count": 7,
+          "leaf_count": 7,
+          "entropy_bits": 2.807354922057604
+        },
+        {
+          "prefix": "<a_194><b_84>",
+          "item_count": 7,
+          "leaf_count": 7,
+          "entropy_bits": 2.807354922057604
+        }
+      ]
+    },
+    "test_weighted": {
+      "example_count": 4533,
+      "covered_count": 4533,
+      "missing_count": 0,
+      "target_weighted_mean_l2_item_count": 4.186631369953673,
+      "target_weighted_median_l2_item_count": 2,
+      "target_weighted_mean_l2_leaf_count": 4.1266269578645485,
+      "target_weighted_median_l2_leaf_count": 2,
+      "target_fraction_multileaf_l2": 0.5830575777630708,
+      "target_fraction_multileaf_l2_ge4": 0.2585484226781381,
+      "target_fraction_multileaf_l2_ge8": 0.13324509155084932,
+      "target_weighted_mean_l3_entropy_bits": 1.2127952014852597
+    }
+  },
+  "comparison": {
+    "item_level": {
+      "common_item_count": 3686,
+      "changed_sid_count": 3686,
+      "changed_sid_fraction": 1.0,
+      "reduced_l2_leaf_count_fraction": 0.20374389582202931,
+      "increased_l2_leaf_count_fraction": 0.31551817688551276,
+      "same_l2_leaf_count_fraction": 0.48073792729245796,
+      "moved_out_of_same_l2_count": 473,
+      "moved_into_same_l2_count": 748,
+      "moved_out_of_ge4_count": 125,
+      "moved_into_ge4_count": 309,
+      "mean_delta_l2_leaf_count_all_items": 0.23467173087357568,
+      "mean_delta_l2_leaf_count_changed_items": 0.23467173087357568
+    },
+    "test_weighted": {
+      "target_count": 4533,
+      "reduced_l2_leaf_count_fraction": 0.21530994926097508,
+      "increased_l2_leaf_count_fraction": 0.3628943304654754,
+      "same_l2_leaf_count_fraction": 0.4217957202735495,
+      "moved_out_of_same_l2_fraction": 0.10368409441870725,
+      "moved_into_same_l2_fraction": 0.18795499669093316,
+      "moved_out_of_ge4_fraction": 0.037943966468122654,
+      "moved_into_ge4_fraction": 0.0970659607324068,
+      "mean_delta_l2_leaf_count": 0.5118023384072359
+    },
+    "top_improved_examples": [
+      {
+        "item_id": 1849,
+        "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Purple",
+        "baseline_sid": "<a_191><b_151><c_51>",
+        "hierarchy_sid": "<a_73><b_62><c_74>",
+        "baseline_l2_prefix": "<a_191><b_151>",
+        "hierarchy_l2_prefix": "<a_73><b_62>",
+        "baseline_l2_leaf_count": 23,
+        "hierarchy_l2_leaf_count": 4,
+        "delta_l2_leaf_count": -19
+      },
+      {
+        "item_id": 2697,
+        "title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_38><b_146><c_142>",
+        "hierarchy_sid": "<a_191><b_5><c_75>",
+        "baseline_l2_prefix": "<a_38><b_146>",
+        "hierarchy_l2_prefix": "<a_191><b_5>",
+        "baseline_l2_leaf_count": 16,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -14
+      },
+      {
+        "item_id": 2894,
+        "title": "Gizmo Dorks 1.75mm HIPS Filament 1kg / 2.2lb for 3D Printers, White",
+        "baseline_sid": "<a_191><b_12><c_239>",
+        "hierarchy_sid": "<a_186><b_211><c_121>",
+        "baseline_l2_prefix": "<a_191><b_12>",
+        "hierarchy_l2_prefix": "<a_186><b_211>",
+        "baseline_l2_leaf_count": 11,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 319,
+        "title": "6061 Aluminum Rectangular Bar, Unpolished (Mill) Finish, Extruded, T6511 Temper, ASTM B221, 1/8\" Thickness, 1\" Width, 36\" Length",
+        "baseline_sid": "<a_29><b_92><c_216>",
+        "hierarchy_sid": "<a_69><b_152><c_41>",
+        "baseline_l2_prefix": "<a_29><b_92>",
+        "hierarchy_l2_prefix": "<a_69><b_152>",
+        "baseline_l2_leaf_count": 12,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 323,
+        "title": "6101 Aluminum Rectangular Bar, Unpolished (Mill) Finish, T61 Temper, ASTM B317, 1/4\" Thickness, 2\" Width, 12\" Length",
+        "baseline_sid": "<a_29><b_92><c_217>",
+        "hierarchy_sid": "<a_69><b_84><c_2>",
+        "baseline_l2_prefix": "<a_29><b_92>",
+        "hierarchy_l2_prefix": "<a_69><b_84>",
+        "baseline_l2_leaf_count": 12,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 2868,
+        "title": "6061 Aluminum Rectangular Bar, Unpolished (Mill) Finish, Extruded, T6511 Temper, ASTM B211/ASTM B221, 1-1/2\" Thickness, 1-1/2\" Width, 12\" Length",
+        "baseline_sid": "<a_29><b_92><c_164>",
+        "hierarchy_sid": "<a_69><b_152><c_9>",
+        "baseline_l2_prefix": "<a_29><b_92>",
+        "hierarchy_l2_prefix": "<a_69><b_152>",
+        "baseline_l2_leaf_count": 12,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 1734,
+        "title": "SOLOOP 328Pcs 8 Sizes Assortment 2:1 Heat Shrink Tube Tubing Sleeve Wrap Wire Kit Set",
+        "baseline_sid": "<a_225><b_101><c_226>",
+        "hierarchy_sid": "<a_32><b_10><c_96>",
+        "baseline_l2_prefix": "<a_225><b_101>",
+        "hierarchy_l2_prefix": "<a_32><b_10>",
+        "baseline_l2_leaf_count": 8,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -7
+      },
+      {
+        "item_id": 3382,
+        "title": "E-Projects 100EP514200R 200 Ohm Resistors, 1/4 W, 5% (Pack of 100)",
+        "baseline_sid": "<a_4><b_79><c_55>",
+        "hierarchy_sid": "<a_118><b_5><c_136>",
+        "baseline_l2_prefix": "<a_4><b_79>",
+        "hierarchy_l2_prefix": "<a_118><b_5>",
+        "baseline_l2_leaf_count": 8,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -7
+      },
+      {
+        "item_id": 767,
+        "title": "J-B Weld 50101 MinuteWeld Instant-Setting Epoxy Syringe - Dries Clear - 25ml",
+        "baseline_sid": "<a_184><b_59><c_168>",
+        "hierarchy_sid": "<a_179><b_128><c_81>",
+        "baseline_l2_prefix": "<a_184><b_59>",
+        "hierarchy_l2_prefix": "<a_179><b_128>",
+        "baseline_l2_leaf_count": 7,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 2215,
+        "title": "J-B Weld 50172 MarineWeld Marine Adhesive Epoxy Syringe - Dries White - 25ml",
+        "baseline_sid": "<a_184><b_59><c_234>",
+        "hierarchy_sid": "<a_179><b_57><c_8>",
+        "baseline_l2_prefix": "<a_184><b_59>",
+        "hierarchy_l2_prefix": "<a_179><b_57>",
+        "baseline_l2_leaf_count": 7,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 2307,
+        "title": "BYKES 30 Neodymium Magnets Strong Magnets Refrigerator Magnets Super Strong Rare Earth Magnets 1/4 x 1/16 inch Disc N48",
+        "baseline_sid": "<a_120><b_42><c_121>",
+        "hierarchy_sid": "<a_5><b_20><c_85>",
+        "baseline_l2_prefix": "<a_120><b_42>",
+        "hierarchy_l2_prefix": "<a_5><b_20>",
+        "baseline_l2_leaf_count": 7,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 2684,
+        "title": "Inkbird Dual Digital PID Temperature Controller 2 Relay Output 100-240V ITC-100VH+ K sensor",
+        "baseline_sid": "<a_56><b_209><c_218>",
+        "hierarchy_sid": "<a_1><b_53><c_28>",
+        "baseline_l2_prefix": "<a_56><b_209>",
+        "hierarchy_l2_prefix": "<a_1><b_53>",
+        "baseline_l2_leaf_count": 7,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 2849,
+        "title": "BYKES 100 Neodymium Strong Powerful Rare Earth Magnets 1/8\" x 1/16\" Disc N48",
+        "baseline_sid": "<a_120><b_42><c_120>",
+        "hierarchy_sid": "<a_5><b_92><c_124>",
+        "baseline_l2_prefix": "<a_120><b_42>",
+        "hierarchy_l2_prefix": "<a_5><b_92>",
+        "baseline_l2_leaf_count": 7,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 3528,
+        "title": "SEOH Micro Borosilicate Glass Graduated Beakers (5ml, 10ml and 25ml)",
+        "baseline_sid": "<a_13><b_106><c_218>",
+        "hierarchy_sid": "<a_215><b_98><c_236>",
+        "baseline_l2_prefix": "<a_13><b_106>",
+        "hierarchy_l2_prefix": "<a_215><b_98>",
+        "baseline_l2_leaf_count": 7,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 1790,
+        "title": "Gizmo Dorks 1.75mm PLA Filament 1kg / 2.2lb for 3D Printers, Black",
+        "baseline_sid": "<a_191><b_12><c_48>",
+        "hierarchy_sid": "<a_191><b_186><c_9>",
+        "baseline_l2_prefix": "<a_191><b_12>",
+        "hierarchy_l2_prefix": "<a_191><b_186>",
+        "baseline_l2_leaf_count": 11,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 1791,
+        "title": "Gizmo Dorks 1.75mm PLA Filament 1kg / 2.2lb for 3D Printers, Translucent Green",
+        "baseline_sid": "<a_191><b_12><c_167>",
+        "hierarchy_sid": "<a_191><b_186><c_56>",
+        "baseline_l2_prefix": "<a_191><b_12>",
+        "hierarchy_l2_prefix": "<a_191><b_186>",
+        "baseline_l2_leaf_count": 11,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 1792,
+        "title": "Gizmo Dorks 1.75mm PLA Filament 1kg / 2.2lb for 3D Printers, White",
+        "baseline_sid": "<a_191><b_12><c_254>",
+        "hierarchy_sid": "<a_191><b_186><c_254>",
+        "baseline_l2_prefix": "<a_191><b_12>",
+        "hierarchy_l2_prefix": "<a_191><b_186>",
+        "baseline_l2_leaf_count": 11,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 2752,
+        "title": "Gizmo Dorks 3mm (2.85mm) ABS Filament 1kg / 2.2lb for 3D Printers, Gray",
+        "baseline_sid": "<a_191><b_12><c_22>",
+        "hierarchy_sid": "<a_191><b_68><c_36>",
+        "baseline_l2_prefix": "<a_191><b_12>",
+        "hierarchy_l2_prefix": "<a_191><b_68>",
+        "baseline_l2_leaf_count": 11,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 3461,
+        "title": "Gizmo Dorks 3mm (2.85mm) ABS Filament 1kg / 2.2lb for 3D Printers, Black",
+        "baseline_sid": "<a_191><b_12><c_97>",
+        "hierarchy_sid": "<a_191><b_68><c_84>",
+        "baseline_l2_prefix": "<a_191><b_12>",
+        "hierarchy_l2_prefix": "<a_191><b_68>",
+        "baseline_l2_leaf_count": 11,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -6
+      },
+      {
+        "item_id": 3462,
+        "title": "Gizmo Dorks 3mm (2.85mm) ABS Filament 1kg / 2.2lb for 3D Printers, White",
+        "baseline_sid": "<a_191><b_12><c_145>",
+        "hierarchy_sid": "<a_191><b_68><c_59>",
+        "baseline_l2_prefix": "<a_191><b_12>",
+        "hierarchy_l2_prefix": "<a_191><b_68>",
+        "baseline_l2_leaf_count": 11,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -6
+      }
+    ]
+  }
+}

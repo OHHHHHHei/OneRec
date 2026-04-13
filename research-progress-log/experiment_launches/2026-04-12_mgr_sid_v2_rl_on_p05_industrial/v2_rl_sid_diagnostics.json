@@ -1,0 +1,237 @@
+{
+  "inputs": {
+    "result_json": "/home/leejt/OneRec/results/experiments/mgr_sid_v2_rl_on_p05_industrial_20260412/final_result_rl_mgr_tokenizer_v2_title_on_desc_p05_Industrial_and_Scientific.json",
+    "index_json": "/home/leejt/OneRec/data_experiment/Amazon/mgr_tokenizer_v2_offline/index/Industrial_and_Scientific.index.json",
+    "info_txt": "/home/leejt/OneRec/data_experiment/Amazon/mgr_tokenizer_v2_offline/info/Industrial_and_Scientific_5_2016-10-2018-11.txt"
+  },
+  "catalog_level": {
+    "item_count": 3686,
+    "unique_sid_count": 3673,
+    "collision_group_count": 13,
+    "collision_item_excess": 13,
+    "collision_rate": 0.00352685838307108,
+    "max_collision_group_size": 2,
+    "weighted_prefix_conditional_entropy_l2_given_l1_bits": 3.6446506909752463,
+    "weighted_prefix_conditional_entropy_l3_given_l1l2_bits": 0.715048271179983,
+    "mean_items_per_l1_prefix": 18.157635467980295,
+    "mean_items_per_l2_prefix": 1.3753731343283582,
+    "median_layer2_parent_count": 9,
+    "median_layer3_parent_count": 12,
+    "max_layer2_parent_count": 26,
+    "max_layer3_parent_count": 72,
+    "top_collision_groups": [
+      {
+        "sid": "<a_112><b_39><c_2>",
+        "item_ids": [
+          "2420",
+          "2582"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_112><b_39><c_35>",
+        "item_ids": [
+          "2715",
+          "3480"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_125><b_155><c_0>",
+        "item_ids": [
+          "1249",
+          "1250"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_154><b_37><c_0>",
+        "item_ids": [
+          "181",
+          "182"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_209><b_61><c_0>",
+        "item_ids": [
+          "2956",
+          "2957"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_22><b_8><c_0>",
+        "item_ids": [
+          "3302",
+          "3459"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_231><b_213><c_0>",
+        "item_ids": [
+          "1382",
+          "1788"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_233><b_126><c_0>",
+        "item_ids": [
+          "1955",
+          "3038"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_247><b_241><c_0>",
+        "item_ids": [
+          "431",
+          "1006"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_250><b_76><c_0>",
+        "item_ids": [
+          "216",
+          "217"
+        ],
+        "size": 2
+      }
+    ],
+    "top_ambiguous_layer2_codes": [
+      {
+        "code": "<b_35>",
+        "distinct_a_prefixes": 26
+      },
+      {
+        "code": "<b_187>",
+        "distinct_a_prefixes": 25
+      },
+      {
+        "code": "<b_39>",
+        "distinct_a_prefixes": 25
+      },
+      {
+        "code": "<b_49>",
+        "distinct_a_prefixes": 23
+      },
+      {
+        "code": "<b_81>",
+        "distinct_a_prefixes": 23
+      },
+      {
+        "code": "<b_147>",
+        "distinct_a_prefixes": 22
+      },
+      {
+        "code": "<b_5>",
+        "distinct_a_prefixes": 21
+      },
+      {
+        "code": "<b_126>",
+        "distinct_a_prefixes": 20
+      },
+      {
+        "code": "<b_21>",
+        "distinct_a_prefixes": 20
+      },
+      {
+        "code": "<b_51>",
+        "distinct_a_prefixes": 20
+      }
+    ],
+    "top_ambiguous_layer3_codes": [
+      {
+        "code": "<c_1>",
+        "distinct_ab_prefixes": 72
+      },
+      {
+        "code": "<c_0>",
+        "distinct_ab_prefixes": 70
+      },
+      {
+        "code": "<c_4>",
+        "distinct_ab_prefixes": 54
+      },
+      {
+        "code": "<c_2>",
+        "distinct_ab_prefixes": 46
+      },
+      {
+        "code": "<c_3>",
+        "distinct_ab_prefixes": 41
+      },
+      {
+        "code": "<c_5>",
+        "distinct_ab_prefixes": 35
+      },
+      {
+        "code": "<c_178>",
+        "distinct_ab_prefixes": 32
+      },
+      {
+        "code": "<c_26>",
+        "distinct_ab_prefixes": 31
+      },
+      {
+        "code": "<c_205>",
+        "distinct_ab_prefixes": 30
+      },
+      {
+        "code": "<c_241>",
+        "distinct_ab_prefixes": 30
+      }
+    ]
+  },
+  "eval_level": {
+    "example_count": 4533,
+    "top1_hit_count": 337,
+    "top1_hit_rate": 0.0743437017427752,
+    "top3_hit_rate": 0.1028016765938672,
+    "top5_hit_rate": 0.11692036179130819,
+    "top10_hit_rate": 0.14184866534303994,
+    "top20_hit_rate": 0.17515993823075227,
+    "top50_hit_rate": 0.23737039488197662,
+    "pred1_in_catalog_rate": 1.0,
+    "avg_top1_lcp": 0.38032208250606664,
+    "avg_top1_lcp_on_error": 0.16992373689227835,
+    "avg_best_lcp_in_beam": 0.8936686521067726,
+    "beam_contains_same_l1_rate": 0.3915729097727774,
+    "beam_contains_same_l2_rate": 0.26472534745201853,
+    "top1_error_count": 4196,
+    "top1_error_same_l1_rate": 0.11129647283126787,
+    "top1_error_same_l2_rate": 0.05862726406101049,
+    "top1_error_same_l1_count": 467,
+    "top1_error_same_l2_count": 246,
+    "collided_target_count": 262,
+    "collided_target_fraction": 0.057798367527024046,
+    "top1_hit_rate_for_collided_targets": 0.7442748091603053,
+    "top1_hit_count_for_collided_targets": 195,
+    "unique_target_count": 4271,
+    "top1_hit_rate_for_unique_targets": 0.03324748302505268,
+    "top1_hit_count_for_unique_targets": 142,
+    "avg_target_l1_fanout_on_hit": 25.172106824925816,
+    "avg_target_l1_fanout_on_miss": 29.234509056244043,
+    "avg_target_l2_fanout_on_hit": 4.8753709198813056,
+    "avg_target_l2_fanout_on_miss": 4.377502383222116
+  },
+  "notes": [
+    "collision_rate and prefix conditional entropy are catalog-level diagnostics; they do not by themselves prove downstream errors.",
+    "same-prefix miss rates and collided-target hit rates connect SID properties to actual evaluation failures.",
+    "This script diagnoses SID/prefix issues more directly than aggregate HR/NDCG, but it does not directly prove the absence of collaborative signal in the tokenizer."
+  ],
+  "human_summary": [
+    "items=3686 unique_sids=3673 collision_rate=0.3527%",
+    "weighted_H(level2|level1)=3.6447 bits",
+    "weighted_H(level3|level1,level2)=0.7150 bits",
+    "top1_hit=7.4344% top10_hit=14.1849%",
+    "avg_top1_lcp=0.3803 avg_top1_lcp_on_error=0.1699",
+    "beam_same_l1=39.1573% beam_same_l2=26.4725%",
+    "same_l1_among_top1_errors=11.1296% same_l2_among_top1_errors=5.8627%",
+    "hit_rate(collided_targets)=74.4275% [195/262] hit_rate(unique_targets)=3.3247% [142/4271]",
+    "avg_target_l2_fanout_on_hit=4.88 avg_target_l2_fanout_on_miss=4.38"
+  ]
+}

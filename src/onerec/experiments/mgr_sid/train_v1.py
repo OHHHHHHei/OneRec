@@ -129,6 +129,7 @@ def _forward_hierarchy(model: RQVAE, x: torch.Tensor, use_sk: bool = True) -> di
     encoded = model.encoder(x)
     residual = encoded
     cumulative_outputs: list[torch.Tensor] = []
+    level_outputs: list[torch.Tensor] = []
     losses: list[torch.Tensor] = []
     all_indices: list[torch.Tensor] = []
     quantized = torch.zeros_like(encoded)
@@ -136,6 +137,7 @@ def _forward_hierarchy(model: RQVAE, x: torch.Tensor, use_sk: bool = True) -> di
         level_q, level_loss, level_idx = quantizer(residual, use_sk=use_sk)
         residual = residual - level_q
         quantized = quantized + level_q
+        level_outputs.append(level_q)
         cumulative_outputs.append(quantized.clone())
         losses.append(level_loss)
         all_indices.append(level_idx)
@@ -147,6 +149,7 @@ def _forward_hierarchy(model: RQVAE, x: torch.Tensor, use_sk: bool = True) -> di
         "rq_loss": rq_loss,
         "indices": indices,
         "cumulative_outputs": cumulative_outputs,
+        "level_outputs": level_outputs,
     }
 
 

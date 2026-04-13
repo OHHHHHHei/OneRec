@@ -80,63 +80,155 @@
 
 \Cref{tab:ambiguity} 表明，这不是简单的 code re-permutation。Hierarchy-aware tokenizer 的确让 same-$l_2$ bucket 更干净：目标 item 平均面对的 $l_2$ 叶子数更少，落在多叶与深拥挤 same-$l_2$ bucket 中的比例更低，同时给定 prefix 后第三级 code 的条件熵也更低。在更细的 movement analysis 中，有 $17.32\%$ 的测试目标从多叶 same-$l_2$ bucket 迁移到单叶 bucket，而只有 $9.68\%$ 迁移到更拥挤的方向。这与我们最初关于 local leaf ambiguity 的诊断完全一致。
 
-\subsection{Tokenizer 收益是否传递到了下游 SFT}
+\subsection{第一轮下游验证：v1 只实现了部分传递}
 
-接下来我们把两套最终 Industrial tokenizer 推进到下游 SFT，并比较得到的推荐结果。除了当前 semantic baseline 和 hierarchy-aware tokenizer，我们还加入项目历史 CSV 中最接近当前设定的一条 Industrial SFT 记录，以及历史最强的一条 Industrial SFT 记录，用来判断当前结果在仓库内部的大致位置。
+我们首先把 \Cref{tab:main,tab:ambiguity} 中的两套最终 Industrial tokenizer 推进到下游 SFT。这里使用的是一组 \emph{internal control}：upstream-aligned semantic control 与 hierarchy-aware v1。在这一步里，我们刻意保持整个管线尽量稳定，只替换 tokenizer，以便先观察 tokenizer 改动是否会传到下游行为。
 
 \begin{table}[t]
   \centering
-  \caption{Industrial 上的 SFT 结果。Hierarchy-aware tokenizer 提升了短程排序，但还没有形成广义的 $@10+$ 优势，也没有超过历史最强 SFT 设定。}
-  \label{tab:sft}
+  \caption{Industrial 上 internal control 的 SFT 结果。MGR-SID v1 在短程排序上有正信号，但还没有形成广义的 $@10+$ 增益。}
+  \label{tab:sft_v1}
   \begin{tabular}{lcccccc}
     \toprule
     运行 & N@1 & N@3 & N@10 & H@1 & H@3 & H@10 \\
     \midrule
-    历史最近设置 & 0.0624 & 0.0798 & 0.0987 & 0.0624 & 0.0929 & 0.1471 \\
-    历史最强设置 & \textbf{0.0671} & \textbf{0.0850} & \textbf{0.1037} & \textbf{0.0671} & \textbf{0.0984} & \textbf{0.1509} \\
-    当前 baseline & 0.0631 & 0.0777 & 0.0943 & 0.0631 & 0.0882 & 0.1343 \\
-    当前 hierarchy & 0.0627 & 0.0802 & 0.0936 & 0.0627 & 0.0929 & 0.1304 \\
+    internal semantic control & 0.0631 & 0.0777 & 0.0943 & 0.0631 & 0.0882 & 0.1343 \\
+    internal hierarchy-aware v1 & 0.0627 & 0.0802 & 0.0936 & 0.0627 & 0.0929 & 0.1304 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\Cref{tab:sft} 给出了一个很重要的限定。Hierarchy-aware tokenizer 并没有直接把系统推成新的 end-to-end 最优 SFT。相对于当前 upstream-aligned baseline，它提升了 $\mathrm{NDCG}@3$ 和 $\mathrm{HR}@3$，在 $@5$ 上也有轻微增益，但在 $@10+$ 上仍然落后。这说明 tokenizer 侧收益 \emph{已经} 可以传到下游，只不过目前主要停留在短程排序，而不是全面增益。
+\Cref{tab:sft_v1} 说明，tokenizer 侧收益确实能传到下游，但只是部分传递：相对于 internal semantic control，v1 提升了 $\mathrm{NDCG}@3$ 与 $\mathrm{HR}@3$，在 $@5$ 上也有轻微增益，但在 $@10+$ 上仍然落后。正是这组结果促使我们把重点从“继续换 graph carrier”转向“重做 tokenizer 训练接口”。
 
-\subsection{Evaluate 阶段的错误分布发生了什么变化}
+\subsection{Ambiguity-aware tokenizer v2}
 
-为了理解这种“局部有提升、整体未全面提升”的现象，我们进一步比较两套 SFT 模型在 evaluate 阶段的 SID-aware 诊断结果。这里关注的不是单纯的 aggregate metric，而是错误类型本身是否发生了预期中的变化。
+v1 的 top-$k$ 与错误分布分析表明：graph regularization 在拥挤局部歧义样本上有帮助，但会过度修正那些本来已经稳定的语义区域。因此我们提出 \texttt{v2}，核心改动是：
+\begin{itemize}[leftmargin=1.4em]
+  \item 用由 semantic density、semantic-collaborative disagreement 与 graph competition 组成的 \emph{offline ambiguity prior} 去调节 graph supervision；
+  \item 加入 \emph{semantic-structure retention}，在低歧义区域保护原始语义几何。
+\end{itemize}
+
+第一版 \texttt{v2} 只采用离线 combined proxy，因为当前的 online uncertainty proxy 在 sanity check 中还不够稳定。
 
 \begin{table}[t]
   \centering
-  \caption{Industrial 上的 evaluate 错误分布。Hierarchy-aware tokenizer 明显减少了 same-prefix 错误，并且在拥挤局部目标上更有优势；但与此同时，beam 更少停留在 baseline 的局部语义邻域中。}
-  \label{tab:error}
-  \begin{tabular}{lccc}
+  \caption{引入 ambiguity-aware supervision 后的 tokenizer 比较。v2 没有进一步降低 final collision，但得到的是最干净的局部层级结构。}
+  \label{tab:v2tok}
+  \begin{tabular}{lcccc}
     \toprule
-    指标 & Baseline & Hierarchy & Delta \\
+    方法 & Final collision & Mean target $l_2$ leaves & Multi-leaf same-$l_2$ & Mean level-3 entropy \\
     \midrule
-    Top-1 error same-$l_1$ rate & 0.1815 & 0.1236 & -0.0580 \\
-    Top-1 error same-$l_2$ rate & 0.0525 & 0.0370 & -0.0156 \\
-    Beam contains same-$l_1$ & 0.6724 & 0.5248 & -0.1476 \\
-    Beam contains same-$l_2$ & 0.3272 & 0.3077 & -0.0194 \\
-    Top-1 hit on targets with $l_2 \ge 4$ & 0.0475 & 0.0521 & +0.0047 \\
-    Recovery on baseline same-$l_2$ errors & -- & 0.0538 & -- \\
+    internal semantic control & 0.00353 & 4.7999 & 0.6894 & 1.4533 \\
+    hierarchy-aware v1 & \textbf{0.00326} & 4.4498 & 0.6131 & 1.2935 \\
+    ambiguity-aware v2 & 0.00353 & \textbf{4.3422} & \textbf{0.4873} & \textbf{1.1001} \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\Cref{tab:error} 说明，下游变化是高度结构化的。积极的一面是，hierarchy-aware tokenizer 确实减少了局部 same-prefix 错误：剩余 top-1 miss 中，发生在 same-$l_1$ 或 same-$l_2$ 子树里的比例都明显下降；同时在 $l_2$ fanout 至少为 $4$ 的拥挤目标上，它的 top-1 命中率更高。更重要的是，baseline 的 same-$l_2$ 错误是 hierarchy 最容易恢复的一类错误。这与“hierarchy 正在解决 local leaf ambiguity”这一方法动机完全一致。
+\Cref{tab:v2tok} 的意义在于：collision 并不是 tokenizer 的全部。虽然 \texttt{v2} 在 final collision 上只打平了 internal semantic control，但它得到的是目前最干净的 local hierarchy。这说明 ambiguity-aware 设计并不是“再把 graph 加重”，而是更有选择地把 graph supervision 放在真正高歧义的区域上。
 
-但诊断同时揭示了另一面：hierarchy-aware tokenizer 的 beam 更不容易停留在 baseline 的局部语义邻域内。从逐样本比较看，hierarchy 修复了 $63$ 个 baseline 的 top-1 miss，但也打坏了 $65$ 个 baseline 原本正确的 top-1 hit。被修复的样本往往更难、更拥挤：在 baseline 下它们的平均目标 $l_2$ fanout 为 $7.32$，而且 target 往往已经在 top-3 或 top-5 中，只是没有被推到 top-1。相反，被打坏的样本往往是 baseline 本来就已经进入了正确局部子树的例子。这也就解释了为什么 hierarchy 在局部 reranking 和短程指标上有帮助，却还没有形成广义的 $@10+$ 增益。
+\subsection{在 recipe-aligned 的原版 MiniOneRec 上做下游比较}
+
+接下来我们先把 \texttt{v2} 推进到真正更公平的下游对照中：与 \emph{原版 MiniOneRec} 在相同 task recipe 下比较。第一轮 \texttt{v2} 使用的 task recipe 为：
+\begin{itemize}[leftmargin=1.4em]
+  \item \texttt{title\_history2sid = on}
+  \item \texttt{SID-description alignment = off}
+\end{itemize}
+
+因此，最公平的原版 MiniOneRec 对照是使用相同 task recipe 的历史运行。为了给出仓库内部的整体位置，我们同时报告最强的原版 MiniOneRec SFT 与 RL 结果。
+
+\begin{table}[t]
+  \centering
+  \caption{Industrial 上 \texttt{v2} 的下游比较。v2 已经超过 recipe-aligned 的原版 MiniOneRec，但还没有超过最强的原版 MiniOneRec recipe。}
+  \label{tab:v2sft}
+  \begin{tabular}{lcccccc}
+    \toprule
+    运行 & N@1 & N@3 & N@10 & H@1 & H@3 & H@10 \\
+    \midrule
+    recipe-aligned original MiniOneRec & 0.0624 & 0.0798 & 0.0987 & 0.0624 & 0.0929 & \textbf{0.1471} \\
+    strongest original MiniOneRec SFT & 0.0671 & \textbf{0.0850} & \textbf{0.1037} & 0.0671 & \textbf{0.0984} & 0.1509 \\
+    strongest original MiniOneRec RL & \textbf{0.0732} & 0.0890 & 0.1073 & \textbf{0.0732} & 0.1004 & 0.1513 \\
+    ambiguity-aware v2 & 0.0704 & 0.0839 & 0.1008 & 0.0704 & 0.0942 & 0.1425 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:v2sft} 更清楚地说明了当前方法的真实位置。相对于 \emph{recipe-aligned 的原版 MiniOneRec}，\texttt{v2} 在所有报告的 NDCG cutoff 上都更好：
+\[
+\Delta \mathrm{NDCG}@1 = +0.0079,\;
+\Delta \mathrm{NDCG}@3 = +0.0041,\;
+\Delta \mathrm{NDCG}@5 = +0.0036,\;
+\Delta \mathrm{NDCG}@10 = +0.0021.
+\]
+同时它也提升了 $\mathrm{HR}@1$、$\mathrm{HR}@3$ 与 $\mathrm{HR}@5$，只是 \(\mathrm{HR}@10\) 仍略低。这说明 \texttt{v2} 已经不是只在 internal control 上成立的方法，它已经在与原版 MiniOneRec 的公平对照中表现出下游增益。
+
+但这张表也提醒我们：\texttt{v2} 还没有超过最强的原版 MiniOneRec recipe。当前最强的原版 MiniOneRec SFT 仍然是 \texttt{title\_history2sid\_off + desc\_align\_p05}，而 strongest RL 仍然更强。到这一步为止，我们知道 \texttt{v2} 在公平 task recipe 下已经成立，但 strongest recipe mismatch 的具体来源还没有拆清。
+
+\subsection{Recipe isolation：真正的冲突来自 \texttt{title\_history2sid\_off}}
+
+为了弄清 strongest original recipe 为什么不能直接迁移到 \texttt{v2} 上，我们补齐了 \texttt{v2} 的四格 recipe matrix：
+\begin{itemize}[leftmargin=1.4em]
+  \item \texttt{title\_history2sid\_on + desc\_align\_off}
+  \item \texttt{title\_history2sid\_on + desc\_align\_p05}
+  \item \texttt{title\_history2sid\_off + desc\_align\_off}
+  \item \texttt{title\_history2sid\_off + desc\_align\_p05}
+\end{itemize}
+
+\begin{table}[t]
+  \centering
+  \caption{Industrial 上 \texttt{v2} 的 recipe isolation 结果。当前最优下游 recipe 是 \texttt{title\_history2sid\_on + desc\_align\_p05}，主要负因子是关闭 \texttt{title\_history2sid}。}
+  \label{tab:v2recipe}
+  \begin{tabular}{lcccccc}
+    \toprule
+    运行 & N@1 & N@3 & N@10 & H@1 & H@3 & H@10 \\
+    \midrule
+    \texttt{v2\_on\_off} & 0.0704 & 0.0839 & 0.1008 & 0.0704 & 0.0942 & 0.1425 \\
+    \texttt{v2\_on\_p05} & \textbf{0.0706} & \textbf{0.0845} & \textbf{0.1027} & \textbf{0.0706} & \textbf{0.0951} & \textbf{0.1463} \\
+    \texttt{v2\_off\_off} & 0.0589 & 0.0741 & 0.0913 & 0.0589 & 0.0854 & 0.1339 \\
+    \texttt{v2\_off\_p05} & 0.0591 & 0.0737 & 0.0899 & 0.0591 & 0.0843 & 0.1308 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Cref{tab:v2recipe} 直接拆清了 strongest-recipe mismatch。只要 \texttt{title\_history2sid} 保持开启，\texttt{desc\_align\_p05} 对 \texttt{v2} 是净正增益：
+\[
+\Delta \mathrm{NDCG}@10 = +0.0019,\qquad
+\Delta \mathrm{HR}@10 = +0.0038.
+\]
+相反，只要把 \texttt{title\_history2sid} 关掉，无论 \texttt{desc\_align} 是否开启，性能都会显著下滑。在 \texttt{desc\_align\_off} 下：
+\[
+\Delta \mathrm{NDCG}@10 = -0.0096,\qquad
+\Delta \mathrm{HR}@10 = -0.0086,
+\]
+而在 \texttt{desc\_align\_p05} 下，下滑更大：
+\[
+\Delta \mathrm{NDCG}@10 = -0.0128,\qquad
+\Delta \mathrm{HR}@10 = -0.0154.
+\]
+
+因此，强 recipe 失配的主因并不是 \texttt{desc\_align\_p05}，而是 \texttt{title\_history2sid\_off}。对于当前 \texttt{v2} 来说，最佳的下游 recipe 已经更新为 \texttt{title\_history2sid\_on + desc\_align\_p05}。
+
+我们进一步把这条最优 \texttt{v2} 设置与 strongest original MiniOneRec SFT 做了更细的比较。两者的差距现在已经很小：
+\[
+\Delta \mathrm{NDCG}@10 = -0.0010,\qquad
+\Delta \mathrm{HR}@10 = -0.0046.
+\]
+更细的 top-$k$ 分析说明，\texttt{v2\_on\_p05} 已经在 rank-1 上更强，same-prefix top-1 错误也明显更少；strongest original SFT 的主要优势则集中在 \texttt{top3/top5/top10} 的中段 beam retention。因此，当前剩余问题已经不再像 tokenizer 方向错误，而更像是 downstream interaction gap。
 
 \subsection{当前结果的解释}
 
-综合来看，当前实验支持一个谨慎但连贯的结论。我们 \emph{还没有} 证明已经得到新的 end-to-end 最优系统，也还没有涉及 RL，但我们已经证明：
+综合起来，目前实验支持的是一个更准确的结论：
 \begin{enumerate}[leftmargin=1.4em]
-  \item 公平的 tokenizer 比较必须使用上游 MiniOneRec 的训练制度；
-  \item graph-structured collaborative information 对 local same-$l_2$ disambiguation 确实有信号；
-  \item 其中最关键的图视图是 spectral middle-resolution graph；
-  \item 将这些图结构以 hierarchy-aware regularization 的方式写回 semantic tokenizer 之后，最终生成 SID 质量优于公平 semantic baseline，并且 same-$l_2$ 局部歧义显著降低；
-  \item 这些 tokenizer 收益能够以“局部、结构化”的形式传到下游 SFT，但当前 tokenizer-to-SFT 的接口仍然会牺牲一部分 baseline 已经正确的局部 routing。
+  \item 公平的 tokenizer 比较必须建立在与上游 MiniOneRec 对齐的训练制度上；
+  \item graph-structured collaborative information 对 local same-$l_2$ disambiguation 确实有信号，而且其中最关键的载体是 spectral middle-resolution graph；
+  \item 仅有 uniform hierarchy-aware 图注入还不够，因为它会过度修正已经稳定的语义区域；
+  \item ambiguity-aware graph supervision 加 semantic-structure retention 能得到比 internal control 与 v1 都更干净的局部层级结构；
+  \item 这种更干净的 tokenizer 已经能在 recipe-aligned 的原版 MiniOneRec 上带来下游增益；
+  \item 经过 recipe isolation 之后，当前 \texttt{v2} 的最佳下游 setting 已经明确为 \texttt{title\_history2sid\_on + desc\_align\_p05}；
+  \item strongest original MiniOneRec recipe 仍然略强，但剩余差距已经收缩成一个中段 beam retention 问题，而不是 tokenizer 侧的彻底失败。
 \end{enumerate}
 
-对当前项目阶段而言，这比简单宣称“下游赢了”更有价值。因为我们现在已经知道：方法真正带来的，是对 crowded local ambiguity 的修复；而下游没能全面变强的关键，不是方向错了，而是这些结构收益还没有被 SFT 充分接住。
+因此，当前阶段最重要的结论不是“我们已经赢了整个系统”，而是：
+\begin{quote}
+tokenizer 侧方法现在已经同时得到结构证据、recipe-aligned 下游证据以及 recipe-isolation 证据的支持。当前最佳 \texttt{v2} setting 已经非常接近 strongest original MiniOneRec SFT，剩余问题主要是 downstream retention，而不是 ambiguity-aware tokenizer 本身的方向错误。
+\end{quote}

@@ -1,0 +1,495 @@
+{
+  "inputs": {
+    "baseline_index": "/home/leejt/OneRec/output/experiments/mgr_sid_v1_upstream/generated_indices/Industrial_and_Scientific.mgr_upstream_hierarchy.index.json",
+    "compare_index": "/home/leejt/OneRec/output/experiments/mgr_sid_tokenizer_v2/generated_indices/Industrial_and_Scientific.mgr_tokenizer_v2_offline.index.json",
+    "test_csv": "/home/leejt/OneRec/data/Amazon/test/Industrial_and_Scientific_5_2016-10-2018-11.csv",
+    "item_json": "/home/leejt/OneRec/data/Amazon/index/Industrial_and_Scientific.item.json"
+  },
+  "baseline": {
+    "catalog": {
+      "item_count": 3686,
+      "l2_prefix_count": 2483,
+      "item_weighted_mean_l2_item_count": 2.6711882799782964,
+      "item_weighted_median_l2_item_count": 1.0,
+      "item_weighted_mean_l2_leaf_count": 2.659251220835594,
+      "item_weighted_median_l2_leaf_count": 1.0,
+      "item_fraction_multileaf_l2": 0.49538795442213784,
+      "item_fraction_multileaf_l2_ge4": 0.17905588714053175,
+      "item_fraction_multileaf_l2_ge8": 0.049918610960390665,
+      "weighted_l3_entropy_given_l2_bits": 0.866406841304097,
+      "top_crowded_l2_prefixes": [
+        {
+          "prefix": "<a_14><b_102>",
+          "item_count": 26,
+          "leaf_count": 26,
+          "entropy_bits": 4.70043971814109
+        },
+        {
+          "prefix": "<a_246><b_198>",
+          "item_count": 20,
+          "leaf_count": 20,
+          "entropy_bits": 4.321928094887363
+        },
+        {
+          "prefix": "<a_14><b_151>",
+          "item_count": 18,
+          "leaf_count": 18,
+          "entropy_bits": 4.169925001442312
+        },
+        {
+          "prefix": "<a_246><b_15>",
+          "item_count": 17,
+          "leaf_count": 17,
+          "entropy_bits": 4.08746284125034
+        },
+        {
+          "prefix": "<a_23><b_17>",
+          "item_count": 15,
+          "leaf_count": 15,
+          "entropy_bits": 3.906890595608518
+        },
+        {
+          "prefix": "<a_246><b_206>",
+          "item_count": 14,
+          "leaf_count": 14,
+          "entropy_bits": 3.8073549220576055
+        },
+        {
+          "prefix": "<a_254><b_155>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_168><b_200>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_236><b_21>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_23><b_253>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_144><b_93>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_146><b_38>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_23><b_249>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_246><b_218>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_14><b_196>",
+          "item_count": 8,
+          "leaf_count": 7,
+          "entropy_bits": 2.75
+        }
+      ]
+    },
+    "test_weighted": {
+      "example_count": 4533,
+      "covered_count": 4533,
+      "missing_count": 0,
+      "target_weighted_mean_l2_item_count": 4.512243547319656,
+      "target_weighted_median_l2_item_count": 2,
+      "target_weighted_mean_l2_leaf_count": 4.449812486212221,
+      "target_weighted_median_l2_leaf_count": 2,
+      "target_fraction_multileaf_l2": 0.6130597838076329,
+      "target_fraction_multileaf_l2_ge4": 0.2828149128612398,
+      "target_fraction_multileaf_l2_ge8": 0.14979042576660048,
+      "target_weighted_mean_l3_entropy_bits": 1.2935251106385623
+    }
+  },
+  "hierarchy": {
+    "catalog": {
+      "item_count": 3686,
+      "l2_prefix_count": 2680,
+      "item_weighted_mean_l2_item_count": 2.414541508410201,
+      "item_weighted_median_l2_item_count": 1.0,
+      "item_weighted_mean_l2_leaf_count": 2.3944655453065655,
+      "item_weighted_median_l2_leaf_count": 1.0,
+      "item_fraction_multileaf_l2": 0.4234943027672273,
+      "item_fraction_multileaf_l2_ge4": 0.13076505697232774,
+      "item_fraction_multileaf_l2_ge8": 0.04395008138903961,
+      "weighted_l3_entropy_given_l2_bits": 0.715048271179983,
+      "top_crowded_l2_prefixes": [
+        {
+          "prefix": "<a_112><b_122>",
+          "item_count": 25,
+          "leaf_count": 25,
+          "entropy_bits": 4.643856189774723
+        },
+        {
+          "prefix": "<a_112><b_65>",
+          "item_count": 23,
+          "leaf_count": 23,
+          "entropy_bits": 4.523561956057013
+        },
+        {
+          "prefix": "<a_112><b_39>",
+          "item_count": 21,
+          "leaf_count": 19,
+          "entropy_bits": 4.201841232302569
+        },
+        {
+          "prefix": "<a_33><b_187>",
+          "item_count": 17,
+          "leaf_count": 17,
+          "entropy_bits": 4.08746284125034
+        },
+        {
+          "prefix": "<a_34><b_232>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_112><b_35>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_177><b_238>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_33><b_35>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_58><b_126>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_72><b_11>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_76><b_76>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_211><b_65>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_233><b_126>",
+          "item_count": 8,
+          "leaf_count": 7,
+          "entropy_bits": 2.75
+        },
+        {
+          "prefix": "<a_211><b_35>",
+          "item_count": 7,
+          "leaf_count": 7,
+          "entropy_bits": 2.807354922057604
+        },
+        {
+          "prefix": "<a_211><b_39>",
+          "item_count": 7,
+          "leaf_count": 7,
+          "entropy_bits": 2.807354922057604
+        }
+      ]
+    },
+    "test_weighted": {
+      "example_count": 4533,
+      "covered_count": 4533,
+      "missing_count": 0,
+      "target_weighted_mean_l2_item_count": 4.414515773218619,
+      "target_weighted_median_l2_item_count": 2,
+      "target_weighted_mean_l2_leaf_count": 4.342157511581734,
+      "target_weighted_median_l2_leaf_count": 1,
+      "target_fraction_multileaf_l2": 0.4873152437679241,
+      "target_fraction_multileaf_l2_ge4": 0.2228105007721156,
+      "target_fraction_multileaf_l2_ge8": 0.1458195455548202,
+      "target_weighted_mean_l3_entropy_bits": 1.100114543698025
+    }
+  },
+  "comparison": {
+    "item_level": {
+      "common_item_count": 3686,
+      "changed_sid_count": 3686,
+      "changed_sid_fraction": 1.0,
+      "reduced_l2_leaf_count_fraction": 0.3081931633206728,
+      "increased_l2_leaf_count_fraction": 0.19262072707542052,
+      "same_l2_leaf_count_fraction": 0.4991861096039067,
+      "moved_out_of_same_l2_count": 721,
+      "moved_into_same_l2_count": 456,
+      "moved_out_of_ge4_count": 315,
+      "moved_into_ge4_count": 137,
+      "mean_delta_l2_leaf_count_all_items": -0.26478567552902876,
+      "mean_delta_l2_leaf_count_changed_items": -0.26478567552902876
+    },
+    "test_weighted": {
+      "target_count": 4533,
+      "reduced_l2_leaf_count_fraction": 0.38517538054268696,
+      "increased_l2_leaf_count_fraction": 0.21685418045444518,
+      "same_l2_leaf_count_fraction": 0.3979704390028679,
+      "moved_out_of_same_l2_fraction": 0.23317891021398632,
+      "moved_into_same_l2_fraction": 0.10743437017427752,
+      "moved_out_of_ge4_fraction": 0.085594529009486,
+      "moved_into_ge4_fraction": 0.02559011692036179,
+      "mean_delta_l2_leaf_count": -0.10765497463048754
+    },
+    "top_improved_examples": [
+      {
+        "item_id": 3096,
+        "title": "HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Bronze",
+        "baseline_sid": "<a_14><b_102><c_95>",
+        "hierarchy_sid": "<a_112><b_187><c_74>",
+        "baseline_l2_prefix": "<a_14><b_102>",
+        "hierarchy_l2_prefix": "<a_112><b_187>",
+        "baseline_l2_leaf_count": 26,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -25
+      },
+      {
+        "item_id": 2701,
+        "title": "HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Transparent Black",
+        "baseline_sid": "<a_14><b_102><c_165>",
+        "hierarchy_sid": "<a_112><b_249><c_74>",
+        "baseline_l2_prefix": "<a_14><b_102>",
+        "hierarchy_l2_prefix": "<a_112><b_249>",
+        "baseline_l2_leaf_count": 26,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -24
+      },
+      {
+        "item_id": 3016,
+        "title": "HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03mm, 1.75 mm, 1 kg Spool, Wood",
+        "baseline_sid": "<a_14><b_102><c_7>",
+        "hierarchy_sid": "<a_112><b_249><c_241>",
+        "baseline_l2_prefix": "<a_14><b_102>",
+        "hierarchy_l2_prefix": "<a_112><b_249>",
+        "baseline_l2_leaf_count": 26,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -24
+      },
+      {
+        "item_id": 3572,
+        "title": "Inland 1.75mm Black ABS 3D Printer Filament - 1kg Spool (2.2 lbs)",
+        "baseline_sid": "<a_23><b_17><c_246>",
+        "hierarchy_sid": "<a_33><b_126><c_12>",
+        "baseline_l2_prefix": "<a_23><b_17>",
+        "hierarchy_l2_prefix": "<a_33><b_126>",
+        "baseline_l2_leaf_count": 15,
+        "hierarchy_l2_leaf_count": 3,
+        "delta_l2_leaf_count": -12
+      },
+      {
+        "item_id": 3645,
+        "title": "Inland 1.75mm Natural PLA 3D Printer Filament - 1kg Spool (2.2 lbs)",
+        "baseline_sid": "<a_23><b_17><c_181>",
+        "hierarchy_sid": "<a_33><b_126><c_222>",
+        "baseline_l2_prefix": "<a_23><b_17>",
+        "hierarchy_l2_prefix": "<a_33><b_126>",
+        "baseline_l2_leaf_count": 15,
+        "hierarchy_l2_leaf_count": 3,
+        "delta_l2_leaf_count": -12
+      },
+      {
+        "item_id": 1203,
+        "title": "eSUN 3D 1.75mm PETG Natural Filament 1kg (2.2lb), PETG 3D Printer Filament, Semi-Transparent 1.75mm Natural",
+        "baseline_sid": "<a_246><b_15><c_110>",
+        "hierarchy_sid": "<a_211><b_35><c_223>",
+        "baseline_l2_prefix": "<a_246><b_15>",
+        "hierarchy_l2_prefix": "<a_211><b_35>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 7,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 2157,
+        "title": "eSUN 3D 1.75mm PETG Blue Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75mm Semi-Transparent Blue",
+        "baseline_sid": "<a_246><b_15><c_6>",
+        "hierarchy_sid": "<a_211><b_35><c_7>",
+        "baseline_l2_prefix": "<a_246><b_15>",
+        "hierarchy_l2_prefix": "<a_211><b_35>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 7,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 2158,
+        "title": "eSUN 3D 1.75mm PETG Green Filament 1kg (2.2lb), PETG 3D Printer Filament, Semi-Transparent 1.75mm Green",
+        "baseline_sid": "<a_246><b_15><c_9>",
+        "hierarchy_sid": "<a_211><b_35><c_45>",
+        "baseline_l2_prefix": "<a_246><b_15>",
+        "hierarchy_l2_prefix": "<a_211><b_35>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 7,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 2703,
+        "title": "eSUN 3D 1.75mm PETG Black Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75mm Solid Opaque Black",
+        "baseline_sid": "<a_246><b_15><c_88>",
+        "hierarchy_sid": "<a_211><b_35><c_13>",
+        "baseline_l2_prefix": "<a_246><b_15>",
+        "hierarchy_l2_prefix": "<a_211><b_35>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 7,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 2893,
+        "title": "eSUN 3D 1.75mm PETG White Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75mm Solid Opaque White",
+        "baseline_sid": "<a_246><b_15><c_255>",
+        "hierarchy_sid": "<a_211><b_35><c_200>",
+        "baseline_l2_prefix": "<a_246><b_15>",
+        "hierarchy_l2_prefix": "<a_211><b_35>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 7,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 3510,
+        "title": "eSUN 3D 1.75mm PETG Red Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75mm Solid Opaque Red",
+        "baseline_sid": "<a_246><b_15><c_58>",
+        "hierarchy_sid": "<a_211><b_35><c_36>",
+        "baseline_l2_prefix": "<a_246><b_15>",
+        "hierarchy_l2_prefix": "<a_211><b_35>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 7,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 3648,
+        "title": "eSUN 3D 1.75mm PETG Orange Filament 1kg (2.2lb), PETG 3D Printer Filament, Semi-Transparent 1.75mm Orange",
+        "baseline_sid": "<a_246><b_15><c_86>",
+        "hierarchy_sid": "<a_211><b_35><c_18>",
+        "baseline_l2_prefix": "<a_246><b_15>",
+        "hierarchy_l2_prefix": "<a_211><b_35>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 7,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 359,
+        "title": "Kreg SK03 Pocket-Hole Screw Kit in 5 Sizes",
+        "baseline_sid": "<a_168><b_200><c_182>",
+        "hierarchy_sid": "<a_87><b_70><c_104>",
+        "baseline_l2_prefix": "<a_168><b_200>",
+        "hierarchy_l2_prefix": "<a_87><b_70>",
+        "baseline_l2_leaf_count": 10,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -9
+      },
+      {
+        "item_id": 1985,
+        "title": "Kreg SML-C2 2-Inch Washer Head #8 Coarse Pocket Screws, 50 Count",
+        "baseline_sid": "<a_168><b_200><c_104>",
+        "hierarchy_sid": "<a_87><b_25><c_216>",
+        "baseline_l2_prefix": "<a_168><b_200>",
+        "hierarchy_l2_prefix": "<a_87><b_25>",
+        "baseline_l2_leaf_count": 10,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -9
+      },
+      {
+        "item_id": 15,
+        "title": "Kreg SML-C2-250 Pocket Screws 2-Inch, 8 Coarse, Washer Head, 250 Count",
+        "baseline_sid": "<a_168><b_200><c_126>",
+        "hierarchy_sid": "<a_87><b_20><c_120>",
+        "baseline_l2_prefix": "<a_168><b_200>",
+        "hierarchy_l2_prefix": "<a_87><b_20>",
+        "baseline_l2_leaf_count": 10,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -8
+      },
+      {
+        "item_id": 387,
+        "title": "Kreg SML-C125-100 1-1/4-Inch 8-Coarse Washer-Head Pocket Screws, 100-Count",
+        "baseline_sid": "<a_168><b_200><c_222>",
+        "hierarchy_sid": "<a_87><b_172><c_16>",
+        "baseline_l2_prefix": "<a_168><b_200>",
+        "hierarchy_l2_prefix": "<a_87><b_172>",
+        "baseline_l2_leaf_count": 10,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -8
+      },
+      {
+        "item_id": 2491,
+        "title": "Kreg SML-F125-100 1-1/4-Inch 7-Fine Washer-Head Pocket Screws, 100-Count",
+        "baseline_sid": "<a_168><b_200><c_52>",
+        "hierarchy_sid": "<a_87><b_172><c_18>",
+        "baseline_l2_prefix": "<a_168><b_200>",
+        "hierarchy_l2_prefix": "<a_87><b_172>",
+        "baseline_l2_leaf_count": 10,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -8
+      },
+      {
+        "item_id": 2508,
+        "title": "Kreg SPS-C1-100 Pocket Screws - 1-Inch, 7 Coarse, Pan-Head, 100-Count",
+        "baseline_sid": "<a_168><b_200><c_195>",
+        "hierarchy_sid": "<a_87><b_20><c_58>",
+        "baseline_l2_prefix": "<a_168><b_200>",
+        "hierarchy_l2_prefix": "<a_87><b_20>",
+        "baseline_l2_leaf_count": 10,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -8
+      },
+      {
+        "item_id": 1795,
+        "title": "eSUN 1.75mm Black PLA 3D Printer filament 1kg Spool (2.2lbs), Black",
+        "baseline_sid": "<a_246><b_206><c_42>",
+        "hierarchy_sid": "<a_211><b_187><c_204>",
+        "baseline_l2_prefix": "<a_246><b_206>",
+        "hierarchy_l2_prefix": "<a_211><b_187>",
+        "baseline_l2_leaf_count": 14,
+        "hierarchy_l2_leaf_count": 6,
+        "delta_l2_leaf_count": -8
+      },
+      {
+        "item_id": 2281,
+        "title": "eSUN 1.75mm Glass Watermelon Red PLA 3D Printer filament 1kg Spool (2.2lbs), Glass Red",
+        "baseline_sid": "<a_246><b_206><c_86>",
+        "hierarchy_sid": "<a_211><b_187><c_195>",
+        "baseline_l2_prefix": "<a_246><b_206>",
+        "hierarchy_l2_prefix": "<a_211><b_187>",
+        "baseline_l2_leaf_count": 14,
+        "hierarchy_l2_leaf_count": 6,
+        "delta_l2_leaf_count": -8
+      }
+    ]
+  }
+}

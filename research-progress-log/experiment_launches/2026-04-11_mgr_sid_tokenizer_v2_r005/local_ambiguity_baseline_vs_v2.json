@@ -1,0 +1,495 @@
+{
+  "inputs": {
+    "baseline_index": "/home/leejt/OneRec/output/experiments/mgr_sid_v1_upstream/generated_indices/Industrial_and_Scientific.mgr_upstream_baseline.index.json",
+    "compare_index": "/home/leejt/OneRec/output/experiments/mgr_sid_tokenizer_v2/generated_indices/Industrial_and_Scientific.mgr_tokenizer_v2_offline.index.json",
+    "test_csv": "/home/leejt/OneRec/data/Amazon/test/Industrial_and_Scientific_5_2016-10-2018-11.csv",
+    "item_json": "/home/leejt/OneRec/data/Amazon/index/Industrial_and_Scientific.item.json"
+  },
+  "baseline": {
+    "catalog": {
+      "item_count": 3686,
+      "l2_prefix_count": 2182,
+      "item_weighted_mean_l2_item_count": 3.202930005425936,
+      "item_weighted_median_l2_item_count": 2.0,
+      "item_weighted_mean_l2_leaf_count": 3.1869234943027673,
+      "item_weighted_median_l2_leaf_count": 2.0,
+      "item_fraction_multileaf_l2": 0.6006511123168746,
+      "item_fraction_multileaf_l2_ge4": 0.2580032555615844,
+      "item_fraction_multileaf_l2_ge8": 0.08030385241454151,
+      "weighted_l3_entropy_given_l2_bits": 1.1119552143289912,
+      "top_crowded_l2_prefixes": [
+        {
+          "prefix": "<a_237><b_102>",
+          "item_count": 25,
+          "leaf_count": 25,
+          "entropy_bits": 4.643856189774723
+        },
+        {
+          "prefix": "<a_237><b_245>",
+          "item_count": 25,
+          "leaf_count": 25,
+          "entropy_bits": 4.643856189774723
+        },
+        {
+          "prefix": "<a_237><b_43>",
+          "item_count": 22,
+          "leaf_count": 22,
+          "entropy_bits": 4.459431618637295
+        },
+        {
+          "prefix": "<a_237><b_229>",
+          "item_count": 17,
+          "leaf_count": 17,
+          "entropy_bits": 4.08746284125034
+        },
+        {
+          "prefix": "<a_184><b_20>",
+          "item_count": 13,
+          "leaf_count": 13,
+          "entropy_bits": 3.7004397181410926
+        },
+        {
+          "prefix": "<a_230><b_14>",
+          "item_count": 14,
+          "leaf_count": 12,
+          "entropy_bits": 3.521640636343319
+        },
+        {
+          "prefix": "<a_134><b_116>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_191><b_8>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_237><b_116>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_254><b_206>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_134><b_190>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_134><b_34>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_104><b_173>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_179><b_244>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_184><b_236>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        }
+      ]
+    },
+    "test_weighted": {
+      "example_count": 4533,
+      "covered_count": 4533,
+      "missing_count": 0,
+      "target_weighted_mean_l2_item_count": 4.8658724906243105,
+      "target_weighted_median_l2_item_count": 3,
+      "target_weighted_mean_l2_leaf_count": 4.799911758217516,
+      "target_weighted_median_l2_leaf_count": 2,
+      "target_fraction_multileaf_l2": 0.6893889256562983,
+      "target_fraction_multileaf_l2_ge4": 0.32825943084050296,
+      "target_fraction_multileaf_l2_ge8": 0.16633575998235164,
+      "target_weighted_mean_l3_entropy_bits": 1.4532937152902716
+    }
+  },
+  "hierarchy": {
+    "catalog": {
+      "item_count": 3686,
+      "l2_prefix_count": 2680,
+      "item_weighted_mean_l2_item_count": 2.414541508410201,
+      "item_weighted_median_l2_item_count": 1.0,
+      "item_weighted_mean_l2_leaf_count": 2.3944655453065655,
+      "item_weighted_median_l2_leaf_count": 1.0,
+      "item_fraction_multileaf_l2": 0.4234943027672273,
+      "item_fraction_multileaf_l2_ge4": 0.13076505697232774,
+      "item_fraction_multileaf_l2_ge8": 0.04395008138903961,
+      "weighted_l3_entropy_given_l2_bits": 0.715048271179983,
+      "top_crowded_l2_prefixes": [
+        {
+          "prefix": "<a_112><b_122>",
+          "item_count": 25,
+          "leaf_count": 25,
+          "entropy_bits": 4.643856189774723
+        },
+        {
+          "prefix": "<a_112><b_65>",
+          "item_count": 23,
+          "leaf_count": 23,
+          "entropy_bits": 4.523561956057013
+        },
+        {
+          "prefix": "<a_112><b_39>",
+          "item_count": 21,
+          "leaf_count": 19,
+          "entropy_bits": 4.201841232302569
+        },
+        {
+          "prefix": "<a_33><b_187>",
+          "item_count": 17,
+          "leaf_count": 17,
+          "entropy_bits": 4.08746284125034
+        },
+        {
+          "prefix": "<a_34><b_232>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_112><b_35>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_177><b_238>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_33><b_35>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_58><b_126>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_72><b_11>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_76><b_76>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_211><b_65>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_233><b_126>",
+          "item_count": 8,
+          "leaf_count": 7,
+          "entropy_bits": 2.75
+        },
+        {
+          "prefix": "<a_211><b_35>",
+          "item_count": 7,
+          "leaf_count": 7,
+          "entropy_bits": 2.807354922057604
+        },
+        {
+          "prefix": "<a_211><b_39>",
+          "item_count": 7,
+          "leaf_count": 7,
+          "entropy_bits": 2.807354922057604
+        }
+      ]
+    },
+    "test_weighted": {
+      "example_count": 4533,
+      "covered_count": 4533,
+      "missing_count": 0,
+      "target_weighted_mean_l2_item_count": 4.414515773218619,
+      "target_weighted_median_l2_item_count": 2,
+      "target_weighted_mean_l2_leaf_count": 4.342157511581734,
+      "target_weighted_median_l2_leaf_count": 1,
+      "target_fraction_multileaf_l2": 0.4873152437679241,
+      "target_fraction_multileaf_l2_ge4": 0.2228105007721156,
+      "target_fraction_multileaf_l2_ge8": 0.1458195455548202,
+      "target_weighted_mean_l3_entropy_bits": 1.100114543698025
+    }
+  },
+  "comparison": {
+    "item_level": {
+      "common_item_count": 3686,
+      "changed_sid_count": 3686,
+      "changed_sid_fraction": 1.0,
+      "reduced_l2_leaf_count_fraction": 0.4243081931633207,
+      "increased_l2_leaf_count_fraction": 0.14785675529028758,
+      "same_l2_leaf_count_fraction": 0.42783505154639173,
+      "moved_out_of_same_l2_count": 983,
+      "moved_into_same_l2_count": 330,
+      "moved_out_of_ge4_count": 554,
+      "moved_into_ge4_count": 85,
+      "mean_delta_l2_leaf_count_all_items": -0.7924579489962018,
+      "mean_delta_l2_leaf_count_changed_items": -0.7924579489962018
+    },
+    "test_weighted": {
+      "target_count": 4533,
+      "reduced_l2_leaf_count_fraction": 0.44209133024487096,
+      "increased_l2_leaf_count_fraction": 0.19324950363997354,
+      "same_l2_leaf_count_fraction": 0.36465916611515553,
+      "moved_out_of_same_l2_fraction": 0.2673726009265387,
+      "moved_into_same_l2_fraction": 0.06529891903816457,
+      "moved_out_of_ge4_fraction": 0.1299360247076991,
+      "moved_into_ge4_fraction": 0.024487094639311716,
+      "mean_delta_l2_leaf_count": -0.45775424663578207
+    },
+    "top_improved_examples": [
+      {
+        "item_id": 2665,
+        "title": "Printrbot PLA Filament for 3D Printers, 1.75mm Diameter, Metallic Charcoal Gray, 1Kg Spool",
+        "baseline_sid": "<a_237><b_245><c_216>",
+        "hierarchy_sid": "<a_45><b_35><c_222>",
+        "baseline_l2_prefix": "<a_237><b_245>",
+        "hierarchy_l2_prefix": "<a_45><b_35>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -24
+      },
+      {
+        "item_id": 3096,
+        "title": "HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Bronze",
+        "baseline_sid": "<a_237><b_102><c_73>",
+        "hierarchy_sid": "<a_112><b_187><c_74>",
+        "baseline_l2_prefix": "<a_237><b_102>",
+        "hierarchy_l2_prefix": "<a_112><b_187>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -24
+      },
+      {
+        "item_id": 3675,
+        "title": "Dremel PLA 3D Printer Filament, 1.75 mm Diameter, 0.5 kg Spool Weight, White Translucent",
+        "baseline_sid": "<a_237><b_245><c_0>",
+        "hierarchy_sid": "<a_112><b_41><c_241>",
+        "baseline_l2_prefix": "<a_237><b_245>",
+        "hierarchy_l2_prefix": "<a_112><b_41>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -24
+      },
+      {
+        "item_id": 2701,
+        "title": "HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Transparent Black",
+        "baseline_sid": "<a_237><b_102><c_43>",
+        "hierarchy_sid": "<a_112><b_249><c_74>",
+        "baseline_l2_prefix": "<a_237><b_102>",
+        "hierarchy_l2_prefix": "<a_112><b_249>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -23
+      },
+      {
+        "item_id": 249,
+        "title": "UP! ABS Plastic Filament, 1.75 mm Diameter, 1.54 lbs Spool, Black",
+        "baseline_sid": "<a_237><b_102><c_29>",
+        "hierarchy_sid": "<a_86><b_39><c_110>",
+        "baseline_l2_prefix": "<a_237><b_102>",
+        "hierarchy_l2_prefix": "<a_86><b_39>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 3,
+        "delta_l2_leaf_count": -22
+      },
+      {
+        "item_id": 3629,
+        "title": "[STAR] Alchement - PLA Series, 3D Filament, 1.75mm, 1kg (Transparent)",
+        "baseline_sid": "<a_237><b_245><c_37>",
+        "hierarchy_sid": "<a_22><b_35><c_1>",
+        "baseline_l2_prefix": "<a_237><b_245>",
+        "hierarchy_l2_prefix": "<a_22><b_35>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 3,
+        "delta_l2_leaf_count": -22
+      },
+      {
+        "item_id": 2909,
+        "title": "3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175TCMS",
+        "baseline_sid": "<a_237><b_43><c_15>",
+        "hierarchy_sid": "<a_22><b_122><c_191>",
+        "baseline_l2_prefix": "<a_237><b_43>",
+        "hierarchy_l2_prefix": "<a_22><b_122>",
+        "baseline_l2_leaf_count": 22,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -21
+      },
+      {
+        "item_id": 2060,
+        "title": "Antique Bronze Metallic PLA - 3D Printing Filament (1.75mm 0.5 kg) Made in the USA",
+        "baseline_sid": "<a_237><b_229><c_153>",
+        "hierarchy_sid": "<a_22><b_89><c_206>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_22><b_89>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -16
+      },
+      {
+        "item_id": 3042,
+        "title": "RioRand 1.75mm PLA Filament 1kg/2.2lb for 3D Printers Reprap, MakerBot Replicator 2, Afinia, Solidoodle etc.(Black)",
+        "baseline_sid": "<a_237><b_229><c_133>",
+        "hierarchy_sid": "<a_226><b_79><c_121>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_226><b_79>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -16
+      },
+      {
+        "item_id": 3490,
+        "title": "MeltInk3D PLA- 1K175BLK05 Black PLA 3D Printer Filament &Oslash; 1.75mm, 1Kg (2.2 Lb), MADE in U.S.A, Dimensional Accuracy: &plusmn; 0.05mm",
+        "baseline_sid": "<a_237><b_229><c_205>",
+        "hierarchy_sid": "<a_22><b_238><c_26>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_22><b_238>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -16
+      },
+      {
+        "item_id": 891,
+        "title": "Filament Outlet Green PLA 1.75mm 3D Printer Filament 1kg (2.2lbs) spool USA",
+        "baseline_sid": "<a_237><b_229><c_7>",
+        "hierarchy_sid": "<a_112><b_129><c_97>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_112><b_129>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -15
+      },
+      {
+        "item_id": 892,
+        "title": "Filament Outlet Black PLA 1.75mm 3D Printer Filament 1kg (2.2lbs) spool USA",
+        "baseline_sid": "<a_237><b_229><c_0>",
+        "hierarchy_sid": "<a_86><b_129><c_4>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_86><b_129>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -15
+      },
+      {
+        "item_id": 3556,
+        "title": "MeltInk3D PLA-1K175GLD05 Gold PLA 3D Printer Filament &Atilde;&tilde; 1.75mm, 1Kg (2.2 Lb), MADE in USA, Dimensional Accuracy: &Acirc;&plusmn; 0.05mm",
+        "baseline_sid": "<a_237><b_229><c_200>",
+        "hierarchy_sid": "<a_22><b_35><c_0>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_22><b_35>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 3,
+        "delta_l2_leaf_count": -14
+      },
+      {
+        "item_id": 370,
+        "title": "Koch 015021 Cable, 7 by 7 Construction, Trade Size 1/16 by 125 Feet, Stainless Steel",
+        "baseline_sid": "<a_184><b_20><c_235>",
+        "hierarchy_sid": "<a_84><b_9><c_147>",
+        "baseline_l2_prefix": "<a_184><b_20>",
+        "hierarchy_l2_prefix": "<a_84><b_9>",
+        "baseline_l2_leaf_count": 13,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -12
+      },
+      {
+        "item_id": 2752,
+        "title": "Gizmo Dorks 3mm (2.85mm) ABS Filament 1kg / 2.2lb for 3D Printers, Gray",
+        "baseline_sid": "<a_237><b_229><c_167>",
+        "hierarchy_sid": "<a_86><b_141><c_147>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_86><b_141>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -12
+      },
+      {
+        "item_id": 3461,
+        "title": "Gizmo Dorks 3mm (2.85mm) ABS Filament 1kg / 2.2lb for 3D Printers, Black",
+        "baseline_sid": "<a_237><b_229><c_8>",
+        "hierarchy_sid": "<a_86><b_141><c_23>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_86><b_141>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -12
+      },
+      {
+        "item_id": 3462,
+        "title": "Gizmo Dorks 3mm (2.85mm) ABS Filament 1kg / 2.2lb for 3D Printers, White",
+        "baseline_sid": "<a_237><b_229><c_150>",
+        "hierarchy_sid": "<a_86><b_141><c_42>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_86><b_141>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -12
+      },
+      {
+        "item_id": 3526,
+        "title": "Gizmo Dorks 3mm (2.85mm) ABS Filament 1kg / 2.2lb for 3D Printers, Green",
+        "baseline_sid": "<a_237><b_229><c_49>",
+        "hierarchy_sid": "<a_86><b_141><c_159>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_86><b_141>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -12
+      },
+      {
+        "item_id": 3554,
+        "title": "Gizmo Dorks 1.75mm ABS Filament 1kg / 2.2lb for 3D Printers, White",
+        "baseline_sid": "<a_237><b_229><c_9>",
+        "hierarchy_sid": "<a_86><b_141><c_222>",
+        "baseline_l2_prefix": "<a_237><b_229>",
+        "hierarchy_l2_prefix": "<a_86><b_141>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 5,
+        "delta_l2_leaf_count": -12
+      },
+      {
+        "item_id": 101,
+        "title": "Stainless Steel 304/304L Pipe Fitting, Nipple, Schedule 40 Welded, 4\" X 6\" NPT Male by Merit Brass",
+        "baseline_sid": "<a_230><b_14><c_17>",
+        "hierarchy_sid": "<a_105><b_136><c_58>",
+        "baseline_l2_prefix": "<a_230><b_14>",
+        "hierarchy_l2_prefix": "<a_105><b_136>",
+        "baseline_l2_leaf_count": 12,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -11
+      }
+    ]
+  }
+}

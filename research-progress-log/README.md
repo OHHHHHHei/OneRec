@@ -1,22 +1,32 @@
 # Research Progress Log
 
-这个目录用于维护当前 MiniOneRec 后续研究的一份持续更新 LaTeX 日志。
+这个目录现在承担两件事：
 
-主要文件：
+1. 维护当前主线的一份持续更新 LaTeX 日志
+2. 为每个关键实验阶段提供一个简洁、可回溯的记录入口
+
+## Canonical Files
 
 - `research_progress_log.tex`
 - `research_progress_log.pdf`
+- `experiment_launches/README.md`
 
-当前中文编译方式：
+## Recommended Reading Order
+
+1. `research_progress_log.tex`
+2. `experiment_launches/README.md`
+3. 再进入具体实验阶段目录读 `README.md` / `RESULTS.md`
+
+## Compile
 
 ```bash
 cd /home/leejt/OneRec/research-progress-log
 pdflatex -interaction=nonstopmode -halt-on-error research_progress_log.tex
 ```
 
-建议使用方式：
+## Usage Policy
 
 - 每次出现有意义的实验结果或方向变化后更新
-- 记录这轮实际做了什么、改了什么、发现了什么
-- 说明当前最可信的解释和下一步动作
-- 把它当成面向论文叙事的工作日志，而不是正式论文草稿
+- 主结论优先写进 `research_progress_log.tex`
+- 每个实验阶段只保留少数 canonical prose 文档
+- 细粒度 raw artifacts 保留在对应 run 目录下，不再在根目录平铺

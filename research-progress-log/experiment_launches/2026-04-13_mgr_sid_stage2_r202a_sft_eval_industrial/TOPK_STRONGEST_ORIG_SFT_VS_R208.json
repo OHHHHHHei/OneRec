@@ -1,0 +1,1600 @@
+{
+  "example_count": 4533,
+  "topk": {
+    "top1": {
+      "baseline_hit_rate": 0.0670637546878447,
+      "hierarchy_hit_rate": 0.06551952349437459,
+      "delta_hit_rate": -0.001544231193470108,
+      "baseline_same_l1_rate": 0.2671519964703287,
+      "hierarchy_same_l1_rate": 0.1698654312817119,
+      "baseline_same_l2_rate": 0.13192146481358924,
+      "hierarchy_same_l2_rate": 0.10015442311934701,
+      "baseline_best_lcp": 0.4661372159717626,
+      "hierarchy_best_lcp": 0.3355393778954335,
+      "improved_count": 51,
+      "worsened_count": 58
+    },
+    "top3": {
+      "baseline_hit_rate": 0.09838958746966689,
+      "hierarchy_hit_rate": 0.09728656518861681,
+      "delta_hit_rate": -0.0011030222810500812,
+      "baseline_same_l1_rate": 0.33245091550849326,
+      "hierarchy_same_l1_rate": 0.2217074784910655,
+      "baseline_same_l2_rate": 0.16655636443856167,
+      "hierarchy_same_l2_rate": 0.14361350099272005,
+      "baseline_best_lcp": 0.5973968674167218,
+      "hierarchy_best_lcp": 0.4626075446724024,
+      "improved_count": 105,
+      "worsened_count": 110
+    },
+    "top5": {
+      "baseline_hit_rate": 0.11824398852856828,
+      "hierarchy_hit_rate": 0.11383189940436797,
+      "delta_hit_rate": -0.004412089124200311,
+      "baseline_same_l1_rate": 0.36818883741451575,
+      "hierarchy_same_l1_rate": 0.25479814692256786,
+      "baseline_same_l2_rate": 0.18266048974189278,
+      "hierarchy_same_l2_rate": 0.15971762629605118,
+      "baseline_best_lcp": 0.6690933156849769,
+      "hierarchy_best_lcp": 0.528347672622987,
+      "improved_count": 118,
+      "worsened_count": 138
+    },
+    "top10": {
+      "baseline_hit_rate": 0.15089344804765056,
+      "hierarchy_hit_rate": 0.14251047871166997,
+      "delta_hit_rate": -0.008382969335980595,
+      "baseline_same_l1_rate": 0.43061989852195015,
+      "hierarchy_same_l1_rate": 0.3117140966247518,
+      "baseline_same_l2_rate": 0.21089786013677475,
+      "hierarchy_same_l2_rate": 0.18905801897198324,
+      "baseline_best_lcp": 0.7924112067063754,
+      "hierarchy_best_lcp": 0.6432825943084051,
+      "improved_count": 133,
+      "worsened_count": 171
+    },
+    "top20": {
+      "baseline_hit_rate": 0.1897198323406133,
+      "hierarchy_hit_rate": 0.1800132362673726,
+      "delta_hit_rate": -0.009706596073240703,
+      "baseline_same_l1_rate": 0.5133465696007059,
+      "hierarchy_same_l1_rate": 0.3913523053165674,
+      "baseline_same_l2_rate": 0.24795940878005734,
+      "hierarchy_same_l2_rate": 0.22942863445841605,
+      "baseline_best_lcp": 0.9510258107213766,
+      "hierarchy_best_lcp": 0.800794176042356,
+      "improved_count": 175,
+      "worsened_count": 219
+    },
+    "top50": {
+      "baseline_hit_rate": 0.24531215530553718,
+      "hierarchy_hit_rate": 0.23737039488197662,
+      "delta_hit_rate": -0.007941760423560568,
+      "baseline_same_l1_rate": 0.6340172071475844,
+      "hierarchy_same_l1_rate": 0.5343039929406574,
+      "baseline_same_l2_rate": 0.314802559011692,
+      "hierarchy_same_l2_rate": 0.29494815795279067,
+      "baseline_best_lcp": 1.1941319214648136,
+      "hierarchy_best_lcp": 1.0666225457754246,
+      "improved_count": 234,
+      "worsened_count": 270
+    }
+  },
+  "rank_transition": {
+    "1": {
+      "1": 246,
+      "11-20": 6,
+      "2-3": 21,
+      "21-50": 8,
+      "4-5": 6,
+      "6-10": 10,
+      ">50": 7
+    },
+    "11-20": {
+      "1": 4,
+      "11-20": 35,
+      "2-3": 10,
+      "21-50": 36,
+      "4-5": 11,
+      "6-10": 20,
+      ">50": 60
+    },
+    "2-3": {
+      "1": 27,
+      "11-20": 12,
+      "2-3": 42,
+      "21-50": 10,
+      "4-5": 17,
+      "6-10": 13,
+      ">50": 21
+    },
+    "21-50": {
+      "1": 4,
+      "11-20": 31,
+      "2-3": 8,
+      "21-50": 47,
+      "4-5": 7,
+      "6-10": 21,
+      ">50": 134
+    },
+    "4-5": {
+      "1": 8,
+      "11-20": 11,
+      "2-3": 24,
+      "21-50": 12,
+      "4-5": 7,
+      "6-10": 14,
+      ">50": 14
+    },
+    "6-10": {
+      "1": 4,
+      "11-20": 19,
+      "2-3": 28,
+      "21-50": 17,
+      "4-5": 16,
+      "6-10": 30,
+      ">50": 34
+    },
+    ">50": {
+      "1": 4,
+      "11-20": 56,
+      "2-3": 11,
+      "21-50": 130,
+      "4-5": 11,
+      "6-10": 22,
+      ">50": 3187
+    }
+  },
+  "fanout_bucket": {
+    "l2<=2": {
+      "top1": {
+        "count": 2661,
+        "baseline_hit_rate": 0.07027433295753475,
+        "hierarchy_hit_rate": 0.06877113866967305,
+        "delta_hit_rate": -0.001503194287861706,
+        "improved_count": 23,
+        "worsened_count": 27
+      },
+      "top3": {
+        "count": 2661,
+        "baseline_hit_rate": 0.0920706501315295,
+        "hierarchy_hit_rate": 0.08229988726042842,
+        "delta_hit_rate": -0.009770762871101082,
+        "improved_count": 23,
+        "worsened_count": 49
+      },
+      "top5": {
+        "count": 2661,
+        "baseline_hit_rate": 0.09996242014280346,
+        "hierarchy_hit_rate": 0.09094325441563322,
+        "delta_hit_rate": -0.009019165727170236,
+        "improved_count": 31,
+        "worsened_count": 55
+      },
+      "top10": {
+        "count": 2661,
+        "baseline_hit_rate": 0.1161217587373168,
+        "hierarchy_hit_rate": 0.10822998872604284,
+        "delta_hit_rate": -0.00789177001127396,
+        "improved_count": 54,
+        "worsened_count": 75
+      }
+    },
+    "l2=3": {
+      "top1": {
+        "count": 472,
+        "baseline_hit_rate": 0.05296610169491525,
+        "hierarchy_hit_rate": 0.05296610169491525,
+        "delta_hit_rate": 0.0,
+        "improved_count": 3,
+        "worsened_count": 3
+      },
+      "top3": {
+        "count": 472,
+        "baseline_hit_rate": 0.059322033898305086,
+        "hierarchy_hit_rate": 0.06567796610169492,
+        "delta_hit_rate": 0.006355932203389834,
+        "improved_count": 7,
+        "worsened_count": 4
+      },
+      "top5": {
+        "count": 472,
+        "baseline_hit_rate": 0.06991525423728813,
+        "hierarchy_hit_rate": 0.07838983050847458,
+        "delta_hit_rate": 0.008474576271186446,
+        "improved_count": 11,
+        "worsened_count": 7
+      },
+      "top10": {
+        "count": 472,
+        "baseline_hit_rate": 0.09533898305084745,
+        "hierarchy_hit_rate": 0.1038135593220339,
+        "delta_hit_rate": 0.008474576271186446,
+        "improved_count": 17,
+        "worsened_count": 13
+      }
+    },
+    "l2>=4": {
+      "top1": {
+        "count": 1400,
+        "baseline_hit_rate": 0.06571428571428571,
+        "hierarchy_hit_rate": 0.06357142857142857,
+        "delta_hit_rate": -0.002142857142857141,
+        "improved_count": 25,
+        "worsened_count": 28
+      },
+      "top3": {
+        "count": 1400,
+        "baseline_hit_rate": 0.12357142857142857,
+        "hierarchy_hit_rate": 0.13642857142857143,
+        "delta_hit_rate": 0.012857142857142859,
+        "improved_count": 75,
+        "worsened_count": 57
+      },
+      "top5": {
+        "count": 1400,
+        "baseline_hit_rate": 0.1692857142857143,
+        "hierarchy_hit_rate": 0.1692857142857143,
+        "delta_hit_rate": 0.0,
+        "improved_count": 76,
+        "worsened_count": 76
+      },
+      "top10": {
+        "count": 1400,
+        "baseline_hit_rate": 0.2357142857142857,
+        "hierarchy_hit_rate": 0.22071428571428572,
+        "delta_hit_rate": -0.014999999999999986,
+        "improved_count": 62,
+        "worsened_count": 83
+      }
+    }
+  },
+  "baseline_rank_bucket": {
+    "1": {
+      "top1": {
+        "count": 304,
+        "hierarchy_hit_rate": 0.8092105263157895,
+        "improved_count": 0,
+        "worsened_count": 58
+      },
+      "top3": {
+        "count": 304,
+        "hierarchy_hit_rate": 0.8782894736842105,
+        "improved_count": 0,
+        "worsened_count": 37
+      },
+      "top5": {
+        "count": 304,
+        "hierarchy_hit_rate": 0.8980263157894737,
+        "improved_count": 0,
+        "worsened_count": 31
+      },
+      "top10": {
+        "count": 304,
+        "hierarchy_hit_rate": 0.930921052631579,
+        "improved_count": 0,
+        "worsened_count": 21
+      }
+    },
+    "2-3": {
+      "top1": {
+        "count": 142,
+        "hierarchy_hit_rate": 0.19014084507042253,
+        "improved_count": 27,
+        "worsened_count": 0
+      },
+      "top3": {
+        "count": 142,
+        "hierarchy_hit_rate": 0.4859154929577465,
+        "improved_count": 0,
+        "worsened_count": 73
+      },
+      "top5": {
+        "count": 142,
+        "hierarchy_hit_rate": 0.6056338028169014,
+        "improved_count": 0,
+        "worsened_count": 56
+      },
+      "top10": {
+        "count": 142,
+        "hierarchy_hit_rate": 0.6971830985915493,
+        "improved_count": 0,
+        "worsened_count": 43
+      }
+    },
+    "4-5": {
+      "top1": {
+        "count": 90,
+        "hierarchy_hit_rate": 0.08888888888888889,
+        "improved_count": 8,
+        "worsened_count": 0
+      },
+      "top3": {
+        "count": 90,
+        "hierarchy_hit_rate": 0.35555555555555557,
+        "improved_count": 32,
+        "worsened_count": 0
+      },
+      "top5": {
+        "count": 90,
+        "hierarchy_hit_rate": 0.43333333333333335,
+        "improved_count": 0,
+        "worsened_count": 51
+      },
+      "top10": {
+        "count": 90,
+        "hierarchy_hit_rate": 0.5888888888888889,
+        "improved_count": 0,
+        "worsened_count": 37
+      }
+    },
+    "6-10": {
+      "top1": {
+        "count": 148,
+        "hierarchy_hit_rate": 0.02702702702702703,
+        "improved_count": 4,
+        "worsened_count": 0
+      },
+      "top3": {
+        "count": 148,
+        "hierarchy_hit_rate": 0.21621621621621623,
+        "improved_count": 32,
+        "worsened_count": 0
+      },
+      "top5": {
+        "count": 148,
+        "hierarchy_hit_rate": 0.32432432432432434,
+        "improved_count": 48,
+        "worsened_count": 0
+      },
+      "top10": {
+        "count": 148,
+        "hierarchy_hit_rate": 0.527027027027027,
+        "improved_count": 0,
+        "worsened_count": 70
+      }
+    },
+    "11-20": {
+      "top1": {
+        "count": 176,
+        "hierarchy_hit_rate": 0.022727272727272728,
+        "improved_count": 4,
+        "worsened_count": 0
+      },
+      "top3": {
+        "count": 176,
+        "hierarchy_hit_rate": 0.07954545454545454,
+        "improved_count": 14,
+        "worsened_count": 0
+      },
+      "top5": {
+        "count": 176,
+        "hierarchy_hit_rate": 0.14204545454545456,
+        "improved_count": 25,
+        "worsened_count": 0
+      },
+      "top10": {
+        "count": 176,
+        "hierarchy_hit_rate": 0.2556818181818182,
+        "improved_count": 45,
+        "worsened_count": 0
+      }
+    },
+    "21-50": {
+      "top1": {
+        "count": 252,
+        "hierarchy_hit_rate": 0.015873015873015872,
+        "improved_count": 4,
+        "worsened_count": 0
+      },
+      "top3": {
+        "count": 252,
+        "hierarchy_hit_rate": 0.047619047619047616,
+        "improved_count": 12,
+        "worsened_count": 0
+      },
+      "top5": {
+        "count": 252,
+        "hierarchy_hit_rate": 0.07539682539682539,
+        "improved_count": 19,
+        "worsened_count": 0
+      },
+      "top10": {
+        "count": 252,
+        "hierarchy_hit_rate": 0.15873015873015872,
+        "improved_count": 40,
+        "worsened_count": 0
+      }
+    },
+    ">50": {
+      "top1": {
+        "count": 3421,
+        "hierarchy_hit_rate": 0.001169248757673195,
+        "improved_count": 4,
+        "worsened_count": 0
+      },
+      "top3": {
+        "count": 3421,
+        "hierarchy_hit_rate": 0.0043846828412744815,
+        "improved_count": 15,
+        "worsened_count": 0
+      },
+      "top5": {
+        "count": 3421,
+        "hierarchy_hit_rate": 0.007600116924875768,
+        "improved_count": 26,
+        "worsened_count": 0
+      },
+      "top10": {
+        "count": 3421,
+        "hierarchy_hit_rate": 0.014030985092078339,
+        "improved_count": 48,
+        "worsened_count": 0
+      }
+    }
+  },
+  "improved_vs_worsened": {
+    "top1": {
+      "improved": {
+        "count": 51,
+        "baseline_same_l1_rate": 0.49019607843137253,
+        "baseline_same_l2_rate": 0.29411764705882354,
+        "baseline_mean_l2_fanout": 10.72549019607843
+      },
+      "worsened": {
+        "count": 58,
+        "baseline_same_l1_rate": 1.0,
+        "baseline_same_l2_rate": 1.0,
+        "baseline_mean_l2_fanout": 9.758620689655173
+      }
+    },
+    "top3": {
+      "improved": {
+        "count": 105,
+        "baseline_same_l1_rate": 0.7619047619047619,
+        "baseline_same_l2_rate": 0.5238095238095238,
+        "baseline_mean_l2_fanout": 15.323809523809524
+      },
+      "worsened": {
+        "count": 110,
+        "baseline_same_l1_rate": 1.0,
+        "baseline_same_l2_rate": 1.0,
+        "baseline_mean_l2_fanout": 10.9
+      }
+    },
+    "top5": {
+      "improved": {
+        "count": 118,
+        "baseline_same_l1_rate": 0.711864406779661,
+        "baseline_same_l2_rate": 0.4745762711864407,
+        "baseline_mean_l2_fanout": 13.754237288135593
+      },
+      "worsened": {
+        "count": 138,
+        "baseline_same_l1_rate": 1.0,
+        "baseline_same_l2_rate": 1.0,
+        "baseline_mean_l2_fanout": 12.210144927536232
+      }
+    },
+    "top10": {
+      "improved": {
+        "count": 133,
+        "baseline_same_l1_rate": 0.6541353383458647,
+        "baseline_same_l2_rate": 0.3684210526315789,
+        "baseline_mean_l2_fanout": 9.593984962406015
+      },
+      "worsened": {
+        "count": 171,
+        "baseline_same_l1_rate": 1.0,
+        "baseline_same_l2_rate": 1.0,
+        "baseline_mean_l2_fanout": 10.847953216374268
+      }
+    }
+  },
+  "example_tables": {
+    "top1": {
+      "improved_examples": [
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": 2,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 50,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Blue",
+          "baseline_rank": 3,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 3,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 4,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 6,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 21,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 1,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2697,
+          "item_title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 3,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 1,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2697,
+          "item_title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 4,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2697,
+          "item_title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 5,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 3442,
+          "item_title": "3D Solutech Real Purple 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 5,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2697,
+          "item_title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 11,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2697,
+          "item_title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 18,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2157,
+          "item_title": "eSUN 3D 1.75mm PETG Blue Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75mm Semi-Transparent Blue",
+          "baseline_rank": 10,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 10,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1373,
+          "item_title": "X-Treme Tape TPE-XZLBRD Silicone Rubber Self Fusing Tape, 1\" x 10', Triangular, Bright Red",
+          "baseline_rank": 41,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 10,
+          "baseline_best_lcp": 0,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1154,
+          "item_title": "6061 Aluminum Round Rod, Unpolished (Mill) Finish, Extruded, T6511 Temper, ASTM B221, 1/4\" Diameter, 60\" Length",
+          "baseline_rank": 2,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 9,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        }
+      ],
+      "worsened_examples": [
+        {
+          "item_id": 50,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Blue",
+          "baseline_rank": 1,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 50,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Blue",
+          "baseline_rank": 1,
+          "hierarchy_rank": 3,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 50,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Blue",
+          "baseline_rank": 1,
+          "hierarchy_rank": 3,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 444,
+          "item_title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, White",
+          "baseline_rank": 1,
+          "hierarchy_rank": 6,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2161,
+          "item_title": "3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 37,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 2659,
+          "item_title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 28,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 2659,
+          "item_title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 23,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2909,
+          "item_title": "3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175TCMS",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 0
+        },
+        {
+          "item_id": 2909,
+          "item_title": "3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175TCMS",
+          "baseline_rank": 1,
+          "hierarchy_rank": 3,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 2909,
+          "item_title": "3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175TCMS",
+          "baseline_rank": 1,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 3112,
+          "item_title": "3D Solutech Real Black 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175RBLK",
+          "baseline_rank": 1,
+          "hierarchy_rank": 20,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 0
+        },
+        {
+          "item_id": 3112,
+          "item_title": "3D Solutech Real Black 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175RBLK",
+          "baseline_rank": 1,
+          "hierarchy_rank": 3,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 3494,
+          "item_title": "3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 8,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 3494,
+          "item_title": "3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 2703,
+          "item_title": "eSUN 3D 1.75mm PETG Black Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75mm Solid Opaque Black",
+          "baseline_rank": 1,
+          "hierarchy_rank": 6,
+          "baseline_l2_fanout": 10,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 0
+        }
+      ]
+    },
+    "top3": {
+      "improved_examples": [
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 4,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 4,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 4,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 5,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 6,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 6,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 6,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2507,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Silver",
+          "baseline_rank": 7,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 8,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 9,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": 11,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 1,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": 17,
+          "hierarchy_rank": 3,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 21,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": null,
+          "hierarchy_rank": 3,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 1,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2697,
+          "item_title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 4,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        }
+      ],
+      "worsened_examples": [
+        {
+          "item_id": 444,
+          "item_title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, White",
+          "baseline_rank": 1,
+          "hierarchy_rank": 6,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2161,
+          "item_title": "3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 37,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 2659,
+          "item_title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 28,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2659,
+          "item_title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 23,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2909,
+          "item_title": "3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175TCMS",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 0
+        },
+        {
+          "item_id": 3112,
+          "item_title": "3D Solutech Real Black 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175RBLK",
+          "baseline_rank": 1,
+          "hierarchy_rank": 20,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 3494,
+          "item_title": "3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 8,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 3494,
+          "item_title": "3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2703,
+          "item_title": "eSUN 3D 1.75mm PETG Black Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75mm Solid Opaque Black",
+          "baseline_rank": 1,
+          "hierarchy_rank": 6,
+          "baseline_l2_fanout": 10,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 130,
+          "item_title": "Gorilla Tape, Black Duct Tape, 1.88\" x 35 yd, Black, (Pack of 1)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 8,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 273,
+          "item_title": "Gorilla Original Gorilla Glue, Waterproof Polyurethane Glue, 2 ounce Bottle, Brown, (Pack of 4)",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 273,
+          "item_title": "Gorilla Original Gorilla Glue, Waterproof Polyurethane Glue, 2 ounce Bottle, Brown, (Pack of 4)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 44,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 273,
+          "item_title": "Gorilla Original Gorilla Glue, Waterproof Polyurethane Glue, 2 ounce Bottle, Brown, (Pack of 4)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 9,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 356,
+          "item_title": "PORTER-CABLE PNS18075 3/4-Inch, 18 Gauge Narrow Crown (1/4-Inch) Staple (5000-Pack)",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 1193,
+          "item_title": "Forney 70451 Wire Rope, Vinyl Coated Aircraft Cable, 250-Feet-by 3/32-Inch thru 3/16-Inch",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 0
+        }
+      ]
+    },
+    "top5": {
+      "improved_examples": [
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": 6,
+          "hierarchy_rank": 4,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 6,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 6,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 6,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2152,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Gold",
+          "baseline_rank": 6,
+          "hierarchy_rank": 5,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": 7,
+          "hierarchy_rank": 4,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": 7,
+          "hierarchy_rank": 4,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2507,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Silver",
+          "baseline_rank": 7,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 8,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 9,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2507,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Silver",
+          "baseline_rank": 10,
+          "hierarchy_rank": 4,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": 11,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": 17,
+          "hierarchy_rank": 3,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2507,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Silver",
+          "baseline_rank": 17,
+          "hierarchy_rank": 5,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 21,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        }
+      ],
+      "worsened_examples": [
+        {
+          "item_id": 444,
+          "item_title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, White",
+          "baseline_rank": 1,
+          "hierarchy_rank": 6,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2161,
+          "item_title": "3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 37,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 2659,
+          "item_title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 28,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2659,
+          "item_title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 23,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2909,
+          "item_title": "3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175TCMS",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 0
+        },
+        {
+          "item_id": 3112,
+          "item_title": "3D Solutech Real Black 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175RBLK",
+          "baseline_rank": 1,
+          "hierarchy_rank": 20,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 3494,
+          "item_title": "3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 8,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 3494,
+          "item_title": "3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2703,
+          "item_title": "eSUN 3D 1.75mm PETG Black Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75mm Solid Opaque Black",
+          "baseline_rank": 1,
+          "hierarchy_rank": 6,
+          "baseline_l2_fanout": 10,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 130,
+          "item_title": "Gorilla Tape, Black Duct Tape, 1.88\" x 35 yd, Black, (Pack of 1)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 8,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 273,
+          "item_title": "Gorilla Original Gorilla Glue, Waterproof Polyurethane Glue, 2 ounce Bottle, Brown, (Pack of 4)",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 273,
+          "item_title": "Gorilla Original Gorilla Glue, Waterproof Polyurethane Glue, 2 ounce Bottle, Brown, (Pack of 4)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 44,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 273,
+          "item_title": "Gorilla Original Gorilla Glue, Waterproof Polyurethane Glue, 2 ounce Bottle, Brown, (Pack of 4)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 9,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 356,
+          "item_title": "PORTER-CABLE PNS18075 3/4-Inch, 18 Gauge Narrow Crown (1/4-Inch) Staple (5000-Pack)",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 1193,
+          "item_title": "Forney 70451 Wire Rope, Vinyl Coated Aircraft Cable, 250-Feet-by 3/32-Inch thru 3/16-Inch",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 0
+        }
+      ]
+    },
+    "top10": {
+      "improved_examples": [
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": 11,
+          "hierarchy_rank": 2,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1107,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Glow in the Dark",
+          "baseline_rank": 12,
+          "hierarchy_rank": 7,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": 17,
+          "hierarchy_rank": 3,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2507,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Silver",
+          "baseline_rank": 17,
+          "hierarchy_rank": 5,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1851,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+          "baseline_rank": 21,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2152,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Gold",
+          "baseline_rank": 33,
+          "hierarchy_rank": 9,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 1850,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Red",
+          "baseline_rank": null,
+          "hierarchy_rank": 3,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 1,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2152,
+          "item_title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Gold",
+          "baseline_rank": null,
+          "hierarchy_rank": 9,
+          "baseline_l2_fanout": 47,
+          "baseline_best_lcp": 1,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2660,
+          "item_title": "3D Solutech Real Grey 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 11,
+          "hierarchy_rank": 8,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2697,
+          "item_title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 11,
+          "hierarchy_rank": 1,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 2697,
+          "item_title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 11,
+          "hierarchy_rank": 10,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 3475,
+          "item_title": "3D Solutech Real Orange 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 11,
+          "hierarchy_rank": 10,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 3475,
+          "item_title": "3D Solutech Real Orange 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 11,
+          "hierarchy_rank": 7,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 3522,
+          "item_title": "3D Solutech Real Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - ST176BLPLA",
+          "baseline_rank": 11,
+          "hierarchy_rank": 5,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        },
+        {
+          "item_id": 3442,
+          "item_title": "3D Solutech Real Purple 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 13,
+          "hierarchy_rank": 7,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 2,
+          "hierarchy_best_lcp": 3
+        }
+      ],
+      "worsened_examples": [
+        {
+          "item_id": 2161,
+          "item_title": "3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 37,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 2659,
+          "item_title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 28,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2659,
+          "item_title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 23,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 2909,
+          "item_title": "3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175TCMS",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 3112,
+          "item_title": "3D Solutech Real Black 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175RBLK",
+          "baseline_rank": 1,
+          "hierarchy_rank": 20,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 3494,
+          "item_title": "3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 24,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 130,
+          "item_title": "Gorilla Tape, Black Duct Tape, 1.88\" x 35 yd, Black, (Pack of 1)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 13,
+          "baseline_l2_fanout": 8,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 273,
+          "item_title": "Gorilla Original Gorilla Glue, Waterproof Polyurethane Glue, 2 ounce Bottle, Brown, (Pack of 4)",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 273,
+          "item_title": "Gorilla Original Gorilla Glue, Waterproof Polyurethane Glue, 2 ounce Bottle, Brown, (Pack of 4)",
+          "baseline_rank": 1,
+          "hierarchy_rank": 44,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 2
+        },
+        {
+          "item_id": 356,
+          "item_title": "PORTER-CABLE PNS18075 3/4-Inch, 18 Gauge Narrow Crown (1/4-Inch) Staple (5000-Pack)",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 1193,
+          "item_title": "Forney 70451 Wire Rope, Vinyl Coated Aircraft Cable, 250-Feet-by 3/32-Inch thru 3/16-Inch",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 5,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 0
+        },
+        {
+          "item_id": 51,
+          "item_title": "HATCHBOX 1 Spool 3D Printer Filament Tabletop Wall Mount Rack",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 3,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 2301,
+          "item_title": "Anderson Metals Brass Tube Fitting, Short Flare Nut, 3/8\" Tube OD",
+          "baseline_rank": 1,
+          "hierarchy_rank": 18,
+          "baseline_l2_fanout": 3,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 181,
+          "item_title": "AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and Humidity Gauge Indicator",
+          "baseline_rank": 1,
+          "hierarchy_rank": 40,
+          "baseline_l2_fanout": 2,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 1
+        },
+        {
+          "item_id": 416,
+          "item_title": "PRO 1 Fuel Line Hose 1/4 Inch Inside Diameter X 25 Feet Length NRB/PVCC SAE30R6",
+          "baseline_rank": 1,
+          "hierarchy_rank": null,
+          "baseline_l2_fanout": 2,
+          "baseline_best_lcp": 3,
+          "hierarchy_best_lcp": 0
+        }
+      ]
+    }
+  }
+}

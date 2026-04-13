@@ -1,0 +1,495 @@
+{
+  "inputs": {
+    "baseline_index": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_tokenizer_v2/generated_indices/Industrial_and_Scientific.mgr_tokenizer_v2_offline.index.json",
+    "compare_index": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_stage2_retention_20260413/generated_indices/Industrial_and_Scientific.stage2_r202a_stopgrad.index.json",
+    "test_csv": "/home/leejt/OneRec/data/Amazon/test/Industrial_and_Scientific_5_2016-10-2018-11.csv",
+    "item_json": "/home/leejt/OneRec/data/Amazon/index/Industrial_and_Scientific.item.json"
+  },
+  "baseline": {
+    "catalog": {
+      "item_count": 3686,
+      "l2_prefix_count": 2680,
+      "item_weighted_mean_l2_item_count": 2.414541508410201,
+      "item_weighted_median_l2_item_count": 1.0,
+      "item_weighted_mean_l2_leaf_count": 2.3944655453065655,
+      "item_weighted_median_l2_leaf_count": 1.0,
+      "item_fraction_multileaf_l2": 0.4234943027672273,
+      "item_fraction_multileaf_l2_ge4": 0.13076505697232774,
+      "item_fraction_multileaf_l2_ge8": 0.04395008138903961,
+      "weighted_l3_entropy_given_l2_bits": 0.715048271179983,
+      "top_crowded_l2_prefixes": [
+        {
+          "prefix": "<a_112><b_122>",
+          "item_count": 25,
+          "leaf_count": 25,
+          "entropy_bits": 4.643856189774723
+        },
+        {
+          "prefix": "<a_112><b_65>",
+          "item_count": 23,
+          "leaf_count": 23,
+          "entropy_bits": 4.523561956057013
+        },
+        {
+          "prefix": "<a_112><b_39>",
+          "item_count": 21,
+          "leaf_count": 19,
+          "entropy_bits": 4.201841232302569
+        },
+        {
+          "prefix": "<a_33><b_187>",
+          "item_count": 17,
+          "leaf_count": 17,
+          "entropy_bits": 4.08746284125034
+        },
+        {
+          "prefix": "<a_34><b_232>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_112><b_35>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_177><b_238>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_33><b_35>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_58><b_126>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_72><b_11>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_76><b_76>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_211><b_65>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_233><b_126>",
+          "item_count": 8,
+          "leaf_count": 7,
+          "entropy_bits": 2.75
+        },
+        {
+          "prefix": "<a_211><b_35>",
+          "item_count": 7,
+          "leaf_count": 7,
+          "entropy_bits": 2.807354922057604
+        },
+        {
+          "prefix": "<a_211><b_39>",
+          "item_count": 7,
+          "leaf_count": 7,
+          "entropy_bits": 2.807354922057604
+        }
+      ]
+    },
+    "test_weighted": {
+      "example_count": 4533,
+      "covered_count": 4533,
+      "missing_count": 0,
+      "target_weighted_mean_l2_item_count": 4.414515773218619,
+      "target_weighted_median_l2_item_count": 2,
+      "target_weighted_mean_l2_leaf_count": 4.342157511581734,
+      "target_weighted_median_l2_leaf_count": 1,
+      "target_fraction_multileaf_l2": 0.4873152437679241,
+      "target_fraction_multileaf_l2_ge4": 0.2228105007721156,
+      "target_fraction_multileaf_l2_ge8": 0.1458195455548202,
+      "target_weighted_mean_l3_entropy_bits": 1.100114543698025
+    }
+  },
+  "hierarchy": {
+    "catalog": {
+      "item_count": 3686,
+      "l2_prefix_count": 2643,
+      "item_weighted_mean_l2_item_count": 2.3521432447097124,
+      "item_weighted_median_l2_item_count": 1.0,
+      "item_weighted_mean_l2_leaf_count": 2.3402061855670104,
+      "item_weighted_median_l2_leaf_count": 1.0,
+      "item_fraction_multileaf_l2": 0.44465545306565385,
+      "item_fraction_multileaf_l2_ge4": 0.12506782419967444,
+      "item_fraction_multileaf_l2_ge8": 0.04666304937601736,
+      "weighted_l3_entropy_given_l2_bits": 0.7282114274183588,
+      "top_crowded_l2_prefixes": [
+        {
+          "prefix": "<a_191><b_151>",
+          "item_count": 23,
+          "leaf_count": 23,
+          "entropy_bits": 4.523561956057013
+        },
+        {
+          "prefix": "<a_191><b_83>",
+          "item_count": 21,
+          "leaf_count": 21,
+          "entropy_bits": 4.39231742277876
+        },
+        {
+          "prefix": "<a_38><b_146>",
+          "item_count": 16,
+          "leaf_count": 16,
+          "entropy_bits": 4.0
+        },
+        {
+          "prefix": "<a_140><b_33>",
+          "item_count": 15,
+          "leaf_count": 15,
+          "entropy_bits": 3.906890595608518
+        },
+        {
+          "prefix": "<a_29><b_92>",
+          "item_count": 12,
+          "leaf_count": 12,
+          "entropy_bits": 3.584962500721156
+        },
+        {
+          "prefix": "<a_140><b_113>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_191><b_12>",
+          "item_count": 11,
+          "leaf_count": 11,
+          "entropy_bits": 3.459431618637298
+        },
+        {
+          "prefix": "<a_191><b_92>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_232><b_130>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_238><b_98>",
+          "item_count": 10,
+          "leaf_count": 10,
+          "entropy_bits": 3.321928094887362
+        },
+        {
+          "prefix": "<a_69><b_90>",
+          "item_count": 9,
+          "leaf_count": 9,
+          "entropy_bits": 3.169925001442312
+        },
+        {
+          "prefix": "<a_225><b_101>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_4><b_79>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_78><b_58>",
+          "item_count": 8,
+          "leaf_count": 8,
+          "entropy_bits": 3.0
+        },
+        {
+          "prefix": "<a_13><b_106>",
+          "item_count": 8,
+          "leaf_count": 7,
+          "entropy_bits": 2.75
+        }
+      ]
+    },
+    "test_weighted": {
+      "example_count": 4533,
+      "covered_count": 4533,
+      "missing_count": 0,
+      "target_weighted_mean_l2_item_count": 3.675490844915067,
+      "target_weighted_median_l2_item_count": 2,
+      "target_weighted_mean_l2_leaf_count": 3.614824619457313,
+      "target_weighted_median_l2_leaf_count": 1,
+      "target_fraction_multileaf_l2": 0.49878667549084493,
+      "target_fraction_multileaf_l2_ge4": 0.19942642841385397,
+      "target_fraction_multileaf_l2_ge8": 0.12883300242664902,
+      "target_weighted_mean_l3_entropy_bits": 1.030771840436369
+    }
+  },
+  "comparison": {
+    "item_level": {
+      "common_item_count": 3686,
+      "changed_sid_count": 3686,
+      "changed_sid_fraction": 1.0,
+      "reduced_l2_leaf_count_fraction": 0.21730873575691806,
+      "increased_l2_leaf_count_fraction": 0.2333152468800868,
+      "same_l2_leaf_count_fraction": 0.5493760173629951,
+      "moved_out_of_same_l2_count": 506,
+      "moved_into_same_l2_count": 584,
+      "moved_out_of_ge4_count": 166,
+      "moved_into_ge4_count": 145,
+      "mean_delta_l2_leaf_count_all_items": -0.05425935973955507,
+      "mean_delta_l2_leaf_count_changed_items": -0.05425935973955507
+    },
+    "test_weighted": {
+      "target_count": 4533,
+      "reduced_l2_leaf_count_fraction": 0.24928303551731745,
+      "increased_l2_leaf_count_fraction": 0.214206926979925,
+      "same_l2_leaf_count_fraction": 0.5365100375027576,
+      "moved_out_of_same_l2_fraction": 0.1257445400397088,
+      "moved_into_same_l2_fraction": 0.13721597176262962,
+      "moved_out_of_ge4_fraction": 0.05515111405250386,
+      "moved_into_ge4_fraction": 0.03176704169424222,
+      "mean_delta_l2_leaf_count": -0.7273328921244209
+    },
+    "top_improved_examples": [
+      {
+        "item_id": 2161,
+        "title": "3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_3>",
+        "hierarchy_sid": "<a_38><b_33><c_250>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_33>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -24
+      },
+      {
+        "item_id": 3474,
+        "title": "3D Solutech See Through Red 1.75mm PETG 3D Printer Filament 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_178>",
+        "hierarchy_sid": "<a_38><b_66><c_99>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_66>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -24
+      },
+      {
+        "item_id": 3557,
+        "title": "3D Solutech Chocolate Brown 3D Printer PLA Filament 1.75MM Filament 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_11>",
+        "hierarchy_sid": "<a_38><b_108><c_105>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_108>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -24
+      },
+      {
+        "item_id": 3435,
+        "title": "3D Solutech Real Black 1.75mm Flexible 3D Printer Filament 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_26>",
+        "hierarchy_sid": "<a_38><b_123><c_236>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_123>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -23
+      },
+      {
+        "item_id": 3681,
+        "title": "3D Solutech Real Orange 1.75mm ABS 3D Printer Filament 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_202>",
+        "hierarchy_sid": "<a_38><b_123><c_87>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_123>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 2,
+        "delta_l2_leaf_count": -23
+      },
+      {
+        "item_id": 1851,
+        "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Yellow",
+        "baseline_sid": "<a_112><b_65><c_164>",
+        "hierarchy_sid": "<a_191><b_187><c_210>",
+        "baseline_l2_prefix": "<a_112><b_65>",
+        "hierarchy_l2_prefix": "<a_191><b_187>",
+        "baseline_l2_leaf_count": 23,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -22
+      },
+      {
+        "item_id": 3442,
+        "title": "3D Solutech Real Purple 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_38>",
+        "hierarchy_sid": "<a_38><b_9><c_18>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_9>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 3,
+        "delta_l2_leaf_count": -22
+      },
+      {
+        "item_id": 3475,
+        "title": "3D Solutech Real Orange 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_213>",
+        "hierarchy_sid": "<a_38><b_9><c_1>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_9>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 3,
+        "delta_l2_leaf_count": -22
+      },
+      {
+        "item_id": 3631,
+        "title": "3D Solutech Skin 3D Printer PLA Filament 1.75MM Filament 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_1>",
+        "hierarchy_sid": "<a_38><b_9><c_110>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_9>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 3,
+        "delta_l2_leaf_count": -22
+      },
+      {
+        "item_id": 3547,
+        "title": "3D Solutech See Through Blue 1.75mm PETG 3D Printer Filament 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_228>",
+        "hierarchy_sid": "<a_38><b_92><c_109>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_92>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 4,
+        "delta_l2_leaf_count": -21
+      },
+      {
+        "item_id": 3505,
+        "title": "Taulman 3D 618 Natural Nylon Filament for 3D Printer 1.75mm 2 1lb Spool Bundle MADE IN USA",
+        "baseline_sid": "<a_33><b_187><c_26>",
+        "hierarchy_sid": "<a_140><b_146><c_108>",
+        "baseline_l2_prefix": "<a_33><b_187>",
+        "hierarchy_l2_prefix": "<a_140><b_146>",
+        "baseline_l2_leaf_count": 17,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -16
+      },
+      {
+        "item_id": 953,
+        "title": "Remington Industries 22UL1007STRBLA UL1007 22 AWG Gauge Stranded Hook-Up Wire, 300V, 0.0253\" Diameter, 100' Length, Black",
+        "baseline_sid": "<a_34><b_232><c_52>",
+        "hierarchy_sid": "<a_238><b_83><c_67>",
+        "baseline_l2_prefix": "<a_34><b_232>",
+        "hierarchy_l2_prefix": "<a_238><b_83>",
+        "baseline_l2_leaf_count": 11,
+        "hierarchy_l2_leaf_count": 1,
+        "delta_l2_leaf_count": -10
+      },
+      {
+        "item_id": 1552,
+        "title": "3D Solutech Teal Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_8>",
+        "hierarchy_sid": "<a_38><b_146><c_0>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_146>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 16,
+        "delta_l2_leaf_count": -9
+      },
+      {
+        "item_id": 1888,
+        "title": "3D Solutech Hot Pink 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_75>",
+        "hierarchy_sid": "<a_38><b_146><c_3>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_146>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 16,
+        "delta_l2_leaf_count": -9
+      },
+      {
+        "item_id": 2659,
+        "title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_248>",
+        "hierarchy_sid": "<a_38><b_146><c_104>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_146>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 16,
+        "delta_l2_leaf_count": -9
+      },
+      {
+        "item_id": 2660,
+        "title": "3D Solutech Real Grey 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_4>",
+        "hierarchy_sid": "<a_38><b_146><c_194>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_146>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 16,
+        "delta_l2_leaf_count": -9
+      },
+      {
+        "item_id": 2697,
+        "title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_79>",
+        "hierarchy_sid": "<a_38><b_146><c_142>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_146>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 16,
+        "delta_l2_leaf_count": -9
+      },
+      {
+        "item_id": 2993,
+        "title": "3D Solutech Blue 3D Printer Ultra PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_163>",
+        "hierarchy_sid": "<a_38><b_146><c_1>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_146>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 16,
+        "delta_l2_leaf_count": -9
+      },
+      {
+        "item_id": 3112,
+        "title": "3D Solutech Real Black 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG) - PLA175RBLK",
+        "baseline_sid": "<a_112><b_122><c_191>",
+        "hierarchy_sid": "<a_38><b_146><c_94>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_146>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 16,
+        "delta_l2_leaf_count": -9
+      },
+      {
+        "item_id": 3453,
+        "title": "3D Solutech Real Gold 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2 LBS (1.0KG)",
+        "baseline_sid": "<a_112><b_122><c_5>",
+        "hierarchy_sid": "<a_38><b_146><c_217>",
+        "baseline_l2_prefix": "<a_112><b_122>",
+        "hierarchy_l2_prefix": "<a_38><b_146>",
+        "baseline_l2_leaf_count": 25,
+        "hierarchy_l2_leaf_count": 16,
+        "delta_l2_leaf_count": -9
+      }
+    ]
+  }
+}

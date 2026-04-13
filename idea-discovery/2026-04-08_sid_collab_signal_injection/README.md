@@ -2,27 +2,28 @@
 
 这个目录现在只保留当前仍然有效的研究主线，并把已经阶段性放下的草案归档。
 
+## Current Canonical Reading Order
+
+1. `RESEARCH_DIRECTION.md`
+2. `working_idea_graph_hierarchy_v1/00_ACTIVE_CONTEXT.md`
+3. `working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md`
+4. `working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md`
+5. `working_idea_graph_hierarchy_v1/refine-logs/EXPERIMENT_PLAN_TOKENIZER_V2.md`
+6. `working_idea_graph_hierarchy_v1/refine-logs/EXPERIMENT_TRACKER_TOKENIZER_V2.md`
+
 ## 当前有效文档
 
 - `RESEARCH_DIRECTION.md`
   - 当前主线方向说明
-  - 主题：`Hierarchy-Aware Collaborative Signal Fusion for SID-based Generative Recommendation`
-  - 内容定位：只保留 `motivation -> idea` 的顺向逻辑，不绑定具体公式和最终实现
+  - 内容定位：只保留 `motivation -> idea` 的顺向逻辑，不绑定具体实现
 
 - `working_idea_graph_hierarchy_v1/`
-  - 基于同一主线，进一步把问题推进到：
+  - 当前 active 主线
+  - 主题已经收敛到：
     - graph structure as collaborative-information carrier
     - hierarchy-aware graph supervision
     - ambiguity-aware tokenizer refinement
-  - 这一轮不再把重点放在简单 multi-view fusion，而是尝试把图结构直接写进 semantic SID 学习本身
-  - 当前建议优先阅读这里的：
-    - `CURRENT_TASK_ALIGNMENT.md`
-    - `13_initial_probe_run_2026-04-09.md`
-    - `14_paper_transplant_probe_run_2026-04-09.md`
-    - `17_ambiguity_proxy_literature_scan.md`
-    - `18_mgr_sid_v2_ambiguity_aware_method.md`
-    - `refine-logs/EXPERIMENT_PLAN_TOKENIZER_V2.md`
-    - `refine-logs/EXPERIMENT_TRACKER_TOKENIZER_V2.md`
+    - semantic-structure retention
 
 ## 归档文档
 
@@ -55,14 +56,10 @@
 
 ## 当前建议
 
-后续如果继续往下推进方法设计，优先基于：
+后续如果继续推进方法设计，优先基于：
 
 - `RESEARCH_DIRECTION.md`
-- `working_idea_graph_hierarchy_v1/`
+- `working_idea_graph_hierarchy_v1/00_ACTIVE_CONTEXT.md`
+- `working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md`
 
-如果需要回看我们为什么一开始会想到局部 leaf 方向，或者回看从 multi-view 融合走向 graph-hierarchy、再走到 `v2 tokenizer-first` 的中间推演，再去看：
-
-- `archive/2026-04-08_initial_discovery_ambileaf/`
-- `archive/2026-04-08_working_idea_hierarchy_aware_v1_superseded/`
-- `working_idea_graph_hierarchy_v1/archive/2026-04-11_doc_cleanup_v1_superseded/`
-- `working_idea_graph_hierarchy_v1/archive/2026-04-11_doc_cleanup_duplicates/`
+如果需要回看从早期 local leaf 方向，到 graph-hierarchy，再到 `v2 tokenizer-first` 的演化证据，再去看 archive。
