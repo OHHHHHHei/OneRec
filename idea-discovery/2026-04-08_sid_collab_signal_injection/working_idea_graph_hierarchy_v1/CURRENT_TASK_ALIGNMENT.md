@@ -1,5 +1,9 @@
 # 当前任务对齐：MGR-SID 的三个核心问题
 
+Status（状态）: `reference（参考）`
+
+Last updated（更新日期）: `2026-04-15`
+
 ## 用途
 
 这份文档只做一件事：
@@ -8,20 +12,34 @@
 
 后续无论是继续 brainstorm、做实现设计、写实验计划，还是拆分具体任务，都应优先和这份文档对齐。
 
+它是一个长期有效的问题定义文档，不是 current-state document（当前状态文档）。
+
+如果你要看最新实验结论、当前最强主线、进行中实验，请先读：
+
+1. [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
+2. [experiment_results.csv](/home/leejt/OneRec/experiment_results.csv)
+
 ## 当前方向的一句话定义
 
 我们当前的研究方向是：
 
-> 用图结构作为协同信息的载体，并以层级感知的方式，将这种 graph-structured collaborative information 融合进 MiniOneRec 的纯语义 SID 构建。
+> 用图结构作为协同信息的载体，并以层级感知的方式，将这种 graph-structured collaborative information（图结构协同信息）融合进 MiniOneRec 的纯语义 SID 构建。
+
+这里要额外明确：
+
+- `baseline`（基线）只是参考锚点，不是优化目标
+- 我们不是要让新的 SID 尽量靠近旧的 SID
+- 我们要找到的是一个更好的 SID 码本空间，它可能接近 baseline，也可能明显偏离 baseline
+- 最终判断标准是全量下游 `evaluate`（评测），不是 tokenizer（分词器）空间是否足够稳定
 
 这里的重点不是：
 
-- 比谁的 graph encoder 更强
+- 比谁的 graph encoder（图编码器）更强
 - 比较强图模型和弱图模型本身的优劣
 
 这里的重点是：
 
-- 如何让图承载 collaborative information
+- 如何让图承载 collaborative information（协同信息）
 - 如何让这种协同信息真正增强 SID 的层级结构与局部判别性
 
 ## 核心问题 1：用什么图来承载协同信息
@@ -30,11 +48,11 @@
 
 我们首先需要决定：
 
-- 什么样的图最适合作为 collaborative information 的结构化载体
+- 什么样的图最适合作为 collaborative information（协同信息）的结构化载体
 
 这一步的核心不是盲目选择某个现成的 GNN，而是先回答：
 
-- 我们想让图承载哪一种 collaborative relation
+- 我们想让图承载哪一种 collaborative relation（协同关系）
 - 哪一种图结构最适合服务于 SID 构建
 
 ### 当前讨论共识
@@ -149,4 +167,4 @@
 
 如果把当前任务再压缩成一句话，就是：
 
-> 设计一种方法，使图结构承载的协同信息能够以层级感知、结构约束式的方式，稳定地融合进 MiniOneRec 的纯语义 SID 构建中。
+> 设计一种方法，使图结构承载的协同信息能够以层级感知、结构约束式的方式，有效地融合进 MiniOneRec 的纯语义 SID 构建中，并形成更好的 SID 码本空间用于下游推荐学习。

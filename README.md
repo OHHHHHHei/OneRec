@@ -17,15 +17,20 @@ preprocess -> embed -> sid-train -> sid-generate -> convert -> sft -> rl -> eval
 
 如果你要快速建立上下文，建议按下面顺序阅读：
 
-- [项目理解报告](/home/leejt/OneRec/project_understanding_report.md)
-  - 适合系统了解仓库结构、主链路、配置系统、数据契约、SFT / RL / Evaluate 实现细节。
-- [MiniOneRec 复现进度表](/home/leejt/OneRec/mini_onerec_reproduction_progress.md)
-  - 适合了解当前复现目标、论文目标值、已完成实验、repo-faithful 与 research-enhanced 的口径区分，以及下一步研究计划。
+- [文档维护工作流](/home/leejt/OneRec/DOCUMENTATION_MAINTENANCE_WORKFLOW.md)
+  - 适合先理解当前文档体系、权威入口、以及后续 agent（智能体）应如何维护文档。
+- [当前状态](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
+  - 适合快速同步当前研究主线、baseline（基线）口径、最强已验证主线、进行中实验和下一步动作。
+- [实验结果总账](/home/leejt/OneRec/experiment_results.csv)
+  - 适合查所有 run（运行）的结果、结论和主线晋升情况。
+- [项目工作区地图](/home/leejt/OneRec/PROJECT_WORKSPACE_MAP.md)
+  - 适合理解仓库目录角色和推荐阅读顺序。
 
 当前建议：
 
-- 想理解代码，优先看“项目理解报告”
-- 想了解现在做到哪里、下一步做什么，优先看“复现进度表”
+- 想同步研究状态，优先看“当前状态”
+- 想查 strongest result（最强结果）和历史 run（运行），优先看“实验结果总账”
+- 想理解目录和文档分工，优先看“文档维护工作流”和“项目工作区地图”
 
 ## 特性
 

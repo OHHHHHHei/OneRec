@@ -1,7 +1,7 @@
 # 2026-04-13 MGR-SID Stage-2 Stop-Gradient Industrial
 
 This stage launches the first retention-targeted tokenizer refinements from
-`EXPERIMENT_PLAN_STAGE2_RETENTION.md`.
+`../../idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/refine-logs/archive/2026-04-14_stage3_scope_cleanup/EXPERIMENT_PLAN_STAGE2_RETENTION.md`.
 
 ## Runs
 

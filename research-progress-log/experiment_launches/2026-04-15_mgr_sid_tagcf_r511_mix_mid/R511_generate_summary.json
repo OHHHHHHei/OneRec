@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_tagcf_branch_20260415/industrial_r511_mix_mid/Apr-15-2026_09-33-42/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_tagcf_branch_20260415/generated_indices/Industrial_and_Scientific.tagcf_r511_mix_mid.index.json",
+  "collision_rate": 0.0048833423765599565,
+  "max_conflict": 3,
+  "collision_rounds_used": 20,
+  "num_items": 3686
+}

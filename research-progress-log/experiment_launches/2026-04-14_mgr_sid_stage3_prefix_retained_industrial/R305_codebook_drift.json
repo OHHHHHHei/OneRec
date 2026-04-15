@@ -1,0 +1,25 @@
+{
+  "summary_rows": [
+    {
+      "level": 1,
+      "param": "rq.vq_layers.0.embedding.weight",
+      "mean_l2_sq_drift": 0.33360159397125244,
+      "rms_drift": 0.5775825381278992,
+      "relative_rms_drift": 1.5460746578612146
+    },
+    {
+      "level": 2,
+      "param": "rq.vq_layers.1.embedding.weight",
+      "mean_l2_sq_drift": 0.13579139113426208,
+      "rms_drift": 0.368498831987381,
+      "relative_rms_drift": 1.4920326201951866
+    },
+    {
+      "level": 3,
+      "param": "rq.vq_layers.2.embedding.weight",
+      "mean_l2_sq_drift": 0.07546742260456085,
+      "rms_drift": 0.27471333742141724,
+      "relative_rms_drift": 1.4633543857331897
+    }
+  ]
+}

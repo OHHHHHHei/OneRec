@@ -1,4 +1,6 @@
-# Experiment Launch Index
+# Experiment Launch Index（实验启动索引）
+
+Status（状态）: `stage-index（阶段索引）`
 
 This directory keeps the experiment-by-experiment record for the current MGR-SID line.
 
@@ -7,6 +9,17 @@ The goal of this index is simple:
 - one stage = one canonical entry
 - detailed raw artifacts stay inside the stage folder
 - old flat notes are archived after they are merged into a clearer stage summary
+
+Every folder here is a historical stage record by default.
+The latest stage is the current active execution path; earlier stages should be
+read as provenance, not as the current optimization target.
+
+This file is not the canonical current-state summary（权威当前状态摘要） anymore（不再承担该角色）.
+
+If you want the live project status first, read:
+
+1. `/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md`
+2. `/home/leejt/OneRec/experiment_results.csv`
 
 ## Recommended Reading Order
 
@@ -21,6 +34,14 @@ The goal of this index is simple:
 9. `2026-04-13_mgr_sid_stage2_stopgrad_industrial/README.md`
 10. `2026-04-13_mgr_sid_stage2_semantic_retention_industrial/RESULTS.md`
 11. `2026-04-13_mgr_sid_stage2_r202a_sft_eval_industrial/RESULTS.md`
+12. `2026-04-13_mgr_sid_stage2_interface_diagnostics_industrial/README.md`
+13. `2026-04-14_mgr_sid_stage3_prefix_retained_industrial/README.md`
+14. `2026-04-14_mgr_sid_stage3_sft_eval_industrial/README.md`
+15. `2026-04-14_mgr_sid_learnability_probe_baseline_check/README.md`
+16. `2026-04-15_mgr_sid_tagcf_m0_attribute_graphs/README.md`
+17. `2026-04-15_mgr_sid_tagcf_r510_attr_mid/README.md`
+18. `2026-04-15_mgr_sid_tagcf_r511_mix_mid/README.md`
+19. `2026-04-15_mgr_sid_fagsp_r520_mid_cascade/README.md`
 
 ## Stage Map
 
@@ -91,12 +112,62 @@ The goal of this index is simple:
   - `2026-04-13_mgr_sid_stage2_stopgrad_industrial/README.md`
   - `2026-04-13_mgr_sid_stage2_semantic_retention_industrial/RESULTS.md`
   - `2026-04-13_mgr_sid_stage2_r202a_sft_eval_industrial/RESULTS.md`
-  - `../../idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/refine-logs/EXPERIMENT_PLAN_STAGE2_RETENTION.md`
+  - `../../idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/refine-logs/archive/2026-04-14_stage3_scope_cleanup/EXPERIMENT_PLAN_STAGE2_RETENTION.md`
 - covers:
   - launch of the first retention-targeted tokenizer refinements
   - `R202a` as the best Block-2 structural branch
   - failure of the first semantic-retention KL implementation (`R205`)
   - first downstream screen of `R202a`, which shows that structural gains alone did not yet beat current `v2_on_p05`
+
+### Stage H: Stage-2 interface diagnostics
+
+- canonical docs:
+  - `2026-04-13_mgr_sid_stage2_interface_diagnostics_industrial/README.md`
+- covers:
+  - explicit diagnosis that tokenizer-side structural cleanup did not
+    automatically create a better downstream SID space
+  - measurement of prefix rearrangement, code polysemy, and learnability
+    probes
+
+### Stage I: Stage-3 codebook-space search
+
+- canonical docs:
+  - `2026-04-14_mgr_sid_stage3_prefix_retained_industrial/README.md`
+- covers:
+  - current stage-3 tokenizer search
+  - `R401b` and `R401d` as candidate SID codebook spaces
+  - shift from “stay near baseline” to “find a better downstream SID space”
+  - tokenizer-side diagnostics before downstream adjudication
+
+### Stage J: Stage-3 downstream adjudication
+
+- canonical docs:
+  - `2026-04-14_mgr_sid_stage3_sft_eval_industrial/README.md`
+- covers:
+  - full downstream `SFT -> evaluate` for `R401b` and `R401d`
+  - the negative verdict that structurally stronger stage-3 SID spaces did not beat current `v2_on_p05`
+  - why stage-3 no longer remains the active execution stage
+
+### Stage K: Learnability reinterpretation
+
+- canonical docs:
+  - `2026-04-14_mgr_sid_learnability_probe_baseline_check/README.md`
+- covers:
+  - baseline learnability probe for original semantic SID
+  - evidence that original semantic may win on easier first-step routing while graph-informed SID spaces remain stronger on deeper conditional prediction
+
+### Stage L: Graph-carrier upgrade exploration
+
+- canonical docs:
+  - `2026-04-15_mgr_sid_tagcf_m0_attribute_graphs/README.md`
+  - `2026-04-15_mgr_sid_tagcf_r510_attr_mid/README.md`
+  - `2026-04-15_mgr_sid_tagcf_r511_mix_mid/README.md`
+  - `2026-04-15_mgr_sid_fagsp_r520_mid_cascade/README.md`
+- covers:
+  - the current shift from retention/codebook-space refinements to graph-carrier upgrades
+  - `TAGCF`-inspired `semantics -> topology` attribute-mid exploration
+  - deeper `FaGSP`-style `item-side cascade` `G_mid` exploration
+  - this is the current active execution stage
 
 ## Artifact Policy Inside Run Folders
 

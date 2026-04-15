@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_fagsp_cascade_20260415/industrial_r520_mid_cascade/Apr-15-2026_09-19-12/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_fagsp_cascade_20260415/generated_indices/Industrial_and_Scientific.fagsp_r520_mid_cascade.index.json",
+  "collision_rate": 0.0037981551817688553,
+  "max_conflict": 2,
+  "collision_rounds_used": 20,
+  "num_items": 3686
+}

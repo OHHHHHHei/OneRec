@@ -61,6 +61,13 @@ def symmetrically_normalize(matrix: sparse.csr_matrix) -> sparse.csr_matrix:
     return (d @ matrix @ d).tocsr()
 
 
+def symmetrize_matrix(matrix: sparse.csr_matrix) -> sparse.csr_matrix:
+    matrix = matrix.tocsr(copy=True).astype(np.float32)
+    matrix = (matrix + matrix.T).multiply(0.5).tocsr()
+    matrix.eliminate_zeros()
+    return matrix
+
+
 def keep_topk_per_row(matrix: sparse.csr_matrix, topk: int) -> sparse.csr_matrix:
     matrix = matrix.tocsr(copy=True).astype(np.float32)
     topk = max(1, int(topk))
@@ -142,6 +149,90 @@ def _spectral_reconstruct(
     return row_normalize(sparse_view)
 
 
+def _eigendecompose_symmetric(
+    matrix: sparse.csr_matrix,
+    rank: int,
+    which: str,
+) -> tuple[np.ndarray, np.ndarray]:
+    matrix = matrix.tocsr().astype(np.float32)
+    n_items = matrix.shape[0]
+    if n_items <= 2:
+        dense = matrix.toarray()
+        values, vectors = np.linalg.eigh(dense)
+        if which == "LA":
+            order = np.argsort(values)[::-1]
+        else:
+            order = np.argsort(values)
+        return values[order], vectors[:, order]
+
+    k = max(1, min(rank, n_items - 1))
+    try:
+        values, vectors = eigsh(matrix, k=k, which=which)
+    except Exception:
+        dense = matrix.toarray()
+        values, vectors = np.linalg.eigh(dense)
+        if which == "LA":
+            order = np.argsort(values)[::-1][:k]
+        else:
+            order = np.argsort(values)[:k]
+        values = values[order]
+        vectors = vectors[:, order]
+        return values, vectors
+
+    if which == "LA":
+        order = np.argsort(values)[::-1]
+    else:
+        order = np.argsort(values)
+    return values[order], vectors[:, order]
+
+
+def _support_quantile_mask(
+    support_scores: sparse.csr_matrix,
+    base_graph: sparse.csr_matrix,
+    quantile: float,
+) -> sparse.csr_matrix:
+    support_scores = support_scores.tocsc()
+    base_graph = base_graph.tocsc()
+    n_items = support_scores.shape[1]
+    quantile = float(np.clip(quantile, 0.0, 1.0))
+
+    rows: list[int] = []
+    cols: list[int] = []
+    data: list[float] = []
+    for col in range(n_items):
+        base_start, base_end = base_graph.indptr[col], base_graph.indptr[col + 1]
+        base_rows = base_graph.indices[base_start:base_end]
+        if base_rows.size == 0:
+            continue
+
+        score_start, score_end = support_scores.indptr[col], support_scores.indptr[col + 1]
+        score_rows = support_scores.indices[score_start:score_end]
+        score_vals = support_scores.data[score_start:score_end]
+        score_map = {int(r): float(v) for r, v in zip(score_rows, score_vals, strict=False)}
+        filtered_scores = np.asarray(
+            [max(0.0, score_map.get(int(r), 0.0)) for r in base_rows],
+            dtype=np.float32,
+        )
+        positive = filtered_scores[filtered_scores > 0.0]
+        if positive.size == 0:
+            continue
+        threshold = float(np.quantile(positive, quantile))
+        keep_mask = filtered_scores >= threshold
+        kept_rows = base_rows[keep_mask]
+        kept_vals = filtered_scores[keep_mask]
+        rows.extend(int(r) for r in kept_rows.tolist())
+        cols.extend([col] * len(kept_rows))
+        data.extend(float(v) for v in kept_vals.tolist())
+
+    mask = sparse.coo_matrix(
+        (np.asarray(data, dtype=np.float32), (np.asarray(rows), np.asarray(cols))),
+        shape=base_graph.shape,
+        dtype=np.float32,
+    ).tocsr()
+    mask.sum_duplicates()
+    return mask
+
+
 def build_fagsp_mid_view(
     base_graph: sparse.csr_matrix,
     name: str,
@@ -163,6 +254,69 @@ def build_fagsp_mid_view(
             "rank": int(rank),
             "eigen_ratio_low": float(eigen_ratio_low),
             "eigen_ratio_high": float(eigen_ratio_high),
+            "nnz": int(view.nnz),
+            "density": sparse_density(view),
+        },
+    )
+
+
+def build_fagsp_cascade_mid_view(
+    base_graph: sparse.csr_matrix,
+    name: str,
+    high_rank: int,
+    low_rank: int,
+    support_quantile: float,
+    boost_alpha: float,
+) -> SparseGraphView:
+    base_graph = row_normalize(base_graph)
+    spectral_base = symmetrically_normalize(symmetrize_matrix(base_graph))
+
+    high_values, high_vectors = _eigendecompose_symmetric(
+        spectral_base,
+        rank=high_rank,
+        which="SA",
+    )
+    high_projection = high_vectors @ high_vectors.T
+    high_projection = np.maximum(high_projection, 0.0).astype(np.float32)
+    np.fill_diagonal(high_projection, 0.0)
+    high_support = sparse.csr_matrix(high_projection)
+    high_support = _support_quantile_mask(
+        support_scores=high_support,
+        base_graph=symmetrize_matrix(base_graph),
+        quantile=support_quantile,
+    )
+
+    boosted_edges = symmetrize_matrix(base_graph).multiply(high_support.sign())
+    enhanced_graph = symmetrize_matrix(base_graph) + float(boost_alpha) * boosted_edges
+    enhanced_graph = row_normalize(enhanced_graph)
+    spectral_enhanced = symmetrically_normalize(symmetrize_matrix(enhanced_graph))
+
+    low_values, low_vectors = _eigendecompose_symmetric(
+        spectral_enhanced,
+        rank=low_rank,
+        which="LA",
+    )
+    low_values = np.maximum(low_values, 0.0)
+    low_reconstruct = low_vectors @ np.diag(low_values) @ low_vectors.T
+    low_reconstruct = np.maximum(low_reconstruct, 0.0).astype(np.float32)
+    np.fill_diagonal(low_reconstruct, 0.0)
+    view = row_normalize(sparse.csr_matrix(low_reconstruct))
+    view.eliminate_zeros()
+
+    return SparseGraphView(
+        name=name,
+        matrix=view,
+        metadata={
+            "kind": "fagsp_cascade",
+            "high_rank": int(high_rank),
+            "low_rank": int(low_rank),
+            "support_quantile": float(support_quantile),
+            "boost_alpha": float(boost_alpha),
+            "high_value_min": float(np.min(high_values)) if high_values.size else 0.0,
+            "high_value_max": float(np.max(high_values)) if high_values.size else 0.0,
+            "low_value_min": float(np.min(low_values)) if low_values.size else 0.0,
+            "low_value_max": float(np.max(low_values)) if low_values.size else 0.0,
+            "support_nnz": int(high_support.nnz),
             "nnz": int(view.nnz),
             "density": sparse_density(view),
         },

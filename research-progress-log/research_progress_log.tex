@@ -28,7 +28,7 @@
 
 \title{MiniOneRec 后续研究\\进度日志}
 \author{工作记录文档}
-\date{最后更新：2026-04-13}
+\date{最后更新：2026-04-15}
 
 \begin{document}
 \begin{CJK*}{UTF8}{gbsn}
@@ -95,6 +95,9 @@
   \item \textbf{strongest-recipe 失配的主因已经拆清。} 当前 strongest original MiniOneRec recipe 与 \texttt{v2} 的主要冲突不是 \texttt{desc\_align\_p05}，而是 \texttt{title\_history2sid\_off}；在 \texttt{title\_history2sid\_on} 保持开启时，\texttt{desc\_align\_p05} 对 \texttt{v2} 是净正增益。
   \item \textbf{stage-2 第一轮 retention-targeted tokenizer refinement 已完成首轮筛选。} \texttt{R202a}（\texttt{stop-gradient} hierarchy isolation）是当前唯一在 retention-oriented 结构指标上给出干净正信号的分支；\texttt{R202b-r075} 与 \texttt{R205} 虽然都把 final generated collision 从 \(13/3686\) 压到 \(12/3686\)，但都显著恶化了 local ambiguity structure。
   \item \textbf{当前没有任何 stage-2 分支在下游超过 \texttt{v2\_on\_p05} 主线。} \texttt{R208}（\texttt{R202a -> SFT/evaluate}）已经完成，但 \(\mathrm{NDCG}@10\) 与 \(\mathrm{HR}@10\) 都低于当前最佳 \texttt{v2\_on\_p05}；因此当前最强 end-to-end 主线仍然是 \texttt{v2\_on\_p05 -> RL}。
+  \item \textbf{stage-3 的两条 codebook-space 候选已经完成 full downstream 裁判，但都没有超过当前 \texttt{v2} 主线。} \texttt{R401b} 与 \texttt{R401d} 都把 tokenizer-side 结构指标与 deeper conditional learnability 做得更强，但在 \texttt{title\_history2sid\_on + desc\_align\_p05} 的 full \texttt{SFT -> evaluate} 下分别只达到 \(\mathrm{NDCG}@10 = 0.09905\) 与 \(0.09354\)，都低于当前 \texttt{v2\_on\_p05 SFT} 的 \(\mathrm{NDCG}@10 = 0.10271\)。
+  \item \textbf{这说明“结构更好”与“更深层可学习性更强”都还不是充分条件。} 当前 strongest line 仍然是 \texttt{v2\_on\_p05 -> RL}；而 stage-3 的负结果把主问题从“继续修 retention / prefix”推进到了“当前 graph carrier 是否才是主要瓶颈”。
+  \item \textbf{当前主执行焦点已经转向 graph-carrier 升级。} \texttt{TAGCF} 支链已证明 fused attribute-topology graph 是一张健康的候选中图，\texttt{R510} 的纯替换版生成后 collision 回到 \(11/3686\) 但 local ambiguity 结果混合；并行地，\texttt{R520} 正在测试更完整的 \texttt{FaGSP} item-side cascade 中图。
 \end{enumerate}
 
 \section{被削弱或阶段性放下的方向}
@@ -785,6 +788,189 @@ Industrial 上，\texttt{v2 offline\_combined} 的结果为：
 \texttt{stop-gradient} hierarchy isolation 确实触及了一个真实瓶颈：跨层梯度干扰；但 current stage-2 的 tokenizer 微调还没有把这种结构收益稳定兑现成更强的下游结果。当前最强主线仍然是 \texttt{v2\_on\_p05 -> RL}，而不是任何已完成的 stage-2 分支。
 \end{quote}
 
+\subsection{阶段 13：Stage-3 codebook-space search 的 full downstream 裁判（2026-04-14 / 2026-04-15）}
+
+\subsubsection*{做了什么}
+
+在 stage-2 首轮结果没有给出下游替代之后，我们进一步推进了 stage-3 的 codebook-space search。这里的目标不再是“保守地让 SID 靠近 \texttt{v2}”，而是：
+
+\begin{quote}
+允许 tokenizer 生成一个与当前 baseline 明显不同的 SID 空间，只要它最终能在 fresh \texttt{SFT -> evaluate} 下成为更好的 downstream SID space。
+\end{quote}
+
+围绕这个目标，我们完成了两条 stage-3 分支的 tokenizer 训练、结构诊断、learnability probe，以及 full downstream \texttt{SFT -> evaluate}：
+
+\begin{itemize}
+  \item \texttt{R401b-g0.05}：在当前最优 \texttt{v2} 基础上加入轻量的 upper-prefix retention；
+  \item \texttt{R401d-g0.05-a0.05}：在 \texttt{R401b} 基础上再加轻量 codebook anchor。
+\end{itemize}
+
+与此同时，我们还补了一轮 original semantic baseline 的 learnability probe，用来重新理解 strongest original MiniOneRec 为什么在下游仍然很强。
+
+\subsubsection*{主要结果}
+
+\paragraph{Tokenizer-side 结果}
+
+\begin{itemize}
+  \item \texttt{R401b} 与 \texttt{R401d} 都把 final generated collision 压到 \(11/3686\)；
+  \item 相对当前 \texttt{v2}：
+  \begin{itemize}
+    \item \texttt{R401b} 的 mean target \(l_2\) leaf count 从 \(4.3422\) 降到 \(2.6967\)；
+    \item \texttt{R401d} 进一步降到 \(2.5711\)；
+    \item target-weighted entropy 分别降到 \(0.7373\) 与 \(0.7156\)。
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Learnability probe}
+
+\begin{itemize}
+  \item current \texttt{v2}：
+  \begin{itemize}
+    \item \(a = 0.0908\)
+    \item \(b|a = 0.2424\)
+    \item \(c|ab = 0.4365\)
+  \end{itemize}
+  \item \texttt{R401b}：
+  \begin{itemize}
+    \item \(a = 0.0780\)
+    \item \(b|a = 0.2484\)
+    \item \(c|ab = 0.4712\)
+  \end{itemize}
+  \item \texttt{R401d}：
+  \begin{itemize}
+    \item \(a = 0.0799\)
+    \item \(b|a = 0.2455\)
+    \item \(c|ab = 0.4829\)
+  \end{itemize}
+  \item original semantic baseline：
+  \begin{itemize}
+    \item \(a = 0.1892\)
+    \item \(b|a = 0.1515\)
+    \item \(c|ab = 0.3299\)
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Full downstream \texttt{SFT -> evaluate}}
+
+\begin{itemize}
+  \item \texttt{R401b}：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10 = 0.09905\)
+    \item \(\mathrm{HR}@10 = 0.13854\)
+  \end{itemize}
+  \item \texttt{R401d}：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10 = 0.09354\)
+    \item \(\mathrm{HR}@10 = 0.13148\)
+  \end{itemize}
+  \item current best \texttt{v2\_on\_p05 SFT}：
+  \begin{itemize}
+    \item \(\mathrm{NDCG}@10 = 0.10271\)
+    \item \(\mathrm{HR}@10 = 0.14626\)
+  \end{itemize}
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这一阶段给出了到目前为止最重要的一条负结果：
+
+\begin{quote}
+Tokenizer-side 的结构更强、deeper conditional learnability 更强，都还不足以保证更好的 downstream SID space。stage-3 的两条 candidate codebook spaces 在 full \texttt{SFT -> evaluate} 下都没有超过当前 \texttt{v2\_on\_p05}。
+\end{quote}
+
+这并不推翻 graph-aware SID 的主线；它更具体地说明：
+
+\begin{itemize}
+  \item original semantic baseline 可能部分赢在 first routing step \(a\) 更容易学；
+  \item graph-informed SID space 可能已经更擅长 deeper conditional organization；
+  \item 但只要这种更深层结构没有真正变成更好的 downstream SID space，它就还不是一个更优主线。
+\end{itemize}
+
+\subsection{阶段 14：从 retention/codebook-space search 转向 graph-carrier 升级（2026-04-15）}
+
+\subsubsection*{做了什么}
+
+在 stage-3 的 full downstream 负结果之后，项目的主问题再次上移了一层：
+
+\begin{quote}
+如果在当前图上继续修 retention / prefix / codebook space 都不能稳定带来更强下游，那么当前瓶颈是否更像是 graph carrier 本身还不够好？
+\end{quote}
+
+围绕这个问题，当前开启了两条 graph-carrier 支链：
+
+\begin{enumerate}
+  \item \textbf{\texttt{TAGCF}-inspired semantics-to-topology 支链}
+  \begin{itemize}
+    \item 先做离线属性拓扑构图小实验；
+    \item 再测试 fused attribute-topology graph 是否能成为更好的 \texttt{G\_mid}。
+  \end{itemize}
+  \item \textbf{更完整的 \texttt{FaGSP} item-side cascade 支链}
+  \begin{itemize}
+    \item 不再只使用粗糙的 spectral slice；
+    \item 而是测试更接近高通支撑发现 + support selection + 增强后低通重构的中图构造。
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection*{主要结果}
+
+\paragraph{\texttt{TAGCF} 支链 M0：属性拓扑构图}
+
+\begin{itemize}
+  \item \texttt{R501 fused} 是当前最健康的 attribute-topology graph：
+  \begin{itemize}
+    \item coverage：\(0.9927\)
+    \item unique attributes：\(3254\)
+    \item connected item rate：\(0.9927\)
+    \item largest component ratio：\(0.9835\)
+  \end{itemize}
+  \item 这说明：
+  \begin{quote}
+  “semantics \(\rightarrow\) topology”的轻量离线版本已经能构出一张像样的候选中图。
+  \end{quote}
+\end{itemize}
+
+\paragraph{\texttt{R510}：纯属性图替换 \texttt{G\_mid}}
+
+\begin{itemize}
+  \item 训练方式：
+  \begin{itemize}
+    \item \(L1 \leftarrow \texttt{coarse\_purified}\)
+    \item \(L2 \leftarrow \texttt{G\_attr\_fused}\)
+    \item \(L3 \leftarrow \texttt{local\_purified}\)
+  \end{itemize}
+  \item final generated collision 回到 \(11/3686\)；
+  \item 相对 current \texttt{v2}：
+  \begin{itemize}
+    \item mean target \(l_2\) leaf count：\(4.3422 \rightarrow 3.6848\)
+    \item multi-leaf same-\(l_2\)：\(0.4873 \rightarrow 0.5277\)
+    \item deep crowded \(l_2 \ge 4\)：\(0.2228 \rightarrow 0.2285\)
+    \item target-weighted entropy：\(1.1001 \rightarrow 1.0898\)
+  \end{itemize}
+\end{itemize}
+
+\paragraph{当前在跑的分支}
+
+\begin{itemize}
+  \item \texttt{R511}：
+  \begin{itemize}
+    \item \(L2 \leftarrow 0.5 \cdot \texttt{fagsp\_mid\_base} + 0.5 \cdot \texttt{G\_attr\_fused}\)
+    \item 目的：判断 attribute topology 更适合作为 additive signal 还是 pure replacement
+  \end{itemize}
+  \item \texttt{R520}：
+  \begin{itemize}
+    \item \(L2 \leftarrow \texttt{fagsp\_mid\_cascade}\)
+    \item 目的：判断当前 \texttt{G\_mid} 的上限是否主要受限于对 \texttt{FaGSP} 借鉴过浅
+  \end{itemize}
+\end{itemize}
+
+\subsubsection*{说明了什么}
+
+这一阶段把当前主线重新钉在了一个更上游的问题上：
+
+\begin{quote}
+如果 stage-2 和 stage-3 都说明“继续修结构”不是最直接的突破口，那么最值得优先验证的，就是更好的 graph carrier 是否比另一个 retention tweak 更重要。
+\end{quote}
+
 \section{当前证据的整体解释}
 
 把目前的证据串起来，可以得到一个更清楚的图景：
@@ -798,9 +984,11 @@ Industrial 上，\texttt{v2 offline\_combined} 的结果为：
   \item \texttt{v2 ambiguity-aware tokenizer} 进一步证明：如果 graph supervision 只在高歧义区域更强、在低歧义区域更多保留 semantic structure，最终 SID 的局部层级结构可以明显更干净；
   \item 当前 \texttt{v2} 在原版 MiniOneRec 上给出的下游正信号是 recipe-sensitive 的：\texttt{title\_history2sid\_on + desc\_align\_p05} 已经成为 \texttt{v2} 的最佳下游 recipe；
   \item strongest original recipe 与 \texttt{v2} 的主冲突并不来自 \texttt{desc\_align\_p05}，而主要来自 \texttt{title\_history2sid\_off}；
-  \item 当前 \texttt{v2\_on\_p05} 与 strongest original MiniOneRec SFT 已经非常接近，剩余差距主要表现为中段 beam retention，而不是 top-1 或 same-prefix disambiguation 的能力不足。
+  \item 当前 \texttt{v2\_on\_p05} 与 strongest original MiniOneRec SFT 已经非常接近，而 \texttt{v2\_on\_p05 -> RL} 又已经超过 strongest original SFT 的 \(\mathrm{NDCG}@10\)；因此 graph-aware SID 不是无效主线，而是一条已经接近工作区间的主线；
   \item stage-2 第一轮结果表明：\texttt{R202a} 的 stop-gradient 能改善 retention-oriented tokenizer structure，但 \texttt{R205} 这版 semantic retention KL 和 \texttt{R202b-r075} 这类 level-1 compensation 都更像“collision 更好但结构更差”的 tradeoff 分支；
-  \item 因此，当前的关键事实已经从“是否需要 stage-2 微调”推进到“为什么 tokenizer 侧的结构收益没有稳定保留到下游 \texttt{SFT/evaluate}”。
+  \item stage-3 进一步表明：即使 tokenizer-side 结构更强、\(b|a\) 与 \(c|ab\) learnability 更强，full downstream \texttt{SFT -> evaluate} 也不一定更好；
+  \item original semantic baseline 的 learnability probe 说明，它可能并不是“全层都最可学”，而更像是在 first routing step \(a\) 上特别容易学；这为当前 strongest original baseline 仍然强势提供了更具体的机制解释；
+  \item 因此，当前的关键事实已经从“如何再修一个更强的 retention/codebook-space 分支”推进到“为什么更好的结构还没有变成更好的 downstream SID space，以及当前 graph carrier 是否才是主要瓶颈”。
 \end{enumerate}
 
 \section{当前最佳工作假设}
@@ -808,14 +996,18 @@ Industrial 上，\texttt{v2 offline\_combined} 的结果为：
 当前最可信的工作假设是：
 
 \begin{quote}
-MiniOneRec 应该继续保留 semantic tokenizer 作为 backbone，同时引入 \textbf{ambiguity-aware graph supervision + semantic-structure retention}。其中 middle-resolution spectral collaborative graph 仍然是最关键的协同载体，而 downstream 最优 recipe 当前更像是 \texttt{title\_history2sid\_on + desc\_align\_p05}。在这条 recipe 上，\texttt{v2} 已经把主要问题压缩成一个中段 beam retention gap；但 stage-2 第一轮说明，这个 gap 还不能靠当前版本的 stop-gradient 或 semantic-retention KL 直接补平。因此当前最强 end-to-end 主线仍然是 \texttt{v2\_on\_p05 -> RL}，而 stage-2 更像是在暴露“结构收益为何没有下游兑现”的接口问题。
+MiniOneRec 仍然应保留 semantic tokenizer 作为 backbone，并继续使用 \textbf{ambiguity-aware graph supervision + semantic-structure retention} 作为当前最强已验证方法骨架。当前 strongest validated line 仍然是 \texttt{v2\_on\_p05 -> RL}。但 stage-2 和 stage-3 的连续负结果说明：下一步最可能带来实质突破的，不再是继续雕 retention / prefix / codebook-space，而是升级承载协同信息的 graph carrier，尤其是 \texttt{G\_mid}。
 \end{quote}
 
-当前最强的 \texttt{G\_mid} 候选仍然是：
+当前对 \texttt{G\_mid} 的判断应分成两层：
 
 \begin{itemize}
-  \item 主候选：\texttt{fagsp\_mid\_base}
-  \item 备选：\texttt{gsprec\_mid\_prism}
+  \item 当前最强的 \textbf{已验证} 候选：\texttt{fagsp\_mid\_base}
+  \item 当前最重要的 \textbf{在跑 challenger}：
+  \begin{itemize}
+    \item \texttt{TAGCF}-inspired \texttt{attribute-topology} mixed \texttt{G\_mid}（\texttt{R511}）
+    \item 更完整的 \texttt{FaGSP item-side cascade} \texttt{G\_mid}（\texttt{R520}）
+  \end{itemize}
 \end{itemize}
 
 当前最合理的 baseline 分层也更清楚了：
@@ -829,16 +1021,17 @@ MiniOneRec 应该继续保留 semantic tokenizer 作为 backbone，同时引入 
 
 \section{当前开放问题}
 
-即使有了新一轮 probe，下面这些问题仍然没有完全解决：
+即使有了 stage-3 与 graph-carrier 支链，下面这些问题仍然没有完全解决：
 
 \begin{enumerate}
   \item 当前 \texttt{v2\_on\_p05} 相对 strongest original MiniOneRec SFT 的中段 beam retention gap，究竟来自下游训练目标、解码行为，还是更深层的 representation transfer 问题？
   \item \texttt{v2} 更干净的 local hierarchy，为什么没有通过 \texttt{sid-generate} 继续转化成更低的 final collision？
   \item 为什么 \texttt{R202a} 这类 tokenizer-side 的 clean structural gain，到了 \texttt{R208} 的 \texttt{SFT/evaluate} 并没有继续转化成更强的 \(\mathrm{NDCG}@10 / \mathrm{HR}@10\)？
-  \item 当前 semantic-structure retention 的更合理最小实现到底是什么？第一版 batch-local neighborhood KL 已经给出负结果，那么下一步应该往更弱的 KL、pairwise ranking，还是其他邻域保持形式收缩？
-  \item 当前 offline ambiguity prior 是否已经足够，还是需要在不破坏 clean logic 的前提下补一版更稳的 online uncertainty？
-  \item 如果 tokenizer 微调在 SFT 上只给出很小增益，这个增益是否能够在第二个 seed 上稳定复现？
-  \item 什么时候再把 internal control、Office、完整消融和 published baselines 拉回主线，避免过早扩展。
+  \item 为什么 \texttt{R401b / R401d} 这类结构更强、deeper conditional learnability 更强的 SID spaces，仍然没有在 full downstream 上超过 \texttt{v2}？
+  \item 当前 strongest original baseline 的优势，究竟有多少来自 first routing step \(a\) 更容易学，而不是整个层级空间都更合理？
+  \item \texttt{TAGCF} 属性拓扑图更适合作为 pure replacement、mixed \texttt{G\_mid}，还是 edge reweighting 工具？
+  \item 更完整的 \texttt{FaGSP} cascade 是否真的比当前 \texttt{fagsp\_mid\_base} 更适合做 SID 监督，还是当前问题根本不在 \texttt{FaGSP} 借鉴过浅？
+  \item 如果新的 graph carrier 依然不能带来下游替代，下一步更值得优先做的应是图权重小扫、带推力的判别性目标，还是重新审视 downstream recipe 与 decode interface？
 \end{enumerate}
 
 \section{下一步行动}
@@ -846,38 +1039,33 @@ MiniOneRec 应该继续保留 semantic tokenizer 作为 backbone，同时引入 
 当前最合理的 next actions 是：
 
 \begin{enumerate}
-  \item 暂时冻结当前 graph carrier 与 \texttt{v2 tokenizer} 主体设计，不再频繁改 graph bank：
-  \begin{itemize}
-    \item \texttt{G\_coarse}：purified coarse collaborative graph；
-    \item \texttt{G\_mid}：\texttt{fagsp\_mid\_base}；
-    \item \texttt{G\_local}：purified transition graph。
-  \end{itemize}
-  \item 将当前最佳 downstream 组合固定为 \texttt{v2\_on\_p05}，继续作为后续任何 tokenizer 调整的固定下游 recipe：
+  \item 将当前 strongest validated mainline 固定为 \texttt{v2\_on\_p05 -> RL}，不让 stage-2 / stage-3 的局部结构结果混淆主表口径；
+  \item 将当前最佳 downstream SFT 组合固定为 \texttt{v2\_on\_p05}，继续作为后续 graph-carrier 分支的主要对照：
   \begin{itemize}
     \item \texttt{title\_history2sid\_on}
     \item \texttt{desc\_align\_p05}
   \end{itemize}
-  \item 暂时将 stage-2 第一轮结论固定为：
+  \item 将 stage-2 与 stage-3 的结论固定为“已完成证据”，而不是当前活动开发线：
   \begin{itemize}
-    \item \texttt{R202a}：当前最干净的 tokenizer-side candidate
+    \item \texttt{R202a}：证明了 stop-gradient 能改善结构，但不能替代 current \texttt{v2}
     \item \texttt{R202b-r075}：保留为 collision-vs-structure tradeoff 证据
     \item \texttt{R205}：保留为 semantic-retention KL 的首轮负结果
     \item \texttt{R208}：确认 \texttt{R202a} 尚未在下游超过当前 \texttt{v2\_on\_p05}
+    \item \texttt{R401b / R401d}：确认更强结构与更强 deeper learnability 仍不足以自动带来更好的 downstream SID space
   \end{itemize}
-  \item 后续如果继续 stage-2，优先考虑的是更克制的第二轮 retention refinement，而不是继续推当前 \texttt{R205} 配方直接下游：
+  \item 当前优先推进 graph-carrier 分支，而不是再继续无条件扩展 retention / prefix 变体：
   \begin{itemize}
-    \item 更弱的 semantic retention 强度；
-    \item 更高 temperature；
-    \item 或者更保守的 pairwise / neighborhood-order preservation 形式。
+    \item 先完成 \texttt{R511}：判断 attribute topology 作为 mixed \texttt{G\_mid} 是否比 pure replacement 更合理；
+    \item 并行完成 \texttt{R520}：判断更完整的 \texttt{FaGSP} cascade 是否能给 \texttt{G\_mid} 带来更强信号。
   \end{itemize}
-  \item 在出现新的 tokenizer-side 候选之前，不继续启动 \texttt{R209/R210}；当前最强 end-to-end 记录仍以 \texttt{v2\_on\_p05 -> RL} 为准；
-  \item internal control、完整机制消融、Office 与 published baselines 暂时后置，只保留在必要时用于解释的地位；
-  \item 在新的 stage-2 候选出现之前，更值得优先做的是：
+  \item 只有在新的 graph-carrier 分支至少满足“tokenizer-side 健康且不明显回退”之后，才继续推进 full downstream \texttt{SFT -> evaluate}；
+  \item 如果 graph-carrier 分支仍然没有清晰正信号，再回到更小规模但更高价值的二级问题：
   \begin{itemize}
-    \item tokenizer-to-SFT transfer 的更细机制分析；
-    \item 判断当前 gap 更像 recipe interface 问题、训练目标问题，还是 decode / beam retention 问题；
-    \item 必要时再决定是否补 second seed 或开启下一轮小修。
+    \item 图权重与图构建超参数的小扫；
+    \item 是否需要引入带推力的判别性目标；
+    \item tokenizer-to-SFT transfer 的更细接口分析。
   \end{itemize}
+  \item internal control、Office、多 seed、完整机制消融与 published baselines 暂时后置，只在主线再次收敛后拉回。
 \end{enumerate}
 
 \section{当前关键材料位置}
@@ -904,11 +1092,23 @@ MiniOneRec 应该继续保留 semantic tokenizer 作为 backbone，同时引入 
   \item v2 recipe isolation 的 top-k / error distribution：\path{research-progress-log/experiment_launches/2026-04-11_mgr_sid_v2_recipe_isolation_industrial/TOPK_ERROR_DISTRIBUTION_COMPARISON.md}
   \item v2 RL 结果总记录：\path{research-progress-log/experiment_launches/2026-04-12_mgr_sid_v2_rl_on_p05_industrial/RESULTS.md}
   \item v2 RL evaluate 分析：\path{research-progress-log/experiment_launches/2026-04-12_mgr_sid_v2_rl_on_p05_industrial/EVAL_ANALYSIS.md}
-  \item stage-2 retention 计划：\path{idea-discovery/.../refine-logs/EXPERIMENT_PLAN_STAGE2_RETENTION.md}
-  \item stage-2 retention tracker：\path{idea-discovery/.../refine-logs/EXPERIMENT_TRACKER_STAGE2_RETENTION.md}
   \item stage-2 stop-gradient 记录：\path{research-progress-log/experiment_launches/2026-04-13_mgr_sid_stage2_stopgrad_industrial/README.md}
   \item stage-2 semantic retention 记录：\path{research-progress-log/experiment_launches/2026-04-13_mgr_sid_stage2_semantic_retention_industrial/README.md}
+  \item stage-2 interface diagnostics：\path{research-progress-log/experiment_launches/2026-04-13_mgr_sid_stage2_interface_diagnostics_industrial/README.md}
   \item stage-2 \texttt{R202a -> SFT/evaluate}：\path{research-progress-log/experiment_launches/2026-04-13_mgr_sid_stage2_r202a_sft_eval_industrial/RESULTS.md}
+  \item stage-3 tokenizer 记录：\path{research-progress-log/experiment_launches/2026-04-14_mgr_sid_stage3_prefix_retained_industrial/README.md}
+  \item stage-3 full downstream 裁判：\path{research-progress-log/experiment_launches/2026-04-14_mgr_sid_stage3_sft_eval_industrial/README.md}
+  \item original semantic baseline learnability probe：\path{research-progress-log/experiment_launches/2026-04-14_mgr_sid_learnability_probe_baseline_check/README.md}
+  \item \texttt{TAGCF} 属性拓扑 M0：\path{research-progress-log/experiment_launches/2026-04-15_mgr_sid_tagcf_m0_attribute_graphs/README.md}
+  \item \texttt{TAGCF} 纯属性中图替换 \texttt{R510}：\path{research-progress-log/experiment_launches/2026-04-15_mgr_sid_tagcf_r510_attr_mid/README.md}
+  \item \texttt{TAGCF} mixed-\texttt{G\_mid} 分支 \texttt{R511}：\path{research-progress-log/experiment_launches/2026-04-15_mgr_sid_tagcf_r511_mix_mid/README.md}
+  \item 更完整 \texttt{FaGSP} cascade 分支 \texttt{R520}：\path{research-progress-log/experiment_launches/2026-04-15_mgr_sid_fagsp_r520_mid_cascade/README.md}
+  \item stage-2 retention 历史计划：\path{idea-discovery/.../refine-logs/archive/2026-04-14_stage3_scope_cleanup/EXPERIMENT_PLAN_STAGE2_RETENTION.md}
+  \item stage-2 retention 历史 tracker：\path{idea-discovery/.../refine-logs/archive/2026-04-14_stage3_scope_cleanup/EXPERIMENT_TRACKER_STAGE2_RETENTION.md}
+  \item stage-3 历史计划：\path{idea-discovery/.../refine-logs/EXPERIMENT_PLAN_STAGE3_PREFIX_RETAINED_HIERARCHY.md}
+  \item \texttt{TAGCF} 支链计划：\path{idea-discovery/.../refine-logs/EXPERIMENT_PLAN_TAGCF_SEMANTIC_TO_TOPOLOGY.md}
+  \item \texttt{TAGCF} 支链 tracker：\path{idea-discovery/.../refine-logs/EXPERIMENT_TRACKER_TAGCF_SEMANTIC_TO_TOPOLOGY.md}
+  \item \texttt{FaGSP} cascade 计划：\path{idea-discovery/.../refine-logs/EXPERIMENT_PLAN_FAGSP_CASCADE_GMID.md}
   \item 第一轮 probe 脚本：\path{scripts/experiment_mgr_sid_graph_bank_probe.py}
   \item 模块移植 probe 脚本：\path{scripts/experiment_mgr_sid_paper_transplant_probe.py}
   \item 实验版训练脚本：\path{scripts/experiment_mgr_sid_v1_train.py}
@@ -917,6 +1117,10 @@ MiniOneRec 应该继续保留 semantic tokenizer 作为 backbone，同时引入 
   \item 实验版局部歧义分析脚本：\path{scripts/experiment_mgr_sid_v1_local_ambiguity_analysis.py}
   \item v2 proxy sanity 脚本：\path{scripts/experiment_mgr_sid_v2_proxy_sanity.py}
   \item v2 训练脚本：\path{scripts/experiment_mgr_sid_v2_train.py}
+  \item \texttt{TAGCF} 属性拓扑构图脚本：\path{scripts/experiment_mgr_sid_tagcf_m0_attribute_graphs.py}
+  \item \texttt{TAGCF R510} 启动脚本：\path{scripts/experiment_mgr_sid_tagcf_r510_attr_mid_train.sh}
+  \item \texttt{TAGCF R511} 启动脚本：\path{scripts/experiment_mgr_sid_tagcf_r511_mix_mid_train.sh}
+  \item \texttt{FaGSP R520} 启动脚本：\path{scripts/experiment_mgr_sid_fagsp_r520_mid_cascade_train.sh}
 \end{itemize}
 
 \end{CJK*}

@@ -16,6 +16,7 @@ from .graph_bank import (
     purify_local_graph,
 )
 from .paper_transplants import (
+    build_fagsp_cascade_mid_view,
     build_fagsp_mid_view,
     build_gsprec_temporal_mid_view,
     load_semantic_embeddings,
@@ -38,6 +39,10 @@ def build_transplanted_graph_bank(
     band_low: float,
     band_high: float,
     temporal_mix: float,
+    fagsp_cascade_high_rank: int,
+    fagsp_cascade_low_rank: int,
+    fagsp_cascade_support_quantile: float,
+    fagsp_cascade_boost_alpha: float,
 ) -> dict[str, SparseGraphView | CommunityGraphView]:
     views = build_graph_bank(
         train_df=train_df,
@@ -128,5 +133,21 @@ def build_transplanted_graph_bank(
         rank=spectral_rank,
         eigen_ratio_low=band_low,
         eigen_ratio_high=band_high,
+    )
+    views["fagsp_mid_cascade"] = build_fagsp_cascade_mid_view(
+        coarse_purified,
+        name="fagsp_mid_cascade",
+        high_rank=fagsp_cascade_high_rank,
+        low_rank=fagsp_cascade_low_rank,
+        support_quantile=fagsp_cascade_support_quantile,
+        boost_alpha=fagsp_cascade_boost_alpha,
+    )
+    views["fagsp_mid_cascade_prism"] = build_fagsp_cascade_mid_view(
+        prism_anchor_coarse,
+        name="fagsp_mid_cascade_prism",
+        high_rank=fagsp_cascade_high_rank,
+        low_rank=fagsp_cascade_low_rank,
+        support_quantile=fagsp_cascade_support_quantile,
+        boost_alpha=fagsp_cascade_boost_alpha,
     )
     return views

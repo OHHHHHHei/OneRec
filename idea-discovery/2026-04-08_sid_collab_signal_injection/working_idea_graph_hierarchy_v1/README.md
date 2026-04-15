@@ -1,29 +1,46 @@
-# Working Idea: Graph Hierarchy v1
+# Working Idea: Graph Hierarchy v1（工作思路：图层级 v1）
 
-This folder keeps the active materials for the current mainline:
+Status（状态）: `navigation（导航页）`
 
-- hierarchy-aware graph-structured collaborative integration into semantic SID
-- graphs as collaborative-information carriers, not graph-encoder benchmarks
-- tokenizer-first `MGR-SID v2` design and end-to-end validation
+这个目录现在主要是工作区导航页，不再承担完整 current-state summary（当前状态摘要）。
 
-It is intentionally separated from the archived `../archive/2026-04-08_working_idea_hierarchy_aware_v1_superseded/` because this round shifts from simple multi-view fusion toward graph-native SID supervision and ambiguity-aware refinement.
+如果你想看“我们现在到底在做什么”，请先读：
 
-## Canonical Reading Order
+1. [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
+2. [experiment_results.csv](/home/leejt/OneRec/experiment_results.csv)
+3. [experiment_launches/README.md](/home/leejt/OneRec/research-progress-log/experiment_launches/README.md)
 
-1. `00_ACTIVE_CONTEXT.md`
-2. `CURRENT_TASK_ALIGNMENT.md`
-3. `01_PROBE_AND_EARLY_EVIDENCE.md`
-4. `02_RELATED_WORK_AND_MODULE_MAP.md`
-5. `17_ambiguity_proxy_literature_scan.md`
-6. `18_mgr_sid_v2_ambiguity_aware_method.md`
-7. `19_mgr_sid_current_method_code_aligned_formulas.md`
-8. `refine-logs/README.md`
-9. `refine-logs/EXPERIMENT_PLAN_TOKENIZER_V2.md`
-10. `refine-logs/EXPERIMENT_TRACKER_TOKENIZER_V2.md`
-11. `refine-logs/EXPERIMENT_PLAN_STAGE2_RETENTION.md`
-12. `refine-logs/EXPERIMENT_TRACKER_STAGE2_RETENTION.md`
+这个工作区本身只回答一件事：
 
-## Archived Inside This Folder
+- 当前主线相关的方法文档、讨论文档、支线文档分别放在哪里。
+
+## Recommended Folder Reading Order（推荐文件夹阅读顺序）
+
+1. [00_ACTIVE_CONTEXT.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/00_ACTIVE_CONTEXT.md)
+2. [CURRENT_TASK_ALIGNMENT.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/CURRENT_TASK_ALIGNMENT.md)
+3. [18_mgr_sid_v2_ambiguity_aware_method.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md)
+4. [19_mgr_sid_current_method_code_aligned_formulas.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md)
+5. [refine-logs/README.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/refine-logs/README.md)
+
+## Method / Discussion Files（方法 / 讨论文件）
+
+- [20_sid_quality_beyond_structure.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/20_sid_quality_beyond_structure.md)
+- [21_graph_design_review_20260414.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/21_graph_design_review_20260414.md)
+- [22_direction_reassessment_beyond_structure_20260414.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/22_direction_reassessment_beyond_structure_20260414.md)
+- [01_PROBE_AND_EARLY_EVIDENCE.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/01_PROBE_AND_EARLY_EVIDENCE.md)
+- [02_RELATED_WORK_AND_MODULE_MAP.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/02_RELATED_WORK_AND_MODULE_MAP.md)
+- [17_ambiguity_proxy_literature_scan.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/17_ambiguity_proxy_literature_scan.md)
+
+## Exploratory Side Branches（探索性支线）
+
+- `side-branches/2026-04-15_tagcf_semantic_to_topology/`
+- `side-branches/2026-04-15_fagsp_cascade_mid/`
+
+这两个支线都服务于同一个当前问题：
+
+- graph carrier upgrade（图载体升级）是否比继续修 retention-only tweak（仅保持项微调）更有希望。
+
+## Archived Inside This Folder（本目录内归档）
 
 - `archive/2026-04-11_doc_cleanup_v1_superseded/`
   - early discovery trail
@@ -36,16 +53,13 @@ It is intentionally separated from the archived `../archive/2026-04-08_working_i
     - early probe notes
     - paper/module mapping notes
     - old process note
+- `refine-logs/archive/2026-04-14_stage3_scope_cleanup/`
+  - historical execution plans and trackers for tokenizer `v2`, stage-2 retention, and stage-2 interface diagnostics
+  - preserved for provenance only
+  - not part of the default current reading order
 
-## Current status
+## Usage Policy（使用规则）
 
-- active mainline: `MGR-SID v2` tokenizer-first
-- role of graphs: collaborative-information carriers for hierarchy-aware SID supervision
-- strongest current `G_mid` candidate: `fagsp_mid_base`
-- best current downstream recipe: `title_history2sid_on + desc_align_p05`
-- current strongest end-to-end line: `v2_on_p05 -> RL`
-- current bottleneck: mid-beam retention (`top5/top10`), not whether the tokenizer works at all
-- current execution stage: stage-2 retention-targeted refinement with first-round results
-  - `R202a`: best tokenizer-side branch so far
-  - `R205`: negative semantic-retention result in current form
-  - `R208`: downstream screen completed, but did not beat current `v2_on_p05`
+- 当前主线只维护在 [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)。
+- 当前结果只维护在 [experiment_results.csv](/home/leejt/OneRec/experiment_results.csv)。
+- 这个 README 以后只做目录导航，不再重复维护“当前最强结果”和“当前活跃实验”的完整描述。

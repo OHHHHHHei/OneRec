@@ -1,0 +1,43 @@
+{
+  "summary_rows": [
+    {
+      "variant": "original_semantic",
+      "target": "a",
+      "seed_list": "42,43,44",
+      "accuracy_mean": 0.18924683730508973,
+      "accuracy_std": 0.0026376023943867383,
+      "hard_accuracy_mean": 0.35785864978902954,
+      "hard_accuracy_std": 0.009867239944024091,
+      "stable_accuracy_mean": 0.12221821243834957,
+      "stable_accuracy_std": 0.0019619278756526043,
+      "n_train": 36259,
+      "n_valid": 4532
+    },
+    {
+      "variant": "original_semantic",
+      "target": "b_given_a",
+      "seed_list": "42,43,44",
+      "accuracy_mean": 0.15151515151515152,
+      "accuracy_std": 0.004234138853964177,
+      "hard_accuracy_mean": 0.2713607594936709,
+      "hard_accuracy_std": 0.009383147085789665,
+      "stable_accuracy_mean": 0.10994827378804282,
+      "stable_accuracy_std": 0.0018943841871795503,
+      "n_train": 36259,
+      "n_valid": 4532
+    },
+    {
+      "variant": "original_semantic",
+      "target": "c_given_ab",
+      "seed_list": "42,43,44",
+      "accuracy_mean": 0.3298764342453663,
+      "accuracy_std": 0.001898130023619279,
+      "hard_accuracy_mean": 0.2183544303797468,
+      "hard_accuracy_std": 0.0022376796872992,
+      "stable_accuracy_mean": 0.3904727535185853,
+      "stable_accuracy_std": 0.0015591821721178587,
+      "n_train": 36259,
+      "n_valid": 4532
+    }
+  ]
+}

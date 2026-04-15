@@ -10,12 +10,14 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn.functional as F
+from scipy import sparse
 from tqdm import tqdm
 
 from onerec.sid.models.rqvae import RQVAE
 from onerec.sid.utils import ensure_dir, get_local_time
 from onerec.utils.io import read_yaml
 
+from .graph_bank import row_normalize
 from .paper_transplants import build_semantic_knn_graph, keep_topk_per_row, load_semantic_embeddings
 from .train_v1 import (
     IndexedEmbDataset,
@@ -73,6 +75,10 @@ class MgrSidV2TrainConfig:
     band_low: float = 0.25
     band_high: float = 0.65
     temporal_mix: float = 0.35
+    fagsp_cascade_high_rank: int = 16
+    fagsp_cascade_low_rank: int = 32
+    fagsp_cascade_support_quantile: float = 0.8
+    fagsp_cascade_boost_alpha: float = 0.5
     graph_topk: int = 32
     semantic_graph_topk: int = 32
     coarse_weight: float = 0.05
@@ -84,9 +90,24 @@ class MgrSidV2TrainConfig:
     graph_scale_max: float = 1.5
     semantic_scale_min: float = 0.5
     semantic_scale_max: float = 1.5
+    coarse_view_name: str = "coarse_purified"
+    mid_view_name: str = "fagsp_mid_base"
+    local_view_name: str = "local_purified"
+    mid_external_graph_path: str | None = None
+    mid_external_graph_mix_base_weight: float = 1.0
     hierarchy_stopgrad_previous_levels: bool = False
     semantic_retention_mode: str = "smoothness"
     semantic_retention_temperature: float = 0.1
+    warm_start_ckpt_path: str | None = None
+    teacher_ckpt_path: str | None = None
+    prefix_retention_l1_weight: float = 0.0
+    prefix_retention_l2_weight: float = 0.0
+    prefix_retention_scale_min: float = 1.0
+    prefix_retention_scale_max: float = 1.0
+    prefix_retention_use_inverse_ambiguity: bool = False
+    prefix_retention_teacher_use_sk: bool = False
+    codebook_anchor_l1_weight: float = 0.0
+    codebook_anchor_l2_weight: float = 0.0
 
 
 def load_train_config(config_path: str, overrides: dict[str, Any] | None = None) -> MgrSidV2TrainConfig:
@@ -170,6 +191,40 @@ def _scale_from_prior(prior: torch.Tensor, low: float, high: float) -> torch.Ten
     return low + (high - low) * prior
 
 
+def _build_model_from_cfg(cfg: MgrSidV2TrainConfig, in_dim: int) -> RQVAE:
+    return RQVAE(
+        in_dim=in_dim,
+        num_emb_list=cfg.num_emb_list,
+        e_dim=cfg.e_dim,
+        layers=cfg.layers,
+        dropout_prob=cfg.dropout_prob,
+        bn=cfg.bn,
+        loss_type=cfg.loss_type,
+        quant_loss_weight=cfg.quant_loss_weight,
+        beta=cfg.beta,
+        kmeans_init=cfg.kmeans_init,
+        kmeans_iters=cfg.kmeans_iters,
+        sk_epsilons=cfg.sk_epsilons,
+        sk_iters=cfg.sk_iters,
+    )
+
+
+def _load_checkpoint_state(model: RQVAE, ckpt_path: str, device: torch.device) -> None:
+    ckpt = torch.load(ckpt_path, map_location=torch.device("cpu"), weights_only=False)
+    model.load_state_dict(ckpt["state_dict"])
+    model.to(device)
+
+
+def _resolve_retention_item_scale(cfg: MgrSidV2TrainConfig, prior_batch: torch.Tensor) -> torch.Tensor:
+    if not cfg.prefix_retention_use_inverse_ambiguity:
+        return torch.ones_like(prior_batch, dtype=torch.float32)
+    return _scale_from_prior(
+        1.0 - prior_batch,
+        cfg.prefix_retention_scale_min,
+        cfg.prefix_retention_scale_max,
+    )
+
+
 def _build_level_representations(
     cumulative_outputs: list[torch.Tensor],
     level_outputs: list[torch.Tensor],
@@ -203,13 +258,39 @@ def _build_graph_tensors(cfg: MgrSidV2TrainConfig, device: torch.device, n_items
         band_low=cfg.band_low,
         band_high=cfg.band_high,
         temporal_mix=cfg.temporal_mix,
+        fagsp_cascade_high_rank=cfg.fagsp_cascade_high_rank,
+        fagsp_cascade_low_rank=cfg.fagsp_cascade_low_rank,
+        fagsp_cascade_support_quantile=cfg.fagsp_cascade_support_quantile,
+        fagsp_cascade_boost_alpha=cfg.fagsp_cascade_boost_alpha,
     )
 
+    def _view_matrix(view_name: str):
+        if view_name not in views:
+            raise KeyError(f"Unknown graph view: {view_name}. Available views: {sorted(views.keys())}")
+        view = views[view_name]
+        matrix = getattr(view, "matrix", None)
+        if matrix is None:
+            raise TypeError(f"Graph view {view_name} does not expose a sparse matrix")
+        return matrix
+
     selected = {
-        "coarse": views["coarse_purified"].matrix,
-        "mid": views["fagsp_mid_base"].matrix,
-        "local": views["local_purified"].matrix,
+        "coarse": _view_matrix(cfg.coarse_view_name),
+        "mid": _view_matrix(cfg.mid_view_name),
+        "local": _view_matrix(cfg.local_view_name),
     }
+
+    if cfg.mid_external_graph_path:
+        external_mid = sparse.load_npz(cfg.mid_external_graph_path).tocsr().astype(np.float32)
+        if external_mid.shape[0] != n_items:
+            external_mid = external_mid[:n_items, :n_items]
+        external_mid = row_normalize(external_mid)
+        base_weight = float(np.clip(cfg.mid_external_graph_mix_base_weight, 0.0, 1.0))
+        if base_weight <= 0.0:
+            selected["mid"] = external_mid
+        elif base_weight < 1.0:
+            selected["mid"] = row_normalize(
+                (base_weight * row_normalize(selected["mid"]) + (1.0 - base_weight) * external_mid).tocsr()
+            )
 
     graph_tensors: dict[str, torch.Tensor] = {}
     for name, matrix in selected.items():
@@ -266,23 +347,31 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         device=device,
     )
 
-    model = RQVAE(
-        in_dim=dataset.dim,
-        num_emb_list=cfg.num_emb_list,
-        e_dim=cfg.e_dim,
-        layers=cfg.layers,
-        dropout_prob=cfg.dropout_prob,
-        bn=cfg.bn,
-        loss_type=cfg.loss_type,
-        quant_loss_weight=cfg.quant_loss_weight,
-        beta=cfg.beta,
-        kmeans_init=cfg.kmeans_init,
-        kmeans_iters=cfg.kmeans_iters,
-        sk_epsilons=cfg.sk_epsilons,
-        sk_iters=cfg.sk_iters,
-    ).to(device)
+    model = _build_model_from_cfg(cfg, in_dim=dataset.dim).to(device)
+    if cfg.warm_start_ckpt_path:
+        _load_checkpoint_state(model, cfg.warm_start_ckpt_path, device=device)
+        logger.info("Warm-started student model from %s", cfg.warm_start_ckpt_path)
+
+    teacher_model: RQVAE | None = None
+    if cfg.prefix_retention_l1_weight > 0 or cfg.prefix_retention_l2_weight > 0:
+        teacher_ckpt_path = cfg.teacher_ckpt_path or cfg.warm_start_ckpt_path
+        if not teacher_ckpt_path:
+            raise ValueError(
+                "prefix retention requires teacher_ckpt_path or warm_start_ckpt_path"
+            )
+        teacher_model = _build_model_from_cfg(cfg, in_dim=dataset.dim).to(device)
+        _load_checkpoint_state(teacher_model, teacher_ckpt_path, device=device)
+        teacher_model.eval()
+        for param in teacher_model.parameters():
+            param.requires_grad = False
+        logger.info("Loaded frozen teacher model from %s", teacher_ckpt_path)
+
     optimizer = _build_optimizer(cfg, model)
     scheduler = _build_scheduler(cfg, optimizer, steps_per_epoch=len(train_loader))
+    codebook_init: dict[int, torch.Tensor] = {
+        level: model.rq.vq_layers[level].embedding.weight.detach().clone()
+        for level in range(3)
+    }
 
     best = {
         "loss": float("inf"),
@@ -304,6 +393,10 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         total_local_graph_loss = 0.0
         total_semantic_coarse_loss = 0.0
         total_semantic_mid_loss = 0.0
+        total_prefix_retain_l1_loss = 0.0
+        total_prefix_retain_l2_loss = 0.0
+        total_codebook_anchor_l1_loss = 0.0
+        total_codebook_anchor_l2_loss = 0.0
 
         iter_data = tqdm(
             train_loader,
@@ -331,6 +424,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 cfg.semantic_scale_min,
                 cfg.semantic_scale_max,
             )
+            retention_item_scale = _resolve_retention_item_scale(cfg, prior_batch)
 
             coarse_subgraph = _select_subgraph(graph_tensors["coarse"], batch_indices)
             mid_subgraph = _select_subgraph(graph_tensors["mid"], batch_indices)
@@ -367,6 +461,39 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                     f"Unsupported semantic_retention_mode: {cfg.semantic_retention_mode}"
                 )
 
+            prefix_retain_l1 = batch_embeddings.new_tensor(0.0)
+            prefix_retain_l2 = batch_embeddings.new_tensor(0.0)
+            codebook_anchor_l1 = batch_embeddings.new_tensor(0.0)
+            codebook_anchor_l2 = batch_embeddings.new_tensor(0.0)
+            if teacher_model is not None:
+                with torch.no_grad():
+                    teacher_pack = _forward_hierarchy(
+                        teacher_model,
+                        batch_embeddings,
+                        use_sk=cfg.prefix_retention_teacher_use_sk,
+                    )
+                if cfg.prefix_retention_l1_weight > 0:
+                    per_item_l1 = torch.mean(
+                        (level_representations[0] - teacher_pack["cumulative_outputs"][0]) ** 2,
+                        dim=1,
+                    )
+                    denom_l1 = retention_item_scale.sum().clamp(min=1e-6)
+                    prefix_retain_l1 = torch.sum(per_item_l1 * retention_item_scale) / denom_l1
+                if cfg.prefix_retention_l2_weight > 0:
+                    per_item_l2 = torch.mean(
+                        (level_representations[1] - teacher_pack["cumulative_outputs"][1]) ** 2,
+                        dim=1,
+                    )
+                    denom_l2 = retention_item_scale.sum().clamp(min=1e-6)
+                    prefix_retain_l2 = torch.sum(per_item_l2 * retention_item_scale) / denom_l2
+
+            if cfg.codebook_anchor_l1_weight > 0:
+                current = model.rq.vq_layers[0].embedding.weight
+                codebook_anchor_l1 = torch.mean((current - codebook_init[0]) ** 2)
+            if cfg.codebook_anchor_l2_weight > 0:
+                current = model.rq.vq_layers[1].embedding.weight
+                codebook_anchor_l2 = torch.mean((current - codebook_init[1]) ** 2)
+
             loss_total = (
                 loss_total
                 + cfg.coarse_weight * graph_losses["coarse"]
@@ -374,6 +501,10 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 + cfg.local_weight * graph_losses["local"]
                 + cfg.semantic_coarse_weight * graph_losses["semantic_coarse"]
                 + cfg.semantic_mid_weight * graph_losses["semantic_mid"]
+                + cfg.prefix_retention_l1_weight * prefix_retain_l1
+                + cfg.prefix_retention_l2_weight * prefix_retain_l2
+                + cfg.codebook_anchor_l1_weight * codebook_anchor_l1
+                + cfg.codebook_anchor_l2_weight * codebook_anchor_l2
             )
 
             loss_total.backward()
@@ -389,6 +520,10 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             total_local_graph_loss += float(graph_losses["local"].item())
             total_semantic_coarse_loss += float(graph_losses["semantic_coarse"].item())
             total_semantic_mid_loss += float(graph_losses["semantic_mid"].item())
+            total_prefix_retain_l1_loss += float(prefix_retain_l1.item())
+            total_prefix_retain_l2_loss += float(prefix_retain_l2.item())
+            total_codebook_anchor_l1_loss += float(codebook_anchor_l1.item())
+            total_codebook_anchor_l2_loss += float(codebook_anchor_l2.item())
 
         record = {
             "epoch": epoch,
@@ -400,6 +535,10 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             "local_graph_loss": total_local_graph_loss,
             "semantic_coarse_loss": total_semantic_coarse_loss,
             "semantic_mid_loss": total_semantic_mid_loss,
+            "prefix_retain_l1_loss": total_prefix_retain_l1_loss,
+            "prefix_retain_l2_loss": total_prefix_retain_l2_loss,
+            "codebook_anchor_l1_loss": total_codebook_anchor_l1_loss,
+            "codebook_anchor_l2_loss": total_codebook_anchor_l2_loss,
         }
 
         if (epoch + 1) % effective_eval_step == 0:
@@ -432,7 +571,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 best["best_collision_ckpt"] = str(ckpt)
 
         logger.info(
-            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f sem_coarse=%.6f sem_mid=%.6f collision=%s",
+            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f collision=%s",
             epoch,
             record["total_loss"],
             record["recon_loss"],
@@ -442,6 +581,10 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             record["local_graph_loss"],
             record["semantic_coarse_loss"],
             record["semantic_mid_loss"],
+            record["prefix_retain_l1_loss"],
+            record["prefix_retain_l2_loss"],
+            record["codebook_anchor_l1_loss"],
+            record["codebook_anchor_l2_loss"],
             f"{record.get('collision_rate', float('nan')):.6f}" if "collision_rate" in record else "na",
         )
         history.append(record)

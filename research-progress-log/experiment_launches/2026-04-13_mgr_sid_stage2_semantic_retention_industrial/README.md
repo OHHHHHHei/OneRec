@@ -1,6 +1,7 @@
 # 2026-04-13 MGR-SID Stage-2 Semantic Retention Industrial
 
-This stage implements Block 3 from `EXPERIMENT_PLAN_STAGE2_RETENTION.md`.
+This stage implements Block 3 from
+`../../idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/refine-logs/archive/2026-04-14_stage3_scope_cleanup/EXPERIMENT_PLAN_STAGE2_RETENTION.md`.
 
 ## Goal
 
