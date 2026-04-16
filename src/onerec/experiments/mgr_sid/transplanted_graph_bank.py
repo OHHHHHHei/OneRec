@@ -10,6 +10,7 @@ from .graph_bank import (
     build_coarse_graph,
     build_graph_bank,
     build_local_graph,
+    build_multi_hop_transition_view,
     build_popularity,
     infer_num_items,
     purify_coarse_graph,
@@ -43,6 +44,10 @@ def build_transplanted_graph_bank(
     fagsp_cascade_low_rank: int,
     fagsp_cascade_support_quantile: float,
     fagsp_cascade_boost_alpha: float,
+    local_multihop_alpha: float = 0.35,
+    local_multihop_max_hop: int = 2,
+    mgdcf_keep_ratio: float = 0.1,
+    mgdcf_binarize_edges: bool = True,
 ) -> dict[str, SparseGraphView | CommunityGraphView]:
     views = build_graph_bank(
         train_df=train_df,
@@ -52,6 +57,8 @@ def build_transplanted_graph_bank(
         local_min_weight=local_min_weight,
         n_clusters=n_clusters,
         seed=seed,
+        mgdcf_keep_ratio=mgdcf_keep_ratio,
+        mgdcf_binarize_edges=mgdcf_binarize_edges,
     )
 
     n_items = infer_num_items(train_df, test_df)
@@ -68,6 +75,7 @@ def build_transplanted_graph_bank(
         popularity=popularity,
         min_weight=local_min_weight,
     )
+    coarse_mgdcf = views["coarse_mgdcf"].matrix
 
     semantic_embeddings = load_semantic_embeddings(semantic_embedding_path)
     if semantic_embeddings is not None and semantic_embeddings.shape[0] != n_items:
@@ -118,6 +126,13 @@ def build_transplanted_graph_bank(
         eigen_ratio_low=band_low,
         eigen_ratio_high=band_high,
     )
+    views["fagsp_mid_mgdcf"] = build_fagsp_mid_view(
+        coarse_mgdcf,
+        name="fagsp_mid_mgdcf",
+        rank=spectral_rank,
+        eigen_ratio_low=band_low,
+        eigen_ratio_high=band_high,
+    )
     views["fagsp_mid_prism"] = build_fagsp_mid_view(
         prism_anchor_coarse,
         name="fagsp_mid_prism",
@@ -149,5 +164,11 @@ def build_transplanted_graph_bank(
         low_rank=fagsp_cascade_low_rank,
         support_quantile=fagsp_cascade_support_quantile,
         boost_alpha=fagsp_cascade_boost_alpha,
+    )
+    views["local_multihop"] = build_multi_hop_transition_view(
+        local_purified,
+        name="local_multihop",
+        alpha=local_multihop_alpha,
+        max_hop=local_multihop_max_hop,
     )
     return views

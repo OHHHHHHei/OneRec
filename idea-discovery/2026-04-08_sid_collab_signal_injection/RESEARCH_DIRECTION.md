@@ -22,6 +22,15 @@ Taken together, these observations suggest a tension:
 - collaborative information is clearly useful
 - but simply injecting it globally and uniformly is not enough, and may even be harmful
 
+There is also a second tension that is now becoming increasingly central:
+
+- some items are semantically very close
+- but their collaborative roles are clearly different
+- current attraction-only graph supervision can say which items should move closer
+- but it still does not explicitly model which semantically similar items should be pulled apart
+
+This matters because many real recommendation failures are not caused by global routing collapse, but by keeping the wrong semantically similar items inside the same local SID neighborhood.
+
 This motivates a more structured view of collaborative integration.
 
 ## Core Hypothesis
@@ -41,6 +50,7 @@ but rather:
 - what kind of collaborative signal should be injected at each SID level?
 - how should these signals be denoised before fusion?
 - how should semantic and collaborative information be balanced across the hierarchy?
+- how should we explicitly separate semantically similar but collaboratively inconsistent items?
 
 ## Intuition Under a 3-Level SID
 
@@ -64,6 +74,8 @@ The final level is responsible for distinguishing between highly similar candida
 
 The goal of this level is to resolve leaf ambiguity among items that are already close in semantic space.
 
+This also suggests that the final level should not only receive local attraction signals. It may also need a way to explicitly distinguish items that are semantically close yet behaviorally separable.
+
 ## Why This Direction Is Different
 
 This direction differs from existing front-end collaborative fusion methods in an important way.
@@ -74,7 +86,8 @@ Our direction instead argues that:
 
 1. **Collaborative utility is hierarchy-dependent.**
 2. **Collaborative noise is also hierarchy-dependent.**
-3. Therefore, the correct unit of design is not only the item representation, but also the **SID level** itself.
+3. **Collaborative separation is hierarchy-dependent as well.**
+4. Therefore, the correct unit of design is not only the item representation, but also the **SID level** itself.
 
 In other words, we are not merely asking how to build a collaborative-aware tokenizer. We are asking how to build a tokenizer whose collaborative awareness is **structured across levels**.
 
@@ -92,11 +105,17 @@ This suggests that denoising should not be viewed as a single preprocessing tric
 
 Therefore, a promising direction is not just level-aware fusion, but **level-aware fusion with level-aware collaborative purification**.
 
+And beyond purification, a complete solution may also require **level-aware collaborative separation**, especially for semantically crowded local neighborhoods.
+
 ## Proposed Research Question
 
 Based on the above, the research direction can be summarized as:
 
 > Can we improve SID-based generative recommendation by injecting collaborative information into different SID levels using different granularities and different denoising strategies, instead of using uniform global fusion?
+
+An even sharper version of the same question is:
+
+> Can we build a hierarchy-aware SID tokenizer that uses collaborative information not only to attract truly related items, but also to separate semantically similar yet collaboratively inconsistent items?
 
 This question is closely aligned with our current motivation:
 
@@ -120,6 +139,8 @@ It explains why current systems can simultaneously show:
 - but poor results from naive front-end global fusion
 
 because the issue is not the existence of collaborative information, but its allocation and purification.
+
+It also explains why attraction-only collaborative supervision may still be insufficient: some of the hardest recommendation errors come from semantically plausible but behaviorally wrong alternatives that are never explicitly separated.
 
 ### 3. A more differentiated method space
 
@@ -145,7 +166,7 @@ What remains open:
 - how to construct coarse, mid, and fine collaborative views
 - how to design the layer-wise fusion mechanism
 - how to define the denoising strategy for each level
+- how to define selective separation signals for semantically similar but collaboratively inconsistent items
 - how to validate that each SID level is really using the appropriate signal
 
 These details should be explored next, but the overall direction is now clear enough to serve as the foundation for the next round of method design.
-

@@ -75,10 +75,14 @@ class MgrSidV2TrainConfig:
     band_low: float = 0.25
     band_high: float = 0.65
     temporal_mix: float = 0.35
+    local_multihop_alpha: float = 0.35
+    local_multihop_max_hop: int = 2
     fagsp_cascade_high_rank: int = 16
     fagsp_cascade_low_rank: int = 32
     fagsp_cascade_support_quantile: float = 0.8
     fagsp_cascade_boost_alpha: float = 0.5
+    mgdcf_keep_ratio: float = 0.1
+    mgdcf_binarize_edges: bool = True
     graph_topk: int = 32
     semantic_graph_topk: int = 32
     coarse_weight: float = 0.05
@@ -108,6 +112,15 @@ class MgrSidV2TrainConfig:
     prefix_retention_teacher_use_sk: bool = False
     codebook_anchor_l1_weight: float = 0.0
     codebook_anchor_l2_weight: float = 0.0
+    selective_separation_weight: float = 0.0
+    selective_separation_margin: float = 0.2
+    selective_separation_pair_csv: str | None = None
+    selective_separation_pair_rule: str | None = None
+    selective_separation_levels: list[int] | None = None
+    selective_separation_use_pair_reliability: bool = True
+    selective_separation_use_ambiguity_scaling: bool = True
+    selective_separation_scale_min: float = 0.5
+    selective_separation_scale_max: float = 1.5
 
 
 def load_train_config(config_path: str, overrides: dict[str, Any] | None = None) -> MgrSidV2TrainConfig:
@@ -187,6 +200,67 @@ def _weighted_batch_local_neighbor_kl_loss(
     return torch.sum(per_item * item_weights) / denom
 
 
+def _load_selective_separation_pair_matrix(
+    path: str,
+    n_items: int,
+    device: torch.device,
+    rule: str | None = None,
+) -> torch.Tensor:
+    df = pd.read_csv(path)
+    required = {"item_a", "item_b"}
+    if not required.issubset(df.columns):
+        missing = sorted(required - set(df.columns))
+        raise ValueError(f"Selective-separation CSV missing required columns {missing}: {path}")
+    if rule and "rule" in df.columns:
+        df = df[df["rule"] == rule].copy()
+
+    values = torch.zeros((n_items, n_items), dtype=torch.float32, device=device)
+    has_reliability = "reliability" in df.columns
+    for row in df.itertuples(index=False):
+        item_a = int(row.item_a)
+        item_b = int(row.item_b)
+        if not (0 <= item_a < n_items and 0 <= item_b < n_items) or item_a == item_b:
+            continue
+        value = 1.0
+        if has_reliability:
+            value = float(getattr(row, "reliability"))
+            if not np.isfinite(value) or value <= 0.0:
+                continue
+        if value > float(values[item_a, item_b].item()):
+            values[item_a, item_b] = value
+            values[item_b, item_a] = value
+    return values
+
+
+def _weighted_selective_separation_loss(
+    representations: torch.Tensor,
+    pair_weights: torch.Tensor,
+    item_scales: torch.Tensor,
+    margin: float,
+) -> torch.Tensor:
+    if representations.size(0) <= 1:
+        return representations.new_tensor(0.0)
+    if not (-1.0 < margin < 1.0):
+        raise ValueError(f"selective_separation_margin must be in (-1, 1), got {margin}")
+
+    representations = F.normalize(representations.float(), p=2, dim=1)
+    similarity = representations @ representations.T
+
+    pair_weights = pair_weights.float()
+    if item_scales.numel() > 0:
+        pair_scale = torch.sqrt(torch.outer(item_scales.float(), item_scales.float()).clamp_min(0.0))
+        pair_weights = pair_weights * pair_scale
+
+    pair_weights = torch.triu(pair_weights, diagonal=1)
+    active_mask = pair_weights > 0.0
+    if not torch.any(active_mask):
+        return representations.new_tensor(0.0)
+
+    penalties = F.relu(similarity - margin).pow(2)
+    denom = pair_weights[active_mask].sum().clamp(min=1e-6)
+    return torch.sum(penalties * pair_weights) / denom
+
+
 def _scale_from_prior(prior: torch.Tensor, low: float, high: float) -> torch.Tensor:
     return low + (high - low) * prior
 
@@ -225,6 +299,16 @@ def _resolve_retention_item_scale(cfg: MgrSidV2TrainConfig, prior_batch: torch.T
     )
 
 
+def _resolve_selective_separation_levels(cfg: MgrSidV2TrainConfig) -> list[int]:
+    if cfg.selective_separation_weight <= 0:
+        return []
+    levels = cfg.selective_separation_levels or [3]
+    normalized = sorted({int(level) for level in levels if int(level) in (1, 2, 3)})
+    if not normalized:
+        raise ValueError("selective_separation_levels must contain at least one of [1, 2, 3]")
+    return normalized
+
+
 def _build_level_representations(
     cumulative_outputs: list[torch.Tensor],
     level_outputs: list[torch.Tensor],
@@ -258,10 +342,14 @@ def _build_graph_tensors(cfg: MgrSidV2TrainConfig, device: torch.device, n_items
         band_low=cfg.band_low,
         band_high=cfg.band_high,
         temporal_mix=cfg.temporal_mix,
+        local_multihop_alpha=cfg.local_multihop_alpha,
+        local_multihop_max_hop=cfg.local_multihop_max_hop,
         fagsp_cascade_high_rank=cfg.fagsp_cascade_high_rank,
         fagsp_cascade_low_rank=cfg.fagsp_cascade_low_rank,
         fagsp_cascade_support_quantile=cfg.fagsp_cascade_support_quantile,
         fagsp_cascade_boost_alpha=cfg.fagsp_cascade_boost_alpha,
+        mgdcf_keep_ratio=cfg.mgdcf_keep_ratio,
+        mgdcf_binarize_edges=cfg.mgdcf_binarize_edges,
     )
 
     def _view_matrix(view_name: str):
@@ -346,6 +434,19 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         n_items=len(dataset),
         device=device,
     )
+    selective_separation_levels = _resolve_selective_separation_levels(cfg)
+    selective_separation_pair_matrix = None
+    if cfg.selective_separation_weight > 0:
+        if not cfg.selective_separation_pair_csv:
+            raise ValueError("selective_separation_pair_csv is required when selective_separation_weight > 0")
+        selective_separation_pair_matrix = _load_selective_separation_pair_matrix(
+            path=cfg.selective_separation_pair_csv,
+            n_items=len(dataset),
+            device=device,
+            rule=cfg.selective_separation_pair_rule,
+        )
+        if not cfg.selective_separation_use_pair_reliability:
+            selective_separation_pair_matrix = (selective_separation_pair_matrix > 0).float()
 
     model = _build_model_from_cfg(cfg, in_dim=dataset.dim).to(device)
     if cfg.warm_start_ckpt_path:
@@ -397,6 +498,9 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         total_prefix_retain_l2_loss = 0.0
         total_codebook_anchor_l1_loss = 0.0
         total_codebook_anchor_l2_loss = 0.0
+        total_selective_sep_l1_loss = 0.0
+        total_selective_sep_l2_loss = 0.0
+        total_selective_sep_l3_loss = 0.0
 
         iter_data = tqdm(
             train_loader,
@@ -425,6 +529,14 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 cfg.semantic_scale_max,
             )
             retention_item_scale = _resolve_retention_item_scale(cfg, prior_batch)
+            if cfg.selective_separation_use_ambiguity_scaling:
+                selective_item_scale = _scale_from_prior(
+                    prior_batch,
+                    cfg.selective_separation_scale_min,
+                    cfg.selective_separation_scale_max,
+                )
+            else:
+                selective_item_scale = torch.ones_like(prior_batch, dtype=torch.float32)
 
             coarse_subgraph = _select_subgraph(graph_tensors["coarse"], batch_indices)
             mid_subgraph = _select_subgraph(graph_tensors["mid"], batch_indices)
@@ -494,6 +606,40 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 current = model.rq.vq_layers[1].embedding.weight
                 codebook_anchor_l2 = torch.mean((current - codebook_init[1]) ** 2)
 
+            selective_sep_l1 = batch_embeddings.new_tensor(0.0)
+            selective_sep_l2 = batch_embeddings.new_tensor(0.0)
+            selective_sep_l3 = batch_embeddings.new_tensor(0.0)
+            selective_sep_mean = batch_embeddings.new_tensor(0.0)
+            if selective_separation_pair_matrix is not None:
+                pair_subgraph = _select_subgraph(selective_separation_pair_matrix, batch_indices)
+                selective_losses: list[torch.Tensor] = []
+                if 1 in selective_separation_levels:
+                    selective_sep_l1 = _weighted_selective_separation_loss(
+                        level_representations[0],
+                        pair_subgraph,
+                        selective_item_scale,
+                        cfg.selective_separation_margin,
+                    )
+                    selective_losses.append(selective_sep_l1)
+                if 2 in selective_separation_levels:
+                    selective_sep_l2 = _weighted_selective_separation_loss(
+                        level_representations[1],
+                        pair_subgraph,
+                        selective_item_scale,
+                        cfg.selective_separation_margin,
+                    )
+                    selective_losses.append(selective_sep_l2)
+                if 3 in selective_separation_levels:
+                    selective_sep_l3 = _weighted_selective_separation_loss(
+                        level_representations[2],
+                        pair_subgraph,
+                        selective_item_scale,
+                        cfg.selective_separation_margin,
+                    )
+                    selective_losses.append(selective_sep_l3)
+                if selective_losses:
+                    selective_sep_mean = torch.stack(selective_losses).mean()
+
             loss_total = (
                 loss_total
                 + cfg.coarse_weight * graph_losses["coarse"]
@@ -505,6 +651,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 + cfg.prefix_retention_l2_weight * prefix_retain_l2
                 + cfg.codebook_anchor_l1_weight * codebook_anchor_l1
                 + cfg.codebook_anchor_l2_weight * codebook_anchor_l2
+                + cfg.selective_separation_weight * selective_sep_mean
             )
 
             loss_total.backward()
@@ -524,6 +671,9 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             total_prefix_retain_l2_loss += float(prefix_retain_l2.item())
             total_codebook_anchor_l1_loss += float(codebook_anchor_l1.item())
             total_codebook_anchor_l2_loss += float(codebook_anchor_l2.item())
+            total_selective_sep_l1_loss += float(selective_sep_l1.item())
+            total_selective_sep_l2_loss += float(selective_sep_l2.item())
+            total_selective_sep_l3_loss += float(selective_sep_l3.item())
 
         record = {
             "epoch": epoch,
@@ -539,6 +689,9 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             "prefix_retain_l2_loss": total_prefix_retain_l2_loss,
             "codebook_anchor_l1_loss": total_codebook_anchor_l1_loss,
             "codebook_anchor_l2_loss": total_codebook_anchor_l2_loss,
+            "selective_sep_l1_loss": total_selective_sep_l1_loss,
+            "selective_sep_l2_loss": total_selective_sep_l2_loss,
+            "selective_sep_l3_loss": total_selective_sep_l3_loss,
         }
 
         if (epoch + 1) % effective_eval_step == 0:
@@ -571,7 +724,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 best["best_collision_ckpt"] = str(ckpt)
 
         logger.info(
-            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f collision=%s",
+            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f sep_l1=%.6f sep_l2=%.6f sep_l3=%.6f collision=%s",
             epoch,
             record["total_loss"],
             record["recon_loss"],
@@ -585,6 +738,9 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             record["prefix_retain_l2_loss"],
             record["codebook_anchor_l1_loss"],
             record["codebook_anchor_l2_loss"],
+            record["selective_sep_l1_loss"],
+            record["selective_sep_l2_loss"],
+            record["selective_sep_l3_loss"],
             f"{record.get('collision_rate', float('nan')):.6f}" if "collision_rate" in record else "na",
         )
         history.append(record)

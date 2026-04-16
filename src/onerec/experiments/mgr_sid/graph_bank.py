@@ -211,6 +211,138 @@ def build_local_graph(train_df: pd.DataFrame, n_items: int, history_k: int) -> s
     return matrix
 
 
+def build_user_item_binary_matrix(train_df: pd.DataFrame, n_items: int) -> sparse.csr_matrix:
+    user_to_idx: dict[str, int] = {}
+    rows: list[int] = []
+    cols: list[int] = []
+    data: list[float] = []
+    for row in train_df.itertuples(index=False):
+        user_id = str(row.user_id)
+        user_idx = user_to_idx.setdefault(user_id, len(user_to_idx))
+        items: set[int] = set()
+        target = int(row.item_id)
+        if 0 <= target < n_items:
+            items.add(target)
+        for hist_item in parse_id_list(row.history_item_id):
+            if 0 <= hist_item < n_items:
+                items.add(hist_item)
+        for item_id in items:
+            rows.append(user_idx)
+            cols.append(item_id)
+            data.append(1.0)
+    matrix = sparse.coo_matrix(
+        (
+            np.asarray(data, dtype=np.float32),
+            (np.asarray(rows, dtype=np.int32), np.asarray(cols, dtype=np.int32)),
+        ),
+        shape=(len(user_to_idx), n_items),
+        dtype=np.float32,
+    ).tocsr()
+    matrix.sum_duplicates()
+    if matrix.nnz:
+        matrix.data[:] = 1.0
+    return matrix
+
+
+def _symmetric_global_top_ratio_prune(
+    matrix: sparse.csr_matrix,
+    keep_ratio: float,
+    binarize: bool,
+) -> sparse.csr_matrix:
+    matrix = matrix.tocsr(copy=True).astype(np.float32)
+    matrix.setdiag(0.0)
+    matrix.eliminate_zeros()
+    if matrix.nnz == 0:
+        return matrix
+
+    upper = sparse.triu(matrix, k=1).tocoo()
+    if upper.nnz == 0:
+        return sparse.csr_matrix(matrix.shape, dtype=np.float32)
+
+    keep_ratio = float(np.clip(keep_ratio, 0.0, 1.0))
+    if keep_ratio <= 0.0:
+        return sparse.csr_matrix(matrix.shape, dtype=np.float32)
+
+    keep_edges = max(1, int(np.ceil(upper.nnz * keep_ratio)))
+    if keep_edges >= upper.nnz:
+        selected_rows = upper.row
+        selected_cols = upper.col
+        selected_data = upper.data
+    else:
+        selected_idx = np.argpartition(upper.data, -keep_edges)[-keep_edges:]
+        selected_rows = upper.row[selected_idx]
+        selected_cols = upper.col[selected_idx]
+        selected_data = upper.data[selected_idx]
+
+    if binarize:
+        selected_data = np.ones_like(selected_data, dtype=np.float32)
+
+    rows = np.concatenate([selected_rows, selected_cols]).astype(np.int32, copy=False)
+    cols = np.concatenate([selected_cols, selected_rows]).astype(np.int32, copy=False)
+    data = np.concatenate([selected_data, selected_data]).astype(np.float32, copy=False)
+    pruned = sparse.coo_matrix((data, (rows, cols)), shape=matrix.shape, dtype=np.float32).tocsr()
+    pruned.sum_duplicates()
+    pruned.setdiag(0.0)
+    pruned.eliminate_zeros()
+    return pruned
+
+
+def build_mgdcf_item_graph(
+    train_df: pd.DataFrame,
+    n_items: int,
+    keep_ratio: float,
+    binarize_edges: bool,
+) -> sparse.csr_matrix:
+    user_item = build_user_item_binary_matrix(train_df, n_items=n_items)
+    user_to_item = row_normalize(user_item)
+    item_to_user = row_normalize(user_item.T.tocsr())
+    item_to_item = (item_to_user @ user_to_item).tocsr().astype(np.float32)
+    item_to_item.setdiag(0.0)
+    item_to_item.eliminate_zeros()
+
+    affinity = item_to_item.multiply(item_to_item.T).tocsr().astype(np.float32)
+    if affinity.nnz:
+        affinity.data = np.sqrt(np.maximum(affinity.data, 0.0))
+    affinity.setdiag(0.0)
+    affinity.eliminate_zeros()
+
+    sparsified = _symmetric_global_top_ratio_prune(
+        affinity,
+        keep_ratio=keep_ratio,
+        binarize=binarize_edges,
+    )
+    return row_normalize(sparsified)
+
+
+def build_multi_hop_transition_view(
+    base_graph: sparse.csr_matrix,
+    name: str,
+    alpha: float,
+    max_hop: int,
+) -> SparseGraphView:
+    normalized = row_normalize(base_graph)
+    accum = normalized.copy().astype(np.float32)
+    power = normalized.copy().astype(np.float32)
+    for hop in range(2, max_hop + 1):
+        power = (power @ normalized).tocsr().astype(np.float32)
+        accum = (accum + (alpha ** (hop - 1)) * power).tocsr()
+    accum = accum.tocsr(copy=True)
+    accum.setdiag(0.0)
+    accum.eliminate_zeros()
+    view = row_normalize(accum)
+    return SparseGraphView(
+        name=name,
+        matrix=view,
+        metadata={
+            "kind": "multi_hop_transition",
+            "alpha": float(alpha),
+            "max_hop": int(max_hop),
+            "nnz": int(view.nnz),
+            "density": sparse_density(view),
+        },
+    )
+
+
 def purify_coarse_graph(
     matrix: sparse.csr_matrix,
     popularity: np.ndarray,
@@ -310,6 +442,8 @@ def build_graph_bank(
     local_min_weight: float,
     n_clusters: int,
     seed: int,
+    mgdcf_keep_ratio: float = 0.1,
+    mgdcf_binarize_edges: bool = True,
 ) -> dict[str, SparseGraphView | CommunityGraphView]:
     n_items = infer_num_items(train_df, test_df)
     popularity = build_popularity(train_df)
@@ -317,6 +451,12 @@ def build_graph_bank(
     local_raw = build_local_graph(train_df, n_items=n_items, history_k=history_k)
     coarse_purified = purify_coarse_graph(coarse_raw, popularity=popularity, min_weight=coarse_min_weight)
     local_purified = purify_local_graph(local_raw, popularity=popularity, min_weight=local_min_weight)
+    coarse_mgdcf = build_mgdcf_item_graph(
+        train_df,
+        n_items=n_items,
+        keep_ratio=mgdcf_keep_ratio,
+        binarize_edges=mgdcf_binarize_edges,
+    )
 
     views: dict[str, SparseGraphView | CommunityGraphView] = {
         "coarse_raw": SparseGraphView(
@@ -328,6 +468,17 @@ def build_graph_bank(
             name="coarse_purified",
             matrix=coarse_purified,
             metadata={"kind": "coarse_purified", "nnz": int(coarse_purified.nnz), "density": sparse_density(coarse_purified)},
+        ),
+        "coarse_mgdcf": SparseGraphView(
+            name="coarse_mgdcf",
+            matrix=coarse_mgdcf,
+            metadata={
+                "kind": "coarse_mgdcf",
+                "nnz": int(coarse_mgdcf.nnz),
+                "density": sparse_density(coarse_mgdcf),
+                "mgdcf_keep_ratio": float(mgdcf_keep_ratio),
+                "mgdcf_binarize_edges": bool(mgdcf_binarize_edges),
+            },
         ),
         "local_raw": SparseGraphView(
             name="local_raw",

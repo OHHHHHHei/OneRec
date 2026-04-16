@@ -6,7 +6,7 @@ This round did **not** modify the existing MiniOneRec training/evaluation pipeli
 Instead, we added an isolated experimental probe under:
 
 - `src/onerec/experiments/mgr_sid/`
-- `scripts/experiment_mgr_sid_graph_bank_probe.py`
+- `scripts/archive/retired_prior_diagnostics/experiment_mgr_sid_graph_bank_probe.py`
 
 The goal was to test one small but important hypothesis for the current direction:
 

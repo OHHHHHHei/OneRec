@@ -1,0 +1,52 @@
+{
+  "rows": [
+    {
+      "n_items": 3686.0,
+      "graph_nnz": 70768.0,
+      "graph_density": 0.005208663008747739,
+      "avg_out_degree": 19.199131850244168,
+      "avg_in_degree": 19.199131850244168,
+      "outgoing_coverage_rate": 0.9720564297341291,
+      "incoming_coverage_rate": 0.9720564297341291,
+      "connected_item_rate": 0.9720564297341291,
+      "orphan_item_rate": 0.027943570265870864,
+      "largest_component_ratio": 0.9720564297341291,
+      "connected_component_count": 104.0,
+      "mean_neighbor_overlap_with_baseline": 0.9708219243344199,
+      "mean_added_neighbors_topk": 0.021161150298426478,
+      "mean_retained_neighbors_topk": 14.991318502441672,
+      "mean_candidate_neighbors_topk": 15.012479652740097,
+      "topk_expansion_ratio": 0.001409570623102501,
+      "n_segments": 4.0,
+      "segment_support_mean": 0.2518935203552246,
+      "segment_support_median": 0.25,
+      "segment_support_q90": 0.25,
+      "edge_supported_by_ge_2_segments_rate": 0.00757404476599593,
+      "name": "coarse_user_segment_k4"
+    },
+    {
+      "n_items": 3686.0,
+      "graph_nnz": 70768.0,
+      "graph_density": 0.005208663008747739,
+      "avg_out_degree": 19.199131850244168,
+      "avg_in_degree": 19.199131850244168,
+      "outgoing_coverage_rate": 0.9720564297341291,
+      "incoming_coverage_rate": 0.9720564297341291,
+      "connected_item_rate": 0.9720564297341291,
+      "orphan_item_rate": 0.027943570265870864,
+      "largest_component_ratio": 0.9720564297341291,
+      "connected_component_count": 104.0,
+      "mean_neighbor_overlap_with_baseline": 0.9674765354258479,
+      "mean_added_neighbors_topk": 0.08111774281063483,
+      "mean_retained_neighbors_topk": 14.931361909929462,
+      "mean_candidate_neighbors_topk": 15.012479652740097,
+      "topk_expansion_ratio": 0.005403354055226254,
+      "n_segments": 8.0,
+      "segment_support_mean": 0.12853974103927612,
+      "segment_support_median": 0.125,
+      "segment_support_q90": 0.125,
+      "edge_supported_by_ge_2_segments_rate": 0.02724395206873163,
+      "name": "coarse_user_segment_k8"
+    }
+  ]
+}

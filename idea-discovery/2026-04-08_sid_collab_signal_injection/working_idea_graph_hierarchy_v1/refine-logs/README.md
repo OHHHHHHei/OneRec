@@ -27,25 +27,50 @@ Read this only after:
   - downstream verdict for stage-3
   - records that both `R401b` and `R401d` were negative relative to current `v2_on_p05`
 
-## Current Active Branch Plans
+## Current Mainline Reference Plans
+
+- `EXPERIMENT_PLAN_SELECTIVE_SEPARATION.md`
+  - current method-reference document（方法参考文档）
+  - still useful for:
+    - understanding the selective-separation（选择性分离） motivation and loss idea
+    - reconstructing what was tried before `S000`
+  - important update:
+    - its diagnostics-first（诊断优先） execution blocks are no longer active after `S000`
+
+- `EXPERIMENT_TRACKER_SELECTIVE_SEPARATION.md`
+  - frozen tracker snapshot（冻结跟踪快照） for the last diagnostics-driven selective-separation branch
+  - not an active execution tracker（活跃执行跟踪表） anymore
+
+## Recently Active but Now Secondary Branch Plans
+
+- `EXPERIMENT_PLAN_COARSE_LOCAL_GRAPH_CARRIERS.md`
+  - previous active plan
+  - still useful for reconstructing why `R530* / R542*` were launched
+  - current role:
+    - supporting branch history
+    - graph-carrier evidence source for the new selective-separation phase
+
+- `EXPERIMENT_TRACKER_COARSE_LOCAL_GRAPH_CARRIERS.md`
+  - tracker for the coarse/local carrier branch
+  - keep as execution history while the branch is being closed out
+
+## Recently Completed Branch Plans
 
 - `EXPERIMENT_PLAN_TAGCF_SEMANTIC_TO_TOPOLOGY.md`
-  - active `TAGCF`-inspired branch
-  - asks whether `semantics -> topology` can create a better graph carrier for SID construction
-  - branch materials live in:
-    - `../side-branches/2026-04-15_tagcf_semantic_to_topology/`
+  - `TAGCF`-inspired branch plan
+  - useful for reconstructing why `R510 / R511` were launched
+  - current status:
+    - no positive downstream evidence so far
 
 - `EXPERIMENT_TRACKER_TAGCF_SEMANTIC_TO_TOPOLOGY.md`
-  - execution tracker for the active `TAGCF` branch
-  - current emphasis:
-    - `R510` mixed pure-replacement result
-    - `R511` additive-mid test in progress
+  - branch tracker for the `TAGCF` line
+  - now mostly useful as a branch history document
 
 - `EXPERIMENT_PLAN_FAGSP_CASCADE_GMID.md`
-  - active branch for a deeper `FaGSP` item-side cascade transplant
-  - asks whether `G_mid` is currently bottlenecked by shallow spectral slicing rather than by the overall hierarchy-aware direction
-  - branch materials live in:
-    - `../side-branches/2026-04-15_fagsp_cascade_mid/`
+  - deeper `FaGSP` item-side cascade plan
+  - useful for reconstructing why `R520` was launched
+  - current status:
+    - no positive tokenizer-side evidence so far
 
 ## Reading Policy（阅读规则）
 
@@ -69,3 +94,6 @@ documents:
 If you need to reconstruct how the project got here, read that archive
 directory intentionally.
 Do not use those files as the default starting point for new graph-carrier decisions.
+
+After `S000`, do not use any prior diagnostic（前验诊断） as the default starting point for
+new tokenizer decisions（新分词器决策）.

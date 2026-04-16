@@ -128,7 +128,7 @@ SID -> SFT -> RL -> Evaluate
 
 脚本：
 
-- [sid_diagnostics.py](/home/leejt/OneRec/scripts/sid_diagnostics.py)
+- [sid_diagnostics.py](/home/leejt/OneRec/scripts/archive/retired_prior_diagnostics/sid_diagnostics.py)
 
 结果台账：
 
