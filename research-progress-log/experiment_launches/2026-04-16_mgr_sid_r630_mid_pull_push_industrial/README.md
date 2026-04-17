@@ -101,14 +101,81 @@ Status（状态）: `snapshot（快照）`
   - `/data/leejt/OneRec/output_weights/experiments/mgr_sid_mid_pull_push_20260416/industrial_r630a_mid_pull_only`
   - `/data/leejt/OneRec/output_weights/experiments/mgr_sid_mid_pull_push_20260416/industrial_r630b_mid_push_only`
   - `/data/leejt/OneRec/output_weights/experiments/mgr_sid_mid_pull_push_20260416/industrial_r630c_mid_pull_push`
+- generated indices（生成索引）:
+  - `/data/leejt/OneRec/output_weights/experiments/mgr_sid_mid_pull_push_20260416/generated_indices/Industrial_and_Scientific.r630a_mid_pull_only.index.json`
+  - `/data/leejt/OneRec/output_weights/experiments/mgr_sid_mid_pull_push_20260416/generated_indices/Industrial_and_Scientific.r630b_mid_push_only.index.json`
+  - `/data/leejt/OneRec/output_weights/experiments/mgr_sid_mid_pull_push_20260416/generated_indices/Industrial_and_Scientific.r630c_mid_pull_push.index.json`
 - logs（日志）:
   - `/home/leejt/OneRec/logs/experiment_mgr_sid_r630a_mid_pull_only_20260416.log`
   - `/home/leejt/OneRec/logs/experiment_mgr_sid_r630b_mid_push_only_20260416.log`
   - `/home/leejt/OneRec/logs/experiment_mgr_sid_r630c_mid_pull_push_20260416.log`
+- generate summaries（生成摘要）:
+  - [R630a_generate_summary.json](/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-16_mgr_sid_r630_mid_pull_push_industrial/R630a_generate_summary.json)
+  - [R630b_generate_summary.json](/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-16_mgr_sid_r630_mid_pull_push_industrial/R630b_generate_summary.json)
+  - [R630c_generate_summary.json](/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-16_mgr_sid_r630_mid_pull_push_industrial/R630c_generate_summary.json)
 - tmux（终端复用）:
   - `mgr_r630a_mid_pull_only`
   - `mgr_r630b_mid_push_only`
   - `mgr_r630c_mid_pull_push`
+
+## Result Snapshot（结果快照）
+
+三条 tokenizer（分词器）训练与 `sid-generate`（SID 生成）都已完成。
+
+### Raw Numbers（原始数字）
+
+- `R630a`
+  - best train collision rate（最佳训练冲突率）: `0.15057`
+  - generated collision（生成后冲突）: `16 / 3686 = 0.0043407488`
+- `R630b`
+  - best train collision rate（最佳训练冲突率）: `0.16468`
+  - generated collision（生成后冲突）: `15 / 3686 = 0.0040694520`
+- `R630c`
+  - best train collision rate（最佳训练冲突率）: `0.12344`
+  - generated collision（生成后冲突）: `11 / 3686 = 0.0029842648`
+
+### Comparison To Existing Lines（与现有主线对比）
+
+- current `v2`（当前 `v2`）: `13 / 3686 = 0.0035268584`
+- `R610a`（上一轮 `L3` selective separation）: `12 / 3686 = 0.0032555616`
+- `R510`（`TAGCF` 属性图替换）: `11 / 3686 = 0.0029842648`
+
+### Reading（解读）
+
+- `R630a` 是明确负结果：
+  - pull-only（仅拉近）把 generated collision（生成后冲突）退回到了 `16 / 3686`
+  - 这基本等于 original semantic baseline（原始语义基线）的水平
+- `R630b` 也不是可行主线：
+  - push-only（仅推远）比 `R630a` 略好
+  - 但仍然弱于 current `v2`（当前 `v2`）和 `R610a`
+- `R630c` 是这组三路里唯一真正站出来的 tokenizer candidate（分词器候选）：
+  - 它同时在 best train collision（最佳训练冲突率）和 generated collision（生成后冲突）上都明显优于 `R630a / R630b`
+  - 也优于 current `v2`（`11 vs 13`）和 `R610a`（`11 vs 12`）
+
+但这次结果也有一个必须保留的限制：
+
+> `R630c` 只是 tokenizer-side（分词器侧）最强，不等于 downstream-ready（可直接下游推进）已经被证明。
+
+原因很直接：
+
+- 它目前只是**匹配**了 `R510` 的 `11 / 3686`
+- 而 `R510` 已经做过完整 `SFT -> evaluate`（监督微调到评测），结论是负的
+
+所以这次最准确的结论不是“pull+push 已经赢了”，而是：
+
+> **在当前这组三路 clean attribution（干净归因）实验里，只有 `R630c` 证明了 pull（拉近）和 push（推远）需要联合出现；但它的真实项目价值仍然必须由 downstream `SFT -> evaluate`（下游监督微调到评测）裁决。**
+
+### Later Downstream Verdict（后续下游裁决）
+
+后续 `Stage U` 已经完成：
+
+- [2026-04-16_mgr_sid_r630c_sft_eval_industrial/README.md](/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-16_mgr_sid_r630c_sft_eval_industrial/README.md)
+
+补充结论是：
+
+- `R630c` 虽然是这组三路里最强的 tokenizer candidate（分词器候选）
+- 但它的 downstream `SFT -> evaluate`（下游监督微调到评测）结果为负
+- 因此这次 `mid-only pull + push`（仅中层拉近加推远）线不能进入 strongest line（最强主线）
 
 ## Promotion Rule（推进规则）
 
@@ -121,3 +188,13 @@ Status（状态）: `snapshot（快照）`
 - `title_history2sid_on + desc_align_p05`
 
 因为这条 recipe（配方）是目前 graph-aware SID（图感知 SID）最稳定的已验证入口。
+
+## Next Action（下一步）
+
+- 冻结 `R630a / R630b`
+  - 它们已经完成了这次 stage（阶段）里各自的归因任务，不值得继续下游化
+- 只推进 `R630c`
+  - 作为这次 stage（阶段）唯一的 downstream candidate（下游候选）
+- 但推进口径必须保持克制：
+  - 这是一次 minimal downstream adjudication（最小下游裁决）
+  - 不是因为 generated collision（生成后冲突）已经足够可信，而是因为 `R630c` 在同组实验里唯一没有明显退化

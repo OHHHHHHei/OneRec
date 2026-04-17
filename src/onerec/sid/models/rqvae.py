@@ -44,21 +44,25 @@ class RQVAE(nn.Module):
         self.sk_iters = sk_iters
 
         self.encode_layer_dims = [self.in_dim] + self.layers + [self.e_dim]
+
+        # 编码器 改变embedding维度进入量化器
         self.encoder = MLPLayers(layers=self.encode_layer_dims,
                                  dropout=self.dropout_prob,bn=self.bn)
-
+                                 
+        # 残差量化器 每层的embedding数量和维度，beta，kmeans初始化，kmeans迭代次数，soft kmeans的epsilon和迭代次数
         self.rq = ResidualVectorQuantizer(num_emb_list, e_dim,
                                           beta=self.beta,
                                           kmeans_init = self.kmeans_init,
                                           kmeans_iters = self.kmeans_iters,
                                           sk_epsilons=self.sk_epsilons,
                                           sk_iters=self.sk_iters,)
-
+        # 解码器 改变embedding维度回到原始维度
         self.decode_layer_dims = self.encode_layer_dims[::-1]
         self.decoder = MLPLayers(layers=self.decode_layer_dims,
                                        dropout=self.dropout_prob,bn=self.bn)
 
     def forward(self, x, use_sk=True):
+        # 输入x经过编码器得到编码表示x_e，进入残差量化器得到量化表示x_q、量化损失rq_loss和索引indices，最后经过解码器得到重构结果out
         x = self.encoder(x)
         x_q, rq_loss, indices = self.rq(x,use_sk=use_sk)
         out = self.decoder(x_q)

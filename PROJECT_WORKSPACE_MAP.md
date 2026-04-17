@@ -8,10 +8,11 @@ If you need to sync to the project quickly, read in this order:
 
 1. `DOCUMENTATION_MAINTENANCE_WORKFLOW.md`
 2. `research-progress-log/CURRENT_STATE.md`
-3. `experiment_results.csv`
-4. `research-progress-log/experiment_launches/README.md`
-5. `idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md`
-6. `idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md`
+3. `research-progress-log/experiment_registry/README.md`
+4. `research-progress-log/experiment_registry/downstream_scoreboard.csv`
+5. `research-progress-log/experiment_launches/README.md`
+6. `idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md`
+7. `idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md`
 
 ## Folder Roles（目录角色）
 
@@ -93,7 +94,9 @@ Generated LaTeX auxiliaries should not be kept unless actively debugging compila
 
 - `DOCUMENTATION_MAINTENANCE_WORKFLOW.md`
 - `research-progress-log/CURRENT_STATE.md`
-- `experiment_results.csv`
+- `research-progress-log/experiment_registry/README.md`
+- `research-progress-log/experiment_registry/downstream_scoreboard.csv`
+- `experiment_results.csv` as legacy wide registry（历史宽表总账）
 
 ### Method and direction（方法与方向）
 

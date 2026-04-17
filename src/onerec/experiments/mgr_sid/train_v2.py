@@ -83,11 +83,19 @@ class MgrSidV2TrainConfig:
     fagsp_cascade_boost_alpha: float = 0.5
     mgdcf_keep_ratio: float = 0.1
     mgdcf_binarize_edges: bool = True
+    seq2g_mix_alpha: float = 0.35
+    seq2g_context_topk: int = 32
+    seq2g_candidate_topm: int = 32
+    seq2g_direct_tau: float = 0.5
+    seq2g_use_reliability: bool = True
+    seq2g_use_direct_weak_mask: bool = True
     graph_topk: int = 32
     semantic_graph_topk: int = 32
+    semantic_external_graph_path: str | None = None
     coarse_weight: float = 0.05
     mid_weight: float = 0.15
     local_weight: float = 0.05
+    l2_contrastive_pull_weight: float = 0.0
     semantic_coarse_weight: float = 0.05
     semantic_mid_weight: float = 0.025
     graph_scale_min: float = 0.5
@@ -154,7 +162,7 @@ def _load_ambiguity_prior(path: str, column: str, n_items: int, device: torch.de
             values[item_id] = np.clip(value, 0.0, 1.0)
     return torch.tensor(values, dtype=torch.float32, device=device)
 
-
+# 图平滑损失，输入是表示矩阵、图邻接矩阵和每个item的权重，输出是一个标量损失值
 def _weighted_graph_smoothness_loss(
     representations: torch.Tensor,
     graph: torch.Tensor,
@@ -261,6 +269,32 @@ def _weighted_selective_separation_loss(
     return torch.sum(penalties * pair_weights) / denom
 
 
+def _weighted_pairwise_pull_loss(
+    representations: torch.Tensor,
+    pair_weights: torch.Tensor,
+    item_scales: torch.Tensor,
+) -> torch.Tensor:
+    if representations.size(0) <= 1:
+        return representations.new_tensor(0.0)
+
+    representations = F.normalize(representations.float(), p=2, dim=1)
+    similarity = representations @ representations.T
+
+    pair_weights = torch.maximum(pair_weights.float(), pair_weights.T.float())
+    if item_scales.numel() > 0:
+        pair_scale = torch.sqrt(torch.outer(item_scales.float(), item_scales.float()).clamp_min(0.0))
+        pair_weights = pair_weights * pair_scale
+
+    pair_weights = torch.triu(pair_weights, diagonal=1)
+    active_mask = pair_weights > 0.0
+    if not torch.any(active_mask):
+        return representations.new_tensor(0.0)
+
+    penalties = (1.0 - similarity).clamp_min(0.0)
+    denom = pair_weights[active_mask].sum().clamp(min=1e-6)
+    return torch.sum(penalties * pair_weights) / denom
+
+
 def _scale_from_prior(prior: torch.Tensor, low: float, high: float) -> torch.Tensor:
     return low + (high - low) * prior
 
@@ -350,6 +384,12 @@ def _build_graph_tensors(cfg: MgrSidV2TrainConfig, device: torch.device, n_items
         fagsp_cascade_boost_alpha=cfg.fagsp_cascade_boost_alpha,
         mgdcf_keep_ratio=cfg.mgdcf_keep_ratio,
         mgdcf_binarize_edges=cfg.mgdcf_binarize_edges,
+        seq2g_mix_alpha=cfg.seq2g_mix_alpha,
+        seq2g_context_topk=cfg.seq2g_context_topk,
+        seq2g_candidate_topm=cfg.seq2g_candidate_topm,
+        seq2g_direct_tau=cfg.seq2g_direct_tau,
+        seq2g_use_reliability=cfg.seq2g_use_reliability,
+        seq2g_use_direct_weak_mask=cfg.seq2g_use_direct_weak_mask,
     )
 
     def _view_matrix(view_name: str):
@@ -385,12 +425,18 @@ def _build_graph_tensors(cfg: MgrSidV2TrainConfig, device: torch.device, n_items
         matrix = keep_topk_per_row(matrix, topk=cfg.graph_topk)
         graph_tensors[name] = _to_torch_dense(matrix, device=device)
 
-    semantic_embeddings = load_semantic_embeddings(cfg.semantic_embedding_path)
-    if semantic_embeddings is None:
-        raise ValueError("semantic_embedding_path is required for tokenizer v2")
-    if semantic_embeddings.shape[0] != n_items:
-        semantic_embeddings = semantic_embeddings[:n_items]
-    semantic_graph = build_semantic_knn_graph(semantic_embeddings, topk=cfg.semantic_graph_topk)
+    if cfg.semantic_external_graph_path:
+        semantic_graph = sparse.load_npz(cfg.semantic_external_graph_path).tocsr().astype(np.float32)
+        if semantic_graph.shape[0] != n_items:
+            semantic_graph = semantic_graph[:n_items, :n_items]
+        semantic_graph = row_normalize(semantic_graph)
+    else:
+        semantic_embeddings = load_semantic_embeddings(cfg.semantic_embedding_path)
+        if semantic_embeddings is None:
+            raise ValueError("semantic_embedding_path is required for tokenizer v2")
+        if semantic_embeddings.shape[0] != n_items:
+            semantic_embeddings = semantic_embeddings[:n_items]
+        semantic_graph = build_semantic_knn_graph(semantic_embeddings, topk=cfg.semantic_graph_topk)
     semantic_graph = keep_topk_per_row(semantic_graph, topk=cfg.semantic_graph_topk)
     graph_tensors["semantic"] = _to_torch_dense(semantic_graph, device=device)
 
@@ -492,6 +538,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         total_coarse_graph_loss = 0.0
         total_mid_graph_loss = 0.0
         total_local_graph_loss = 0.0
+        total_l2_contrastive_pull_loss = 0.0
         total_semantic_coarse_loss = 0.0
         total_semantic_mid_loss = 0.0
         total_prefix_retain_l1_loss = 0.0
@@ -548,6 +595,13 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 "mid": _weighted_graph_smoothness_loss(level_representations[1], mid_subgraph, graph_item_scale),
                 "local": _weighted_graph_smoothness_loss(level_representations[2], local_subgraph, graph_item_scale),
             }
+            l2_contrastive_pull = batch_embeddings.new_tensor(0.0)
+            if cfg.l2_contrastive_pull_weight > 0:
+                l2_contrastive_pull = _weighted_pairwise_pull_loss(
+                    level_representations[1],
+                    mid_subgraph,
+                    graph_item_scale,
+                )
             if cfg.semantic_retention_mode == "smoothness":
                 graph_losses["semantic_coarse"] = _weighted_graph_smoothness_loss(
                     level_representations[0], semantic_subgraph, semantic_item_scale
@@ -645,6 +699,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 + cfg.coarse_weight * graph_losses["coarse"]
                 + cfg.mid_weight * graph_losses["mid"]
                 + cfg.local_weight * graph_losses["local"]
+                + cfg.l2_contrastive_pull_weight * l2_contrastive_pull
                 + cfg.semantic_coarse_weight * graph_losses["semantic_coarse"]
                 + cfg.semantic_mid_weight * graph_losses["semantic_mid"]
                 + cfg.prefix_retention_l1_weight * prefix_retain_l1
@@ -665,6 +720,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             total_coarse_graph_loss += float(graph_losses["coarse"].item())
             total_mid_graph_loss += float(graph_losses["mid"].item())
             total_local_graph_loss += float(graph_losses["local"].item())
+            total_l2_contrastive_pull_loss += float(l2_contrastive_pull.item())
             total_semantic_coarse_loss += float(graph_losses["semantic_coarse"].item())
             total_semantic_mid_loss += float(graph_losses["semantic_mid"].item())
             total_prefix_retain_l1_loss += float(prefix_retain_l1.item())
@@ -683,6 +739,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             "coarse_graph_loss": total_coarse_graph_loss,
             "mid_graph_loss": total_mid_graph_loss,
             "local_graph_loss": total_local_graph_loss,
+            "l2_contrastive_pull_loss": total_l2_contrastive_pull_loss,
             "semantic_coarse_loss": total_semantic_coarse_loss,
             "semantic_mid_loss": total_semantic_mid_loss,
             "prefix_retain_l1_loss": total_prefix_retain_l1_loss,
@@ -724,7 +781,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 best["best_collision_ckpt"] = str(ckpt)
 
         logger.info(
-            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f sep_l1=%.6f sep_l2=%.6f sep_l3=%.6f collision=%s",
+            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f l2_pull=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f sep_l1=%.6f sep_l2=%.6f sep_l3=%.6f collision=%s",
             epoch,
             record["total_loss"],
             record["recon_loss"],
@@ -732,6 +789,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             record["coarse_graph_loss"],
             record["mid_graph_loss"],
             record["local_graph_loss"],
+            record["l2_contrastive_pull_loss"],
             record["semantic_coarse_loss"],
             record["semantic_mid_loss"],
             record["prefix_retain_l1_loss"],

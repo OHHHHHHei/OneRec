@@ -14,6 +14,39 @@ Read this only after:
 1. [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
 2. [experiment_results.csv](/home/leejt/OneRec/experiment_results.csv)
 
+## Current Active Plan（当前活跃计划）
+
+- `EXPERIMENT_PLAN_L1_SMOOTH_L2_CONTRASTIVE_MULTIHOP.md`
+  - current active interface plan（当前活跃接口计划）
+  - focuses on:
+    - `L1 smooth + L2 contrastive + L3 smooth`（第一层平滑 + 第二层对比式 + 第三层平滑）
+    - `G_mid <- local_multihop`（中图改为局部多跳图）
+    - `stop-gradient prefix`（前缀停梯度）
+    - clean attribution（干净归因） rather than another graph-carrier search（而不是再做一轮图载体搜索）
+  - use this when:
+    - the active question is whether the current bottleneck sits in the `L2` supervision interface（第二层监督接口） rather than only in graph-carrier quality（图载体质量）
+
+Current reading order（当前阅读顺序） for this branch:
+
+1. [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
+2. [18_mgr_sid_v2_ambiguity_aware_method.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md)
+3. [EXPERIMENT_PLAN_L1_SMOOTH_L2_CONTRASTIVE_MULTIHOP.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/refine-logs/EXPERIMENT_PLAN_L1_SMOOTH_L2_CONTRASTIVE_MULTIHOP.md)
+
+## Recently Active Mainline Plan
+
+- `EXPERIMENT_PLAN_SEQ2GRAPH_LITE_HIGH_ORDER_CARRIER.md`
+  - previous active graph-carrier plan（上一阶段活跃图载体计划）
+  - still useful for:
+    - reconstructing why `R640 / R650 / R660` were launched
+    - understanding the `Seq2Graph-lite`（轻量 `Seq2Graph`） high-order rescue graph（高阶补盲图） branch
+  - current role:
+    - branch history（分支历史）
+    - supporting evidence（辅助证据）, not the default next-step plan（默认下一步计划）
+
+- `EXPERIMENT_TRACKER_SEQ2GRAPH_LITE_HIGH_ORDER_CARRIER.md`
+  - execution tracker（执行跟踪表） for the `R640*` branch
+  - keep as a frozen run ledger（冻结运行账本）, not the default next-run tracker（默认下一轮跟踪表）
+
 ## Recently Completed Mainline Decision Docs
 
 - `EXPERIMENT_PLAN_STAGE3_PREFIX_RETAINED_HIERARCHY.md`

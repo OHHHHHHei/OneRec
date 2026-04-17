@@ -1,0 +1,28 @@
+{
+  "tag": "R670a",
+  "n_items": 3686,
+  "semantic_neighbor_topk": 64,
+  "strong_rank_topk": 16,
+  "l1_topk": 16,
+  "brand_bonus": 1.25,
+  "nnz_after_symmetry": 36753,
+  "positive_rows_before_symmetry": 2797,
+  "fallback_same_family_rows": 19,
+  "self_loop_rows_before_symmetry": 889,
+  "non_self_pair_rows": 26517,
+  "unique_non_self_pairs": 17932,
+  "family_pair_counts_top10": {
+    "other": 6133,
+    "3d_filament": 5553,
+    "connector_fitting": 3905,
+    "gauge_meter": 3459,
+    "tape": 3012,
+    "fastener": 2145,
+    "adhesive_epoxy": 1558,
+    "metadata_placeholder": 416,
+    "ventilation_fan": 295,
+    "test_strip": 41
+  },
+  "output_graph": "/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-18_mgr_sid_r670_clean_l1_semantic_l2_push_pull_industrial/R670a_l1_high_conf_semantic_graph.npz",
+  "output_pairs": "/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-18_mgr_sid_r670_clean_l1_semantic_l2_push_pull_industrial/R670a_l1_high_conf_semantic_pairs.csv"
+}

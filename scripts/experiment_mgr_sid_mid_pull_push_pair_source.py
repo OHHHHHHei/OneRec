@@ -44,6 +44,7 @@ def parse_args() -> argparse.Namespace:
         "--output-dir",
         default="/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-16_mgr_sid_r630_mid_pull_push_industrial",
     )
+    parser.add_argument("--tag", default="R630")
     parser.add_argument("--history-k", type=int, default=10)
     parser.add_argument("--coarse-min-weight", type=float, default=2.0)
     parser.add_argument("--local-min-weight", type=float, default=1.0)
@@ -183,12 +184,13 @@ def main() -> None:
     weak_df = weak_df.sort_values(by=["reliability", "semantic_sim"], ascending=[False, False]).reset_index(drop=True)
 
     save_topn = max(int(args.save_topn), 1)
+    tag = args.tag
     all_pairs.sort_values(by=["semantic_sim"], ascending=[False]).to_csv(
-        output_dir / "R630_all_semantic_pairs.csv",
+        output_dir / f"{tag}_all_semantic_pairs.csv",
         index=False,
     )
-    weak_df.to_csv(output_dir / "R630_all_mid_graph_weak_pairs.csv", index=False)
-    weak_df.head(save_topn).to_csv(output_dir / "R630_top_mid_graph_weak_pairs.csv", index=False)
+    weak_df.to_csv(output_dir / f"{tag}_all_mid_graph_weak_pairs.csv", index=False)
+    weak_df.head(save_topn).to_csv(output_dir / f"{tag}_top_mid_graph_weak_pairs.csv", index=False)
 
     covered_items = set(weak_df["item_a"].tolist()) | set(weak_df["item_b"].tolist()) if not weak_df.empty else set()
     summary = {
@@ -201,13 +203,14 @@ def main() -> None:
         "semantic_topk": int(args.semantic_topk),
         "graph_topk": int(args.graph_topk),
         "graph_weak_quantile": float(args.graph_weak_quantile),
+        "tag": tag,
         "semantic_sim_mean": float(weak_df["semantic_sim"].mean()) if not weak_df.empty else 0.0,
         "mid_affinity_mean": float(weak_df["mid_affinity"].mean()) if not weak_df.empty else 0.0,
         "reliability_mean": float(weak_df["reliability"].mean()) if not weak_df.empty else 0.0,
-        "output_csv": str(output_dir / "R630_all_mid_graph_weak_pairs.csv"),
-        "output_top_csv": str(output_dir / "R630_top_mid_graph_weak_pairs.csv"),
+        "output_csv": str(output_dir / f"{tag}_all_mid_graph_weak_pairs.csv"),
+        "output_top_csv": str(output_dir / f"{tag}_top_mid_graph_weak_pairs.csv"),
     }
-    with open(output_dir / "R630_pair_source_summary.json", "w", encoding="utf-8") as handle:
+    with open(output_dir / f"{tag}_pair_source_summary.json", "w", encoding="utf-8") as handle:
         json.dump(summary, handle, ensure_ascii=False, indent=2)
 
     print(json.dumps(summary, ensure_ascii=False, indent=2))

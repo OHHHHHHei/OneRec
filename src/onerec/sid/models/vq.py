@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from .layers import kmeans, sinkhorn_algorithm
 
-
+# 单层量化器
 class VectorQuantizer(nn.Module):
 
     def __init__(self, n_e, e_dim,
@@ -71,6 +71,7 @@ class VectorQuantizer(nn.Module):
         d = torch.sum(latent**2, dim=1, keepdim=True) + \
             torch.sum(self.embedding.weight**2, dim=1, keepdim=True).t()- \
             2 * torch.matmul(latent, self.embedding.weight.t())
+        # 如果不使用soft kmeans或者epsilon小于等于0，则直接使用argmin得到最近的索引；否则使用sinkhorn算法得到软分配矩阵Q，并使用argmax得到索引
         if not use_sk or self.sk_epsilon <= 0:
             indices = torch.argmin(d, dim=-1)
         else:

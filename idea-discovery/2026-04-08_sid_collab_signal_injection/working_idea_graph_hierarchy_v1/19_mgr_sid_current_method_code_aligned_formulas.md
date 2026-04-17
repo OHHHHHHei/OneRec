@@ -601,6 +601,35 @@ $$
 
 当前配置中 `semantic_graph_topk=32`。
 
+### 8.1 Experimental External Semantic Graph Hook（实验性外部语义图接口）
+
+从 `R670a` 开始，`train_v2.py` 增加了 `semantic_external_graph_path`（外部语义图路径）配置项。
+
+如果该项为空，代码仍按上面的方式从 semantic embedding（语义嵌入）构造普通 semantic kNN graph（语义近邻图）。
+
+如果该项非空，代码会直接读取外部 sparse graph（稀疏图）：
+
+$$
+\mathbf A_{\mathrm{sem}}
+=
+\operatorname{RowNorm}
+\left(
+\operatorname{LoadSparse}
+(\texttt{semantic\_external\_graph\_path})
+\right).
+$$
+
+随后仍然执行逐行 top-k 裁剪：
+
+$$
+\mathbf A_{\mathrm{sem}}^\star
+=
+\operatorname{TopKRow}(\mathbf A_{\mathrm{sem}}, k_s).
+$$
+
+这只是替换 semantic graph（语义图）来源，不改变 `_weighted_graph_smoothness_loss`（加权图平滑损失）的计算形式。
+`R670a` 使用该接口把 `L1`（第一层）的 semantic-side smoothness（语义侧平滑）限制在 high-confidence semantic pairs（高置信语义物品对）上。
+
 ## 9. V2：当前代码真实使用的加权 Smoothness Loss
 
 当前 v2 没有使用 KL semantic retention，也没有在训练时使用 online uncertainty。  
@@ -758,6 +787,47 @@ $$
 +
 0.025\,\mathcal L_{\mathrm{ws}}(\mathbf H^{(2)},\mathbf A^{s},\mathbf s).
 $$
+
+### 10.1 R670a Experimental Objective（R670a 实验目标）
+
+`R670a` 不是当前 v2 的替代定义，而是一个正在验证的 clean hierarchy（干净层级分工）实验变体。
+
+它把 level representation（层级表示）改成 stop-gradient prefix（前缀停梯度）版本：
+
+$$
+\tilde{\mathbf H}^{(1)} = \mathbf Q^{(1)},
+$$
+
+$$
+\tilde{\mathbf H}^{(2)}
+=
+\operatorname{sg}(\mathbf Q^{(1)})+\mathbf Q^{(2)}.
+$$
+
+对应的训练目标为
+
+$$
+\mathcal L_{\mathrm{R670a}}
+=
+\mathcal L_{\mathrm{sem}}
++
+0.08\,\mathcal L_{\mathrm{ws}}
+(\tilde{\mathbf H}^{(1)},\mathbf A_{\mathrm{sem\_hc}},\mathbf s)
++
+0.15\,\mathcal L_{\mathrm{ws}}
+(\tilde{\mathbf H}^{(2)},\mathbf A_{\mathrm{mid}},\mathbf g)
++
+0.01\,\mathcal L_{\mathrm{sep}}
+(\tilde{\mathbf H}^{(2)},\mathbf P_{\mathrm{weak}}).
+$$
+
+其中：
+
+- $\mathbf A_{\mathrm{sem\_hc}}$ 是外部 high-confidence semantic graph（高置信语义图）。
+- $\mathbf A_{\mathrm{mid}}$ 使用 `fagsp_mid_base`（基础中层图）。
+- $\mathbf P_{\mathrm{weak}}$ 是 semantic-near + mid-weak pairs（语义近但中图弱连接物品对）。
+- `coarse_weight = 0.0`，`local_weight = 0.0`，`semantic_mid_weight = 0.0`。
+- 这个目标不限制 active L1 code count（活跃第一层码数量），只改变 `L1`（第一层）和 `L2`（第二层）的训练信号分工。
 
 ## 11. 当前代码没有做什么
 

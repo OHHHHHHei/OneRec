@@ -40,7 +40,8 @@ Keep lightweight artifacts（轻量产物） in the repository:
 - `logs/`
 - `results/`
 - `research-progress-log/`
-- `experiment_results.csv`
+- `research-progress-log/experiment_registry/`
+- `experiment_results.csv` as legacy wide registry（历史宽表总账）
 
 ## Writing Policy（写作规则）
 
@@ -74,7 +75,11 @@ Use these target documents by default:
 - current state（当前状态）:
   - `/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md`
 - experiment registry（实验总账）:
-  - `/home/leejt/OneRec/experiment_results.csv`
+  - `/home/leejt/OneRec/research-progress-log/experiment_registry/README.md`
+  - `/home/leejt/OneRec/research-progress-log/experiment_registry/tokenizer_registry.csv`
+  - `/home/leejt/OneRec/research-progress-log/experiment_registry/sft_registry.csv`
+  - `/home/leejt/OneRec/research-progress-log/experiment_registry/rl_registry.csv`
+  - `/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv`
 - method narrative（方法叙事）:
   - `/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md`
 - code-aligned method spec（代码对齐方法说明）:
@@ -86,7 +91,9 @@ Rules:
 
 - Prefer updating an existing canonical document（权威文档） over creating a new summary document（总结文档）.
 - Do not create another current-state summary（当前状态总结） if the change belongs in `CURRENT_STATE.md`.
-- Do not record a finalized experiment result（已定稿实验结果） only in prose（文字）; update `experiment_results.csv` first or in the same task.
+- Do not record a finalized experiment result（已定稿实验结果） only in prose（文字）; update the corresponding split registry（分表总账） first or in the same task.
+- Do not hand-write long rows（长行） into `/home/leejt/OneRec/experiment_results.csv`; it is now a legacy wide registry（历史宽表总账） for compatibility（兼容） and migration（迁移）.
+- Follow the experiment recording pipeline（实验记录流水线） in `/home/leejt/OneRec/research-progress-log/experiment_registry/README.md`: launch/running status（启动/运行中状态） belongs in the stage README（阶段快照） and `CURRENT_STATE.md`; only finalized results（定稿结果） belong in split registries（分表总账）.
 - Treat dated notes（带日期笔记） as `snapshot`（快照） or `discussion-only`（仅讨论） by default unless they are explicitly designated as canonical（权威）.
 
 ## Recommended Bootstrap Reading Order（推荐启动阅读顺序）
@@ -95,5 +102,6 @@ If Claude Code（Claude Code） needs to sync quickly, read in this order:
 
 1. `/home/leejt/OneRec/DOCUMENTATION_MAINTENANCE_WORKFLOW.md`
 2. `/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md`
-3. `/home/leejt/OneRec/experiment_results.csv`
-4. `/home/leejt/OneRec/PROJECT_WORKSPACE_MAP.md`
+3. `/home/leejt/OneRec/research-progress-log/experiment_registry/README.md`
+4. `/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv`
+5. `/home/leejt/OneRec/PROJECT_WORKSPACE_MAP.md`

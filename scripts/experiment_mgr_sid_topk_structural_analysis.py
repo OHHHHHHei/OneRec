@@ -374,11 +374,29 @@ def format_rate(value: float) -> str:
     return f"{value:.5f}"
 
 
+def ks_with_positive_delta(topk: dict[str, dict[str, float | int]]) -> list[int]:
+    return [k for k in TOPKS if float(topk[f"top{k}"]["delta_hit_rate"]) > 1e-9]
+
+
+def ks_with_negative_delta(topk: dict[str, dict[str, float | int]]) -> list[int]:
+    return [k for k in TOPKS if float(topk[f"top{k}"]["delta_hit_rate"]) < -1e-9]
+
+
+def format_k_list(values: list[int]) -> str:
+    return ", ".join(f"`top{k}`" for k in values) if values else "none"
+
+
 def write_markdown(summary: dict, path: Path) -> None:
     topk = summary["topk"]
     fanout_bucket = summary["fanout_bucket"]
     rank_transition = summary["rank_transition"]
     improved_vs_worsened = summary["improved_vs_worsened"]
+    positive_ks = ks_with_positive_delta(topk)
+    negative_ks = ks_with_negative_delta(topk)
+    crowded_top1_delta = float(fanout_bucket["l2>=4"]["top1"]["delta_hit_rate"])
+    crowded_top3_delta = float(fanout_bucket["l2>=4"]["top3"]["delta_hit_rate"])
+    crowded_top10_delta = float(fanout_bucket["l2>=4"]["top10"]["delta_hit_rate"])
+    sparse_top10_delta = float(fanout_bucket["l2<=2"]["top10"]["delta_hit_rate"])
 
     lines: list[str] = []
     lines.append("# Top-k Structural Error Analysis\n")
@@ -399,9 +417,47 @@ def write_markdown(summary: dict, path: Path) -> None:
         )
 
     lines.append("\n## Reading\n")
-    lines.append("- `hierarchy` is strongest on short-range metrics: `top3` improves most clearly, and `top5` remains slightly positive.")
-    lines.append("- `hierarchy` reduces same-prefix presence in the beam at almost every `k`, which means its gain does not come from retaining more nearby candidates; it comes from cleaning up some hard local neighborhoods while losing others.")
-    lines.append("- This already suggests the core tradeoff: better local disambiguation on difficult cases, but weaker neighborhood retention on some examples that the baseline already handled well.\n")
+    if positive_ks and negative_ks:
+        lines.append(
+            f"- The result is mixed across `k`: hierarchy gains on {format_k_list(positive_ks)}, "
+            f"but loses on {format_k_list(negative_ks)}."
+        )
+    elif positive_ks:
+        lines.append(
+            f"- The hierarchy run is positive across all tracked `k`, with gains on {format_k_list(positive_ks)}."
+        )
+    else:
+        lines.append(
+            f"- The hierarchy run underperforms the baseline at every tracked `k`; "
+            f"the losses are present on {format_k_list(negative_ks)}."
+        )
+    lines.append(
+        "- Hierarchy changes same-prefix retention in the beam at almost every `k`, so the comparison is not only about exact hits; "
+        "it also shows whether the model keeps the target inside the correct local neighborhood."
+    )
+    if crowded_top1_delta > 0 or crowded_top3_delta > 0:
+        lines.append(
+            f"- The clearest surviving upside is on crowded targets (`l2>=4`): "
+            f"`top1` delta = {crowded_top1_delta:+.5f}, `top3` delta = {crowded_top3_delta:+.5f}. "
+            f"But that advantage does not survive to `top10` (delta = {crowded_top10_delta:+.5f}), "
+            f"which points to better head disambiguation but weaker beam retention."
+        )
+    else:
+        lines.append(
+            f"- Even on crowded targets (`l2>=4`), hierarchy does not show a stable advantage "
+            f"(`top1` delta = {crowded_top1_delta:+.5f}, `top3` delta = {crowded_top3_delta:+.5f}, "
+            f"`top10` delta = {crowded_top10_delta:+.5f})."
+        )
+    if sparse_top10_delta < 0:
+        lines.append(
+            f"- Sparse or easier targets also degrade at `top10` (`l2<=2` delta = {sparse_top10_delta:+.5f}), "
+            "so the current tokenizer-to-SFT transfer is not only failing on a tiny corner case.\n"
+        )
+    else:
+        lines.append(
+            f"- Sparse or easier targets do not collapse at `top10` (`l2<=2` delta = {sparse_top10_delta:+.5f}), "
+            "so most of the tension stays in the crowded local neighborhoods.\n"
+        )
 
     lines.append("## Rank Transition Matrix\n")
     lines.append("Rows are baseline target-rank buckets, columns are hierarchy target-rank buckets.\n")
@@ -446,9 +502,29 @@ def write_markdown(summary: dict, path: Path) -> None:
         lines.append("")
 
     lines.append("## Main Takeaways\n")
-    lines.append("- The positive effect of `hierarchy` is not a uniform top-k gain. It is concentrated in short-range ranking and crowded local structures.")
-    lines.append("- The strongest positive evidence remains on high-fanout `same_l2`-like cases, where moving the target upward inside a hard local neighborhood matters most.")
-    lines.append("- The strongest negative evidence is rank-drop on examples that the baseline already kept in the correct local neighborhood. This is the clearest sign that the current tokenizer-to-SFT transfer is still imperfect.")
+    if positive_ks and negative_ks:
+        lines.append(
+            "- The hierarchy effect is selective rather than uniform: it helps some parts of the ranking but hurts others."
+        )
+    elif positive_ks:
+        lines.append(
+            "- The hierarchy effect is broad in this comparison: it improves hit rate across the tracked top-k range."
+        )
+    else:
+        lines.append(
+            "- The hierarchy effect is negative in this comparison: tokenizer-side changes do not convert into a net top-k ranking gain."
+        )
+    if crowded_top1_delta > 0 or crowded_top3_delta > 0:
+        lines.append(
+            "- The remaining positive signal, if any, is concentrated on crowded local structures and short-range disambiguation."
+        )
+    else:
+        lines.append(
+            "- There is no clear crowded-case rescue in this comparison; the losses are broad enough that local disambiguation is not compensating."
+        )
+    lines.append(
+        "- The clearest failure mode is rank-drop on examples that the baseline already kept in the correct local neighborhood, which is a beam-retention problem rather than a simple local collision problem."
+    )
 
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

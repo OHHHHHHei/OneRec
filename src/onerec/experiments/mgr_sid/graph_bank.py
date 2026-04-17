@@ -43,6 +43,17 @@ def l2_normalize_rows(array: np.ndarray) -> np.ndarray:
     return array / norms
 
 
+def l2_normalize_cols(matrix: sparse.csr_matrix) -> sparse.csr_matrix:
+    matrix = matrix.tocsc(copy=True).astype(np.float32)
+    col_norms = np.sqrt(np.asarray(matrix.power(2).sum(axis=0)).reshape(-1))
+    inv = np.zeros_like(col_norms, dtype=np.float32)
+    mask = col_norms > 0
+    inv[mask] = 1.0 / col_norms[mask]
+    normalized = (matrix @ sparse.diags(inv)).tocsr()
+    normalized.eliminate_zeros()
+    return normalized
+
+
 def row_normalize(matrix: sparse.csr_matrix) -> sparse.csr_matrix:
     matrix = matrix.tocsr(copy=True).astype(np.float32)
     row_sums = np.asarray(matrix.sum(axis=1)).reshape(-1)
@@ -96,6 +107,58 @@ def sparse_density(matrix: sparse.csr_matrix) -> float:
     if total == 0:
         return 0.0
     return float(matrix.nnz / total)
+
+
+def keep_topk_per_row(matrix: sparse.csr_matrix, topk: int) -> sparse.csr_matrix:
+    matrix = matrix.tocsr(copy=True).astype(np.float32)
+    topk = max(1, int(topk))
+    data: list[float] = []
+    indices: list[int] = []
+    indptr = [0]
+    for row in range(matrix.shape[0]):
+        start, end = matrix.indptr[row], matrix.indptr[row + 1]
+        row_indices = matrix.indices[start:end]
+        row_data = matrix.data[start:end]
+        if row_data.size > topk:
+            keep_idx = np.argpartition(row_data, -topk)[-topk:]
+            keep_idx = keep_idx[np.argsort(row_data[keep_idx])[::-1]]
+            row_indices = row_indices[keep_idx]
+            row_data = row_data[keep_idx]
+        data.extend(row_data.tolist())
+        indices.extend(row_indices.tolist())
+        indptr.append(len(data))
+    pruned = sparse.csr_matrix(
+        (np.asarray(data, dtype=np.float32), np.asarray(indices, dtype=np.int32), np.asarray(indptr, dtype=np.int32)),
+        shape=matrix.shape,
+    )
+    pruned.eliminate_zeros()
+    return pruned
+
+
+def keep_topk_per_col(matrix: sparse.csr_matrix, topk: int) -> sparse.csr_matrix:
+    matrix = matrix.tocsc(copy=True).astype(np.float32)
+    topk = max(1, int(topk))
+    data: list[float] = []
+    indices: list[int] = []
+    indptr = [0]
+    for col in range(matrix.shape[1]):
+        start, end = matrix.indptr[col], matrix.indptr[col + 1]
+        col_indices = matrix.indices[start:end]
+        col_data = matrix.data[start:end]
+        if col_data.size > topk:
+            keep_idx = np.argpartition(col_data, -topk)[-topk:]
+            keep_idx = keep_idx[np.argsort(col_data[keep_idx])[::-1]]
+            col_indices = col_indices[keep_idx]
+            col_data = col_data[keep_idx]
+        data.extend(col_data.tolist())
+        indices.extend(col_indices.tolist())
+        indptr.append(len(data))
+    pruned = sparse.csc_matrix(
+        (np.asarray(data, dtype=np.float32), np.asarray(indices, dtype=np.int32), np.asarray(indptr, dtype=np.int32)),
+        shape=matrix.shape,
+    ).tocsr()
+    pruned.eliminate_zeros()
+    return pruned
 
 
 @dataclass
@@ -163,7 +226,7 @@ def build_popularity(train_df: pd.DataFrame) -> np.ndarray:
                 pop[hist_item] += 1.0
     return pop
 
-
+# 构建图的函数，输入是训练数据、item数量和历史长度，输出是一个稀疏矩阵表示图的邻接矩阵
 def build_coarse_graph(train_df: pd.DataFrame, n_items: int, history_k: int) -> sparse.csr_matrix:
     rows: list[int] = []
     cols: list[int] = []
@@ -242,6 +305,148 @@ def build_user_item_binary_matrix(train_df: pd.DataFrame, n_items: int) -> spars
     if matrix.nnz:
         matrix.data[:] = 1.0
     return matrix
+
+
+def build_direct_support_graph(
+    coarse_raw: sparse.csr_matrix,
+    local_raw: sparse.csr_matrix,
+) -> sparse.csr_matrix:
+    direct = (
+        coarse_raw.tocsr().astype(np.float32)
+        + coarse_raw.T.tocsr().astype(np.float32)
+        + local_raw.tocsr().astype(np.float32)
+        + local_raw.T.tocsr().astype(np.float32)
+    ).tocsr()
+    direct.setdiag(0.0)
+    direct.eliminate_zeros()
+    return direct
+
+
+def build_seq2graph_context_matrix(
+    local_raw: sparse.csr_matrix,
+    context_topk: int,
+    candidate_topm: int,
+) -> sparse.csr_matrix:
+    signatures = local_raw.tocsr(copy=True).astype(np.float32)
+    signatures.setdiag(0.0)
+    signatures.eliminate_zeros()
+    if candidate_topm > 0:
+        signatures = keep_topk_per_col(signatures, topk=candidate_topm)
+    normalized = l2_normalize_cols(signatures)
+    affinity = (normalized.T @ normalized).tocsr().astype(np.float32)
+    affinity.setdiag(0.0)
+    affinity.eliminate_zeros()
+    if context_topk > 0:
+        affinity = keep_topk_per_row(affinity, topk=context_topk)
+    return affinity
+
+
+def _weighted_jaccard_sparse_columns(
+    matrix: sparse.csc_matrix,
+    col_a: int,
+    col_b: int,
+) -> float:
+    start_a, end_a = matrix.indptr[col_a], matrix.indptr[col_a + 1]
+    start_b, end_b = matrix.indptr[col_b], matrix.indptr[col_b + 1]
+    idx_a = matrix.indices[start_a:end_a]
+    idx_b = matrix.indices[start_b:end_b]
+    data_a = matrix.data[start_a:end_a]
+    data_b = matrix.data[start_b:end_b]
+
+    i = 0
+    j = 0
+    inter = 0.0
+    union = 0.0
+    while i < idx_a.size and j < idx_b.size:
+        row_a = int(idx_a[i])
+        row_b = int(idx_b[j])
+        if row_a == row_b:
+            val_a = float(data_a[i])
+            val_b = float(data_b[j])
+            inter += min(val_a, val_b)
+            union += max(val_a, val_b)
+            i += 1
+            j += 1
+        elif row_a < row_b:
+            union += float(data_a[i])
+            i += 1
+        else:
+            union += float(data_b[j])
+            j += 1
+
+    while i < idx_a.size:
+        union += float(data_a[i])
+        i += 1
+    while j < idx_b.size:
+        union += float(data_b[j])
+        j += 1
+
+    if union <= 0.0:
+        return 0.0
+    return float(inter / union)
+
+
+def build_seq2graph_reliability(
+    local_raw: sparse.csr_matrix,
+    context_affinity: sparse.csr_matrix,
+) -> sparse.csr_matrix:
+    local_csc = local_raw.tocsc(copy=True).astype(np.float32)
+    candidate = context_affinity.tocoo(copy=False)
+    cache: dict[tuple[int, int], float] = {}
+    data = np.zeros_like(candidate.data, dtype=np.float32)
+    for idx, (row, col) in enumerate(zip(candidate.row, candidate.col, strict=False)):
+        a = int(row)
+        b = int(col)
+        key = (a, b) if a <= b else (b, a)
+        if key not in cache:
+            cache[key] = _weighted_jaccard_sparse_columns(local_csc, key[0], key[1])
+        data[idx] = cache[key]
+    reliability = sparse.coo_matrix(
+        (data, (candidate.row, candidate.col)),
+        shape=context_affinity.shape,
+        dtype=np.float32,
+    ).tocsr()
+    reliability.eliminate_zeros()
+    return reliability
+
+
+def build_seq2graph_rescue_graph(
+    coarse_graph: sparse.csr_matrix,
+    context_affinity: sparse.csr_matrix,
+    mix_alpha: float,
+    context_topk: int,
+    reliability: sparse.csr_matrix | None = None,
+    direct_support: sparse.csr_matrix | None = None,
+    direct_tau: float = 0.0,
+    use_reliability: bool = True,
+    use_direct_weak_mask: bool = True,
+) -> tuple[sparse.csr_matrix, sparse.csr_matrix]:
+    rescue = context_affinity.tocsr(copy=True).astype(np.float32)
+    rescue.setdiag(0.0)
+    rescue.eliminate_zeros()
+
+    if use_reliability and reliability is not None:
+        rescue = rescue.multiply(reliability.tocsr())
+
+    if use_direct_weak_mask and direct_support is not None and rescue.nnz:
+        rescue_coo = rescue.tocoo(copy=False)
+        direct_values = np.asarray(direct_support.tocsr()[rescue_coo.row, rescue_coo.col]).reshape(-1)
+        keep_mask = direct_values < float(direct_tau)
+        rescue = sparse.coo_matrix(
+            (rescue_coo.data[keep_mask], (rescue_coo.row[keep_mask], rescue_coo.col[keep_mask])),
+            shape=rescue.shape,
+            dtype=np.float32,
+        ).tocsr()
+
+    rescue.setdiag(0.0)
+    rescue.eliminate_zeros()
+    if context_topk > 0 and rescue.nnz:
+        rescue = keep_topk_per_row(rescue, topk=context_topk)
+    rescue = row_normalize(rescue)
+    mixed = row_normalize(
+        ((1.0 - float(np.clip(mix_alpha, 0.0, 1.0))) * row_normalize(coarse_graph) + float(np.clip(mix_alpha, 0.0, 1.0)) * rescue).tocsr()
+    )
+    return mixed, rescue
 
 
 def _symmetric_global_top_ratio_prune(

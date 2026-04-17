@@ -12,6 +12,10 @@ from .graph_bank import (
     build_local_graph,
     build_multi_hop_transition_view,
     build_popularity,
+    build_direct_support_graph,
+    build_seq2graph_context_matrix,
+    build_seq2graph_reliability,
+    build_seq2graph_rescue_graph,
     infer_num_items,
     purify_coarse_graph,
     purify_local_graph,
@@ -48,6 +52,12 @@ def build_transplanted_graph_bank(
     local_multihop_max_hop: int = 2,
     mgdcf_keep_ratio: float = 0.1,
     mgdcf_binarize_edges: bool = True,
+    seq2g_mix_alpha: float = 0.35,
+    seq2g_context_topk: int = 32,
+    seq2g_candidate_topm: int = 32,
+    seq2g_direct_tau: float = 0.5,
+    seq2g_use_reliability: bool = True,
+    seq2g_use_direct_weak_mask: bool = True,
 ) -> dict[str, SparseGraphView | CommunityGraphView]:
     views = build_graph_bank(
         train_df=train_df,
@@ -75,7 +85,61 @@ def build_transplanted_graph_bank(
         popularity=popularity,
         min_weight=local_min_weight,
     )
+    direct_support = build_direct_support_graph(coarse_raw=coarse_raw, local_raw=local_raw)
     coarse_mgdcf = views["coarse_mgdcf"].matrix
+    seq2g_context = build_seq2graph_context_matrix(
+        local_raw=local_raw,
+        context_topk=seq2g_context_topk,
+        candidate_topm=seq2g_candidate_topm,
+    )
+    seq2g_reliability = build_seq2graph_reliability(
+        local_raw=local_raw,
+        context_affinity=seq2g_context,
+    )
+    coarse_seq2g_ctx_only, seq2g_ctx_only_rescue = build_seq2graph_rescue_graph(
+        coarse_graph=coarse_purified,
+        context_affinity=seq2g_context,
+        mix_alpha=seq2g_mix_alpha,
+        context_topk=seq2g_context_topk,
+        reliability=None,
+        direct_support=direct_support,
+        direct_tau=seq2g_direct_tau,
+        use_reliability=False,
+        use_direct_weak_mask=False,
+    )
+    coarse_seq2g_rel, seq2g_rel_rescue = build_seq2graph_rescue_graph(
+        coarse_graph=coarse_purified,
+        context_affinity=seq2g_context,
+        mix_alpha=seq2g_mix_alpha,
+        context_topk=seq2g_context_topk,
+        reliability=seq2g_reliability,
+        direct_support=direct_support,
+        direct_tau=seq2g_direct_tau,
+        use_reliability=True,
+        use_direct_weak_mask=False,
+    )
+    coarse_seq2g_rel_masked, seq2g_rel_masked_rescue = build_seq2graph_rescue_graph(
+        coarse_graph=coarse_purified,
+        context_affinity=seq2g_context,
+        mix_alpha=seq2g_mix_alpha,
+        context_topk=seq2g_context_topk,
+        reliability=seq2g_reliability,
+        direct_support=direct_support,
+        direct_tau=seq2g_direct_tau,
+        use_reliability=True,
+        use_direct_weak_mask=True,
+    )
+    coarse_seq2g_rescue, seq2g_configured_rescue = build_seq2graph_rescue_graph(
+        coarse_graph=coarse_purified,
+        context_affinity=seq2g_context,
+        mix_alpha=seq2g_mix_alpha,
+        context_topk=seq2g_context_topk,
+        reliability=seq2g_reliability,
+        direct_support=direct_support,
+        direct_tau=seq2g_direct_tau,
+        use_reliability=seq2g_use_reliability,
+        use_direct_weak_mask=seq2g_use_direct_weak_mask,
+    )
 
     semantic_embeddings = load_semantic_embeddings(semantic_embedding_path)
     if semantic_embeddings is not None and semantic_embeddings.shape[0] != n_items:
@@ -118,6 +182,64 @@ def build_transplanted_graph_bank(
             "nnz": int(prism_anchor_local.nnz),
         },
     )
+    views["coarse_seq2g_ctx_only"] = SparseGraphView(
+        name="coarse_seq2g_ctx_only",
+        matrix=coarse_seq2g_ctx_only,
+        metadata={
+            "kind": "seq2graph_lite_coarse",
+            "seq2g_variant": "ctx_only",
+            "seq2g_mix_alpha": float(seq2g_mix_alpha),
+            "seq2g_context_topk": int(seq2g_context_topk),
+            "seq2g_candidate_topm": int(seq2g_candidate_topm),
+            "seq2g_direct_tau": float(seq2g_direct_tau),
+            "rescue_nnz": int(seq2g_ctx_only_rescue.nnz),
+            "nnz": int(coarse_seq2g_ctx_only.nnz),
+        },
+    )
+    views["coarse_seq2g_rel"] = SparseGraphView(
+        name="coarse_seq2g_rel",
+        matrix=coarse_seq2g_rel,
+        metadata={
+            "kind": "seq2graph_lite_coarse",
+            "seq2g_variant": "rel",
+            "seq2g_mix_alpha": float(seq2g_mix_alpha),
+            "seq2g_context_topk": int(seq2g_context_topk),
+            "seq2g_candidate_topm": int(seq2g_candidate_topm),
+            "seq2g_direct_tau": float(seq2g_direct_tau),
+            "rescue_nnz": int(seq2g_rel_rescue.nnz),
+            "nnz": int(coarse_seq2g_rel.nnz),
+        },
+    )
+    views["coarse_seq2g_rel_masked"] = SparseGraphView(
+        name="coarse_seq2g_rel_masked",
+        matrix=coarse_seq2g_rel_masked,
+        metadata={
+            "kind": "seq2graph_lite_coarse",
+            "seq2g_variant": "rel_masked",
+            "seq2g_mix_alpha": float(seq2g_mix_alpha),
+            "seq2g_context_topk": int(seq2g_context_topk),
+            "seq2g_candidate_topm": int(seq2g_candidate_topm),
+            "seq2g_direct_tau": float(seq2g_direct_tau),
+            "rescue_nnz": int(seq2g_rel_masked_rescue.nnz),
+            "nnz": int(coarse_seq2g_rel_masked.nnz),
+        },
+    )
+    views["coarse_seq2g_rescue"] = SparseGraphView(
+        name="coarse_seq2g_rescue",
+        matrix=coarse_seq2g_rescue,
+        metadata={
+            "kind": "seq2graph_lite_coarse",
+            "seq2g_variant": "configured",
+            "seq2g_mix_alpha": float(seq2g_mix_alpha),
+            "seq2g_context_topk": int(seq2g_context_topk),
+            "seq2g_candidate_topm": int(seq2g_candidate_topm),
+            "seq2g_direct_tau": float(seq2g_direct_tau),
+            "seq2g_use_reliability": bool(seq2g_use_reliability),
+            "seq2g_use_direct_weak_mask": bool(seq2g_use_direct_weak_mask),
+            "rescue_nnz": int(seq2g_configured_rescue.nnz),
+            "nnz": int(coarse_seq2g_rescue.nnz),
+        },
+    )
 
     views["fagsp_mid_base"] = build_fagsp_mid_view(
         coarse_purified,
@@ -129,6 +251,34 @@ def build_transplanted_graph_bank(
     views["fagsp_mid_mgdcf"] = build_fagsp_mid_view(
         coarse_mgdcf,
         name="fagsp_mid_mgdcf",
+        rank=spectral_rank,
+        eigen_ratio_low=band_low,
+        eigen_ratio_high=band_high,
+    )
+    views["fagsp_mid_seq2g_ctx_only"] = build_fagsp_mid_view(
+        coarse_seq2g_ctx_only,
+        name="fagsp_mid_seq2g_ctx_only",
+        rank=spectral_rank,
+        eigen_ratio_low=band_low,
+        eigen_ratio_high=band_high,
+    )
+    views["fagsp_mid_seq2g_rel"] = build_fagsp_mid_view(
+        coarse_seq2g_rel,
+        name="fagsp_mid_seq2g_rel",
+        rank=spectral_rank,
+        eigen_ratio_low=band_low,
+        eigen_ratio_high=band_high,
+    )
+    views["fagsp_mid_seq2g_rel_masked"] = build_fagsp_mid_view(
+        coarse_seq2g_rel_masked,
+        name="fagsp_mid_seq2g_rel_masked",
+        rank=spectral_rank,
+        eigen_ratio_low=band_low,
+        eigen_ratio_high=band_high,
+    )
+    views["fagsp_mid_seq2g_rescue"] = build_fagsp_mid_view(
+        coarse_seq2g_rescue,
+        name="fagsp_mid_seq2g_rescue",
         rank=spectral_rank,
         eigen_ratio_low=band_low,
         eigen_ratio_high=band_high,

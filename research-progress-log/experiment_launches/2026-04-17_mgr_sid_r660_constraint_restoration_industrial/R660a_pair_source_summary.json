@@ -1,0 +1,17 @@
+{
+  "n_items": 3686,
+  "mid_view_name": "fagsp_mid_seq2g_rel_masked",
+  "semantic_pair_count": 82596,
+  "weak_pair_count": 1190,
+  "weak_pair_item_coverage_rate": 0.29896907216494845,
+  "weak_threshold": 0.0016943709051702172,
+  "semantic_topk": 32,
+  "graph_topk": 32,
+  "graph_weak_quantile": 0.25,
+  "tag": "R660a",
+  "semantic_sim_mean": 0.03232755345926315,
+  "mid_affinity_mean": 0.0014584285848355312,
+  "reliability_mean": 0.004500024733162467,
+  "output_csv": "/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-17_mgr_sid_r660_constraint_restoration_industrial/R660a_all_mid_graph_weak_pairs.csv",
+  "output_top_csv": "/home/leejt/OneRec/research-progress-log/experiment_launches/2026-04-17_mgr_sid_r660_constraint_restoration_industrial/R660a_top_mid_graph_weak_pairs.csv"
+}

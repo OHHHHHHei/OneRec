@@ -21,15 +21,17 @@ preprocess -> embed -> sid-train -> sid-generate -> convert -> sft -> rl -> eval
   - 适合先理解当前文档体系、权威入口、以及后续 agent（智能体）应如何维护文档。
 - [当前状态](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
   - 适合快速同步当前研究主线、baseline（基线）口径、最强已验证主线、进行中实验和下一步动作。
-- [实验结果总账](/home/leejt/OneRec/experiment_results.csv)
-  - 适合查所有 run（运行）的结果、结论和主线晋升情况。
+- [实验结果总账](/home/leejt/OneRec/research-progress-log/experiment_registry/README.md)
+  - 适合查 tokenizer（分词器）、SFT（监督微调）、RL（强化学习）的分表总账。
+- [下游指标榜单](/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv)
+  - 适合快速比较 `NDCG@10`（归一化折损累计增益@10）和 `HR@10`（命中率@10）。
 - [项目工作区地图](/home/leejt/OneRec/PROJECT_WORKSPACE_MAP.md)
   - 适合理解仓库目录角色和推荐阅读顺序。
 
 当前建议：
 
 - 想同步研究状态，优先看“当前状态”
-- 想查 strongest result（最强结果）和历史 run（运行），优先看“实验结果总账”
+- 想查 strongest result（最强结果）和历史 run（运行），优先看“实验结果总账”和“下游指标榜单”
 - 想理解目录和文档分工，优先看“文档维护工作流”和“项目工作区地图”
 
 ## 特性

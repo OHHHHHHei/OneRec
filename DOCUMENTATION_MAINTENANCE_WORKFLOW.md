@@ -2,7 +2,7 @@
 
 Status（状态）: `canonical-policy（权威规范）`
 
-Last updated（更新日期）: `2026-04-15`
+Last updated（更新日期）: `2026-04-17`
 
 ## 目的
 
@@ -11,7 +11,7 @@ Last updated（更新日期）: `2026-04-15`
 目标只有三个：
 
 1. 让“现在我们在做什么”只有一个权威入口。
-2. 让“结果到底是什么”只有一个权威总账。
+2. 让“结果到底是什么”有一个清晰的分表总账入口。
 3. 让其他文档都各自回到清晰、稳定、不互相冲突的角色。
 
 这份规范既服务于人，也服务于 agent（智能体）。
@@ -27,13 +27,20 @@ Last updated（更新日期）: `2026-04-15`
 
 任何其他文档都不应再复制一份完整“当前主线摘要”。
 
-### 原则 2：只允许一个 experiment registry（实验总账）
+### 原则 2：experiment registry（实验总账）采用 split registry（分表总账）
 
-当前唯一 experiment registry（实验总账）是：
+当前活跃 experiment registry（实验总账）入口是：
 
-- [experiment_results.csv](/home/leejt/OneRec/experiment_results.csv)
+- [research-progress-log/experiment_registry/README.md](/home/leejt/OneRec/research-progress-log/experiment_registry/README.md)
 
-其他文档可以引用结果，但不应承担“唯一结果源”的角色。
+其中按实验类型拆分为：
+
+- [tokenizer_registry.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/tokenizer_registry.csv)
+- [sft_registry.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/sft_registry.csv)
+- [rl_registry.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/rl_registry.csv)
+- [downstream_scoreboard.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv)
+
+根目录旧表 [experiment_results.csv](/home/leejt/OneRec/experiment_results.csv) 现在是 legacy wide registry（历史宽表总账），用于兼容旧脚本和追溯迁移，不再作为人工追加新结果的首选入口。
 
 ### 原则 3：README 主要做 navigation（导航），不是做第二份总结
 
@@ -61,7 +68,7 @@ Last updated（更新日期）: `2026-04-15`
 任何 agent（智能体）在新建文档前，都必须先问自己：
 
 1. 这个信息是否应该更新到 `CURRENT_STATE.md`？
-2. 这个结果是否应该写入 `experiment_results.csv`？
+2. 这个结果是否应该写入 `research-progress-log/experiment_registry/` 下的对应 split registry（分表总账）？
 3. 这个变化是否只是某个已有文档的一次增量更新？
 
 如果答案是“是”，优先更新已有权威文档，而不是新建一个旁支文档。
@@ -85,22 +92,30 @@ Last updated（更新日期）: `2026-04-15`
   - 当前进行中的实验
   - 下一步 1 到 3 条动作
 
-#### 2. `experiment_results.csv`
+#### 2. `research-progress-log/experiment_registry/`
 
 - 角色：`registry（总账）`
-- 用途：唯一实验结果总账
+- 用途：按实验类型拆分的实验结果总账
 - 更新频率：高
 - 必须维护的内容：
-  - run id（运行编号）
-  - variant（变体）
-  - 对照
-  - 关键指标
-  - verdict（结论）
-  - 是否进入主线
+  - tokenizer registry（分词器登记表）
+  - SFT registry（监督微调登记表）
+  - RL registry（强化学习登记表）
+  - downstream scoreboard（下游指标榜单）
+  - 每条 finalized result（定稿结果）的关键指标和 artifact pointer（产物指针）
+
+#### 3. `experiment_results.csv`
+
+- 角色：`legacy-registry（历史总账）`
+- 用途：历史宽表、旧脚本兼容、迁移追溯
+- 更新频率：低
+- 不再承担：
+  - active registry（活跃总账）
+  - 手工追加新结果的默认入口
 
 ### B. 中低频维护文档
 
-#### 3. `idea-discovery/.../RESEARCH_DIRECTION.md`
+#### 4. `idea-discovery/.../RESEARCH_DIRECTION.md`
 
 - 角色：`reference（参考）`
 - 用途：固定 `motivation -> idea`（动机到想法）的顺向逻辑
@@ -109,7 +124,7 @@ Last updated（更新日期）: `2026-04-15`
   - 问题定义真的变了
   - 主方法叙事真的变了
 
-#### 4. `idea-discovery/.../CURRENT_TASK_ALIGNMENT.md`
+#### 5. `idea-discovery/.../CURRENT_TASK_ALIGNMENT.md`
 
 - 角色：`reference（参考）`
 - 用途：固定长期核心问题，不同步实验结果
@@ -118,7 +133,7 @@ Last updated（更新日期）: `2026-04-15`
   - 核心研究问题发生重排
   - 主执行问题从 A 切换到 B
 
-#### 5. `idea-discovery/.../18_mgr_sid_v2_ambiguity_aware_method.md`
+#### 6. `idea-discovery/.../18_mgr_sid_v2_ambiguity_aware_method.md`
 
 - 角色：`reference（参考）`
 - 用途：方法叙事版说明
@@ -126,7 +141,7 @@ Last updated（更新日期）: `2026-04-15`
 - 什么时候更新：
   - 方法定义真的变了
 
-#### 6. `idea-discovery/.../19_mgr_sid_current_method_code_aligned_formulas.md`
+#### 7. `idea-discovery/.../19_mgr_sid_current_method_code_aligned_formulas.md`
 
 - 角色：`reference（参考）`
 - 用途：代码对齐公式说明
@@ -138,7 +153,7 @@ Last updated（更新日期）: `2026-04-15`
   - 关键配置含义
   真正发生了实现变动
 
-#### 7. `research-progress-log/experiment_launches/README.md`
+#### 8. `research-progress-log/experiment_launches/README.md`
 
 - 角色：`stage-index（阶段索引）`
 - 用途：阶段索引，不是当前状态摘要
@@ -147,7 +162,7 @@ Last updated（更新日期）: `2026-04-15`
   - 新 stage（阶段）开始
   - 某 stage 的角色发生收口或结束
 
-#### 8. `research-progress-log/research_progress_log.tex`
+#### 9. `research-progress-log/research_progress_log.tex`
 
 - 角色：`milestone-narrative（里程碑叙事）`
 - 用途：长篇叙事、里程碑沉淀、论文前整理材料
@@ -158,7 +173,7 @@ Last updated（更新日期）: `2026-04-15`
 
 ### C. 低频 / 条件性维护文档
 
-#### 9. `refine-logs/README.md`
+#### 10. `refine-logs/README.md`
 
 - 角色：`plan-index（计划索引）`
 - 用途：活跃计划索引
@@ -167,7 +182,7 @@ Last updated（更新日期）: `2026-04-15`
   - 活跃分支计划切换
   - 某 plan（计划）从 active（活跃）变成 archive（归档）
 
-#### 10. `research-progress-log/experiment_launches/<run>/README.md`
+#### 11. `research-progress-log/experiment_launches/<run>/README.md`
 
 - 角色：`stage-snapshot（阶段快照）`
 - 用途：记录单个 stage / run（阶段 / 运行）的发起背景和产物位置
@@ -229,6 +244,8 @@ Snapshot date（快照日期）: `2026-04-14`
 - `PROJECT_WORKSPACE_MAP.md`
 - `DOCUMENTATION_MAINTENANCE_WORKFLOW.md`
 - `experiment_results.csv`
+
+`experiment_results.csv` 现在是 legacy wide registry（历史宽表总账），不是 active split registry（活跃分表总账）。
 
 根目录不应该继续堆积大量 dated summary（带日期总结）文档。
 
@@ -297,23 +314,33 @@ Snapshot date（快照日期）: `2026-04-14`
    - `refine-logs/README.md`
 4. 只有在它改变当前主线判断时，才更新：
    - `CURRENT_STATE.md`
+5. 不写入 split registry（分表总账），因为 registry（登记表）只记录 finalized result（定稿结果）。
+
+详细实验记录规则见：
+
+- [research-progress-log/experiment_registry/README.md](/home/leejt/OneRec/research-progress-log/experiment_registry/README.md)
 
 ### 流程 B：实验完成
 
 当一个 experiment（实验）跑完后：
 
-1. 先更新 `experiment_results.csv`
-2. 再更新对应 run folder（运行目录）的 `README.md` / `RESULTS.md`
-3. 如果结果改变了：
+1. 先更新 `research-progress-log/experiment_registry/` 下对应 split registry（分表总账）
+2. 同步更新 `downstream_scoreboard.csv`（下游指标榜单），如果它是 SFT/RL evaluate（监督微调/强化学习评测）结果
+3. 运行：
+   - `python scripts/validate_experiment_registry.py`
+4. 再更新对应 run folder（运行目录）的 `README.md` / `RESULTS.md`
+5. 如果结果改变了：
    - strongest validated line（最强已验证主线）
    - baseline 口径
    - 当前 active exploration（当前活跃探索）
    - 下一步动作
    则更新 `CURRENT_STATE.md`
-4. 如果阶段索引发生变化，再更新：
+6. 如果阶段索引发生变化，再更新：
    - `research-progress-log/experiment_launches/README.md`
-5. 如果这是里程碑，再决定是否补写：
+7. 如果这是里程碑，再决定是否补写：
    - `research_progress_log.tex`
+
+禁止把 partial metric（中间指标）或 running status（运行状态）写入 split registry（分表总账）。
 
 ### 流程 C：方法实现变化
 
@@ -351,7 +378,8 @@ Snapshot date（快照日期）: `2026-04-14`
 3. 把 dated snapshot（带日期快照）继续当成活文档写
 4. 把 discussion note（讨论笔记）写成事实源
 5. 方法没变却新建另一份 method spec（方法说明）
-6. 实验结果没先落到 `experiment_results.csv`，就先在 prose（文字）里到处引用
+6. 实验结果没先落到对应 split registry（分表总账），就先在 prose（文字）里到处引用
+7. 手工拼接 legacy wide registry（历史宽表总账）的 `112` 列长行
 
 ## 对 agent（智能体）的执行要求
 
@@ -374,12 +402,13 @@ Snapshot date（快照日期）: `2026-04-14`
 
 1. [DOCUMENTATION_MAINTENANCE_WORKFLOW.md](/home/leejt/OneRec/DOCUMENTATION_MAINTENANCE_WORKFLOW.md)
 2. [research-progress-log/CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
-3. [experiment_results.csv](/home/leejt/OneRec/experiment_results.csv)
-4. [PROJECT_WORKSPACE_MAP.md](/home/leejt/OneRec/PROJECT_WORKSPACE_MAP.md)
+3. [research-progress-log/experiment_registry/README.md](/home/leejt/OneRec/research-progress-log/experiment_registry/README.md)
+4. [research-progress-log/experiment_registry/downstream_scoreboard.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv)
+5. [PROJECT_WORKSPACE_MAP.md](/home/leejt/OneRec/PROJECT_WORKSPACE_MAP.md)
 
 需要方法细节时，再补：
 
-5. [RESEARCH_DIRECTION.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/RESEARCH_DIRECTION.md)
-6. [CURRENT_TASK_ALIGNMENT.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/CURRENT_TASK_ALIGNMENT.md)
-7. [18_mgr_sid_v2_ambiguity_aware_method.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md)
-8. [19_mgr_sid_current_method_code_aligned_formulas.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md)
+6. [RESEARCH_DIRECTION.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/RESEARCH_DIRECTION.md)
+7. [CURRENT_TASK_ALIGNMENT.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/CURRENT_TASK_ALIGNMENT.md)
+8. [18_mgr_sid_v2_ambiguity_aware_method.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md)
+9. [19_mgr_sid_current_method_code_aligned_formulas.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md)

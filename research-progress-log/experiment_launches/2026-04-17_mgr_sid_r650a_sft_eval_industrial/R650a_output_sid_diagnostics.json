@@ -1,0 +1,237 @@
+{
+  "inputs": {
+    "result_json": "results/experiments/mgr_sid_r650a_sft_eval_20260417/final_result_sft_mgr_r650a_title_on_desc_p05_Industrial_and_Scientific.json",
+    "index_json": "data_experiment/Amazon/r650a_seq2graph_mid_pull_push/index/Industrial_and_Scientific.index.json",
+    "info_txt": "data_experiment/Amazon/r650a_seq2graph_mid_pull_push/info/Industrial_and_Scientific_5_2016-10-2018-11.txt"
+  },
+  "catalog_level": {
+    "item_count": 3686,
+    "unique_sid_count": 3675,
+    "collision_group_count": 11,
+    "collision_item_excess": 11,
+    "collision_rate": 0.002984264785675529,
+    "max_collision_group_size": 2,
+    "weighted_prefix_conditional_entropy_l2_given_l1_bits": 3.723628548554347,
+    "weighted_prefix_conditional_entropy_l3_given_l1l2_bits": 0.6279720710621768,
+    "mean_items_per_l1_prefix": 18.522613065326635,
+    "mean_items_per_l2_prefix": 1.3249460819554277,
+    "median_layer2_parent_count": 10,
+    "median_layer3_parent_count": 13,
+    "max_layer2_parent_count": 24,
+    "max_layer3_parent_count": 79,
+    "top_collision_groups": [
+      {
+        "sid": "<a_107><b_97><c_0>",
+        "item_ids": [
+          "3302",
+          "3459"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_160><b_225><c_0>",
+        "item_ids": [
+          "1955",
+          "3038"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_186><b_6><c_0>",
+        "item_ids": [
+          "139",
+          "774"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_21><b_61><c_0>",
+        "item_ids": [
+          "216",
+          "217"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_245><b_79><c_0>",
+        "item_ids": [
+          "2956",
+          "2957"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_246><b_132><c_0>",
+        "item_ids": [
+          "431",
+          "1006"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_249><b_252><c_0>",
+        "item_ids": [
+          "1249",
+          "1250"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_34><b_117><c_0>",
+        "item_ids": [
+          "7",
+          "8"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_79><b_250><c_0>",
+        "item_ids": [
+          "181",
+          "182"
+        ],
+        "size": 2
+      },
+      {
+        "sid": "<a_84><b_124><c_0>",
+        "item_ids": [
+          "3209",
+          "3210"
+        ],
+        "size": 2
+      }
+    ],
+    "top_ambiguous_layer2_codes": [
+      {
+        "code": "<b_120>",
+        "distinct_a_prefixes": 24
+      },
+      {
+        "code": "<b_83>",
+        "distinct_a_prefixes": 23
+      },
+      {
+        "code": "<b_1>",
+        "distinct_a_prefixes": 21
+      },
+      {
+        "code": "<b_68>",
+        "distinct_a_prefixes": 21
+      },
+      {
+        "code": "<b_163>",
+        "distinct_a_prefixes": 19
+      },
+      {
+        "code": "<b_254>",
+        "distinct_a_prefixes": 19
+      },
+      {
+        "code": "<b_81>",
+        "distinct_a_prefixes": 19
+      },
+      {
+        "code": "<b_101>",
+        "distinct_a_prefixes": 18
+      },
+      {
+        "code": "<b_115>",
+        "distinct_a_prefixes": 18
+      },
+      {
+        "code": "<b_251>",
+        "distinct_a_prefixes": 18
+      }
+    ],
+    "top_ambiguous_layer3_codes": [
+      {
+        "code": "<c_0>",
+        "distinct_ab_prefixes": 79
+      },
+      {
+        "code": "<c_1>",
+        "distinct_ab_prefixes": 56
+      },
+      {
+        "code": "<c_2>",
+        "distinct_ab_prefixes": 56
+      },
+      {
+        "code": "<c_5>",
+        "distinct_ab_prefixes": 40
+      },
+      {
+        "code": "<c_4>",
+        "distinct_ab_prefixes": 39
+      },
+      {
+        "code": "<c_101>",
+        "distinct_ab_prefixes": 35
+      },
+      {
+        "code": "<c_3>",
+        "distinct_ab_prefixes": 32
+      },
+      {
+        "code": "<c_187>",
+        "distinct_ab_prefixes": 28
+      },
+      {
+        "code": "<c_15>",
+        "distinct_ab_prefixes": 25
+      },
+      {
+        "code": "<c_162>",
+        "distinct_ab_prefixes": 25
+      }
+    ]
+  },
+  "eval_level": {
+    "example_count": 4533,
+    "top1_hit_count": 296,
+    "top1_hit_rate": 0.06529891903816457,
+    "top3_hit_rate": 0.09353628943304655,
+    "top5_hit_rate": 0.10919920582395765,
+    "top10_hit_rate": 0.13236267372600927,
+    "top20_hit_rate": 0.17074784910655194,
+    "top50_hit_rate": 0.2298698433708361,
+    "pred1_in_catalog_rate": 1.0,
+    "avg_top1_lcp": 0.3256121773659828,
+    "avg_top1_lcp_on_error": 0.13877743686570687,
+    "avg_best_lcp_in_beam": 0.9788219722038385,
+    "beam_contains_same_l1_rate": 0.46944628281491285,
+    "beam_contains_same_l2_rate": 0.2795058460180896,
+    "top1_error_count": 4237,
+    "top1_error_same_l1_rate": 0.09251829124380458,
+    "top1_error_same_l2_rate": 0.04625914562190229,
+    "top1_error_same_l1_count": 392,
+    "top1_error_same_l2_count": 196,
+    "collided_target_count": 261,
+    "collided_target_fraction": 0.05757776307081403,
+    "top1_hit_rate_for_collided_targets": 0.6130268199233716,
+    "top1_hit_count_for_collided_targets": 160,
+    "unique_target_count": 4272,
+    "top1_hit_rate_for_unique_targets": 0.031835205992509365,
+    "top1_hit_count_for_unique_targets": 136,
+    "avg_target_l1_fanout_on_hit": 24.074324324324323,
+    "avg_target_l1_fanout_on_miss": 28.750295020061365,
+    "avg_target_l2_fanout_on_hit": 4.212837837837838,
+    "avg_target_l2_fanout_on_miss": 3.6075053103611046
+  },
+  "notes": [
+    "collision_rate and prefix conditional entropy are catalog-level diagnostics; they do not by themselves prove downstream errors.",
+    "same-prefix miss rates and collided-target hit rates connect SID properties to actual evaluation failures.",
+    "This script diagnoses SID/prefix issues more directly than aggregate HR/NDCG, but it does not directly prove the absence of collaborative signal in the tokenizer."
+  ],
+  "human_summary": [
+    "items=3686 unique_sids=3675 collision_rate=0.2984%",
+    "weighted_H(level2|level1)=3.7236 bits",
+    "weighted_H(level3|level1,level2)=0.6280 bits",
+    "top1_hit=6.5299% top10_hit=13.2363%",
+    "avg_top1_lcp=0.3256 avg_top1_lcp_on_error=0.1388",
+    "beam_same_l1=46.9446% beam_same_l2=27.9506%",
+    "same_l1_among_top1_errors=9.2518% same_l2_among_top1_errors=4.6259%",
+    "hit_rate(collided_targets)=61.3027% [160/261] hit_rate(unique_targets)=3.1835% [136/4272]",
+    "avg_target_l2_fanout_on_hit=4.21 avg_target_l2_fanout_on_miss=3.61"
+  ]
+}

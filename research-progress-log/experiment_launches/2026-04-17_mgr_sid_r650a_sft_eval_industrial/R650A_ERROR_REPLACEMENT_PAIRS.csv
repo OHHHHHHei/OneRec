@@ -1,0 +1,101 @@
+count,target_item,target_title,target_family,pred1_item,pred1_title,pred1_family,pred1_lcp
+7,2909,"3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional A…",3d_filament,3466,"3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Dimensional Accuracy +/- 0…",3d_filament,1
+6,3522,"3D Solutech Real Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accu…",3d_filament,3466,"3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Dimensional Accuracy +/- 0…",3d_filament,1
+4,2909,"3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional A…",3d_filament,3494,"3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM Filament, Dimensional Ac…",3d_filament,1
+4,3475,"3D Solutech Real Orange 3D Printer PLA Filament 1.75MM Filament, Dimensional Ac…",3d_filament,3466,"3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Dimensional Accuracy +/- 0…",3d_filament,2
+4,3442,"3D Solutech Real Purple 3D Printer PLA Filament 1.75MM Filament, Dimensional Ac…",3d_filament,3466,"3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Dimensional Accuracy +/- 0…",3d_filament,2
+3,2807,VIVOSUN 6 Inch 440 CFM Inline Duct Ventilation Fan with Variable Speed Controll…,ventilation_fan,176,URBEST 530 Pcs 2:1 Heat Shrink Tubing Tube Sleeving Wrap Cable Wire 5 Color 8 S…,other,0
+3,3016,"HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03mm, 1.75 mm, 1 kg Sp…",3d_filament,2507,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,1
+2,1847,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,50,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,0
+2,2909,"3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional A…",3d_filament,2697,"3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Acc…",3d_filament,1
+2,2507,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,3466,"3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Dimensional Accuracy +/- 0…",3d_filament,0
+2,3016,"HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03mm, 1.75 mm, 1 kg Sp…",3d_filament,3466,"3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Dimensional Accuracy +/- 0…",3d_filament,0
+2,3522,"3D Solutech Real Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accu…",3d_filament,2697,"3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Acc…",3d_filament,1
+2,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,119,Rubbermaid Commercial BRUTE Heavy-Duty Round Waste/Utility Container with Venti…,other,0
+1,450,"X-Treme Tape TPE-X36ZLB Silicone Rubber Self Fusing Tape, 1"" x 36', Triangular,…",tape,58,American Terminal E-FFR250N-100 22/18-Gauge Economy Nylon Fully-Insulated Femal…,gauge_meter,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,151,"Monoprice Hook & Loop Fastening Tape 5 yard/roll, 0.75-inch - Blue (105830)",tape,0
+1,3475,"3D Solutech Real Orange 3D Printer PLA Filament 1.75MM Filament, Dimensional Ac…",3d_filament,2697,"3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Acc…",3d_filament,2
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,764,Shop-Vac 9050300 2.5-Inch by 8-Foot Hose,connector_fitting,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,1644,O-Cedar Heavy Duty Scrunge Scrub Sponge (Pack of 6),other,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,1286,Accessbuy 180-Piece Rubber Grommet Shop Assortment,other,0
+1,465,"Dorman Hardware 4-9845 Peggable Wire Basket Set, 3-Pack",other,338,Etekcity Lasergrip 1080 Non-Contact Digital Laser Infrared Thermometer Temperat…,gauge_meter,0
+1,1911,uxcell 1 Meter 65 Flat width 40mm Dia Ratio 2:1 Heat Shrinkable Shrinking Tube …,gauge_meter,40,"Forney 20859 Cutting Fluid, Industrial Pro Tap Magic, 1-Gallon",other,0
+1,2419,"HATCHBOX 3D ABS-1KG1.75-BLU ABS 3D Printer Filament, Dimensional Accuracy +/- 0…",3d_filament,2157,"eSUN 3D 1.75mm PETG Blue Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75mm…",3d_filament,1
+1,560,"Litmus pH Test Strips, Universal Application (pH 1-14), 2 Packs of 100 Strips",test_strip,218,Phresh Duct Silencer 8 in x 24 in,ventilation_fan,0
+1,2912,Inland 1.75mm Black PLA 3D Printer Filament - 1kg Spool (2.2 lbs),3d_filament,2158,"eSUN 3D 1.75mm PETG Green Filament 1kg (2.2lb), PETG 3D Printer Filament, Semi-…",3d_filament,0
+1,201,"ColorConnex Coupler & Plug Kit (7 Piece), Industrial Type D, 1/4 in. NPT, Red -…",connector_fitting,157,Yueton 100pcs Female Fully Insulated Wire Crimp Terminal Nylon Quick Connectors…,connector_fitting,0
+1,157,Yueton 100pcs Female Fully Insulated Wire Crimp Terminal Nylon Quick Connectors…,connector_fitting,457,CRC 03400 16oz Truetap Cutting Fluid Heavy Duty Bottle,other,0
+1,175,"Gorilla Crystal Clear Duct Tape, 1.88&rdquo; x 9 yd, Clear, (Pack of 1)",tape,340,Break-Free CLP-4 Cleaner Lubricant Preservative Squeeze Bottle (4 -Fluid Ounce),other,0
+1,217,Ancor Tinned Copper Lugs 8 AWG - 4/0 AWG,other,997,"The Hillman Group 4839 1/8 Wire Rope Clip, 10-Pack",other,0
+1,3210,Ancor Heat Shrink Ring Terminals,other,178,"Neiko 10194A Titanium Step Drill Bit, High Speed Steel | 1/4"" to 1-3/8"" | Total…",other,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,521,"Gardner Bender 19-001 WireGard Screw-On Wire Connectors, 22-16 AWG, Electrical …",connector_fitting,0
+1,724,"Duck Brand EZ Start Packing Tape With Dispenser, 1.88 Inch x 22.2 Yard, Clear, …",tape,77,"Scotch Heavy Duty Shipping Packaging Tape, 3"" Core, 1.88"" x 54.6 Yards, 6-Rolls…",tape,0
+1,2734,Inland 1.75mm White PLA 3D Printer Filament - 1kg Spool (2.2 lbs),3d_filament,2714,NinjaFlex TPU 3D Printing Filament - 1.75mm .50kg - SAPPHIRE,3d_filament,0
+1,3405,"HATCHBOX PETG 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool…",3d_filament,1850,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,2168,"PORTER-CABLE Wet/Dry Vacuum, 6 Gallon, 4 Horsepower",other,0
+1,37,"The Hillman Group 591521 Small Flat and Lock Washer Assortment, 270-Pack",other,796,Hillman Toggle Bolt 90 Lb. 5 / Card,fastener,1
+1,796,Hillman Toggle Bolt 90 Lb. 5 / Card,fastener,320,DEWALT DW4524 4-1/2-Inch by 1/4-Inch by 7/8-Inch Concrete/Masonry Grinding Wheel,other,0
+1,1553,Inland 1.75mm Red PLA 3D Printer Filament - 1kg Spool (2.2 lbs),3d_filament,1850,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,0
+1,1824,DTOL 10 X Mini Laser Dot Diode Module Head WL Red 650nm 6mm 5V 5mW Pack of 10,other,633,100 x 2N2222 NPN TO-92 Plastic-Encapsulate Power Transistors 75V 600mA,other,0
+1,2924,"Hilitchi 635 Pcs 40 Pin 2.54mm Pitch Single Row Pin Headers,Dupont Connector Ho…",connector_fitting,2730,PTFE Teflon Bowden Tube for 1.75 Filament (2.0mm ID/4.0mm OD) &ndash; White Con…,3d_filament,0
+1,45,"Permatex 80050 Clear RTV Silicone Adhesive Sealant, 3 oz",adhesive_epoxy,214,520 Piece Electrical Terminal Assortment with Storage Box,other,0
+1,232,"Karter Scientific 213A2 Borosilicate Glass Low Form Glass Beaker, 50/100/250/50…",other,1549,Vktech 100PCS 0.2ml Graduated Pipettes Dropper Polyethylene,other,0
+1,1953,"Funnel, Regular stem, glass, 50 OD x 50mm stem",other,824,"213C2 Karter Scientific Glass Graduated Cylinder 3 Piece Set 10, 50 & 100ml",other,0
+1,560,"Litmus pH Test Strips, Universal Application (pH 1-14), 2 Packs of 100 Strips",test_strip,824,"213C2 Karter Scientific Glass Graduated Cylinder 3 Piece Set 10, 50 & 100ml",other,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,747,"Soft 'n Style BMX-8031 Plastic Clear Spray Bottle, 16 fl.oz. Capacity",other,0
+1,1395,KREG Tools SSW Kreg Screw Selector Wheel. Woodworking,fastener,837,Commando Grinding Wheel Dresser with Flat Diamond Coated Surface for Truing Gri…,other,0
+1,40,"Forney 20859 Cutting Fluid, Industrial Pro Tap Magic, 1-Gallon",other,338,Etekcity Lasergrip 1080 Non-Contact Digital Laser Infrared Thermometer Temperat…,gauge_meter,0
+1,1850,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,1758,Signswise 200x200mm 12V 220W Silicone Rubber Heating Heater for 3D Printer Heat…,3d_filament,0
+1,2721,"3D Solutech Navy Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accu…",3d_filament,3466,"3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Dimensional Accuracy +/- 0…",3d_filament,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,534,"Century Drill and Tool 76221 Coarse Drill Cup Wire Brush, 2-3/4-Inch",other,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,269,"Philips Sonicare HealthyWhite+ electric rechargeable toothbrush, HX8911",other,0
+1,1699,Install Bay 3MBTT 3M T-Tap Connector 18/14 Gauge - 100 Pack (Blue),connector_fitting,40,"Forney 20859 Cutting Fluid, Industrial Pro Tap Magic, 1-Gallon",other,0
+1,114,"Super Glue 15187 Super Glue, 12-Pack",adhesive_epoxy,172,"Gorilla Super Glue Gel, 15 Gram, Clear",adhesive_epoxy,1
+1,175,"Gorilla Crystal Clear Duct Tape, 1.88&rdquo; x 9 yd, Clear, (Pack of 1)",tape,172,"Gorilla Super Glue Gel, 15 Gram, Clear",adhesive_epoxy,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,739,"Tensive Parker Labs Conductive Adhesive Gel, 50 Gram",3d_filament,0
+1,201,"ColorConnex Coupler & Plug Kit (7 Piece), Industrial Type D, 1/4 in. NPT, Red -…",connector_fitting,524,"Innovative Components AN4C-5S3L-21 1.75"" Star Knob thru hole&nbsp; 1/4-20 steel…",fastener,0
+1,417,American Terminal E-FFB250N-100 16/14-Gauge Economy Nylon Fully-Insulated Femal…,gauge_meter,593,"Gardner Bender 10-106 50PK Ring Terminal, Yellow",other,0
+1,531,"General Electric GE360 Kitchen and Bath  Silicone I Caulk, 2.8-Ounce, Clear",other,35,Olympia Tools 38-644 5-Inch Open End Multi-Purpose Vise,other,0
+1,175,"Gorilla Crystal Clear Duct Tape, 1.88&rdquo; x 9 yd, Clear, (Pack of 1)",tape,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,0
+1,2703,"eSUN 3D 1.75mm PETG Black Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75m…",3d_filament,1205,"PEI (Polyetherimide) Sheet, Opaque Off-White, Standard Tolerance, ASTM D5205 PE…",other,0
+1,2070,"CLR Pro CL-4Pro Calcium, Lime and Rust Remover, 1 Gallon Bottle",other,609,"Dap 7079812343 Drydex 5.5 Oz 6Pk Raw Building Material, 5.5-Ounce, Pink/White",other,0
+1,1851,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,3466,"3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Dimensional Accuracy +/- 0…",3d_filament,0
+1,2152,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,50,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,2
+1,98,"Industrial & Scientific"" />",metadata_placeholder,922,"Shop Vac 906-87-00 Universal Tool Adapter, Pack of 1",other,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,296,"EISCO CH0688 Labs Clamp Retort, 3 PVC Coated Prongs (opens to 90mm in dia.) wit…",3d_filament,0
+1,671,Kimtech Science KimWipes Delicate Task Wipers 1-ply 280 count (Pack of 2),other,670,Tonor TM RJ45 RJ11 RJ12 CAT5 CAT 6 UTP Network Lan Cable Tester Test Tool,other,0
+1,3016,"HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03mm, 1.75 mm, 1 kg Sp…",3d_filament,2477,BAMtack! 1.75mm Black PLA 3D Printer Filament - 1kg (2.2 lbs) - Dimensional Acc…,3d_filament,0
+1,40,"Forney 20859 Cutting Fluid, Industrial Pro Tap Magic, 1-Gallon",other,1255,"SE 82331TF 30-Piece Set of Titanium-Coated Diamond Burrs, Grits 120-150",other,0
+1,2472,"HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,2161,"3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy …",3d_filament,1
+1,444,"HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,2855,RANCO ETC-111000 Digital Cold Temperature Control NEW,other,0
+1,128,"MegaDeal AC201710300001 12 Pack 2"" Swivel Caster Wheels Rubber Base with Top Pl…",other,2811,"500 Piece Assorted Loose Bicycle Bearing Balls 1/8"", 5/32"", 3/16"" 7/32"" & 1/4",other,0
+1,273,"Gorilla Original Gorilla Glue, Waterproof Polyurethane Glue, 2 ounce Bottle, Br…",adhesive_epoxy,257,"Gorilla 5000408  Original Gorilla Glue, Waterproof Polyurethane Glue, 4 ounce B…",adhesive_epoxy,2
+1,416,PRO 1 Fuel Line Hose 1/4 Inch Inside Diameter X 25 Feet Length NRB/PVCC SAE30R6,connector_fitting,159,Etekcity Lasergrip 774 Non-contact Digital Laser Infrared Thermometer Temperatu…,gauge_meter,0
+1,2909,"3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional A…",3d_filament,2060,Antique Bronze Metallic PLA - 3D Printing Filament (1.75mm 0.5 kg) Made in the …,3d_filament,0
+1,281,SE TL10 10-Piece Test Lead Set with Alligator Clips,other,1466,Seek Thermal Compact Imager for iOS-Apple,other,0
+1,2754,Hakko CHP 3-SA Stainless Steel Non-Magnetic Precision Tweezers with Very Fine P…,other,281,SE TL10 10-Piece Test Lead Set with Alligator Clips,other,0
+1,98,"Industrial & Scientific"" />",metadata_placeholder,457,CRC 03400 16oz Truetap Cutting Fluid Heavy Duty Bottle,other,0
+1,1376,"Century Drill and Tool 97205 Plug Hand Pipe Tap, 3/4-14 NPT",other,54,"Industrial & Scientific"" />",metadata_placeholder,0
+1,1847,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,1851,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,0
+1,130,"Gorilla Tape, Black Duct Tape, 1.88"" x 35 yd, Black, (Pack of 1)",tape,152,"Camco 4ft TastePURE Drinking Water Hose - Lead and BPA Free, Reinforced for Max…",connector_fitting,0
+1,377,"Gorilla Tape, Black Tough & Wide Duct Tape, 2.88"" x 30 yd, Black, (Pack of 1)",tape,172,"Gorilla Super Glue Gel, 15 Gram, Clear",adhesive_epoxy,0
+1,2333,eSUN 3D Printer CLEANING Filament 1.75mm Natural 0.1kg for all 1.75mm FDM 3D Pr…,3d_filament,2507,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,0
+1,2793,"First Aid Only Splinter Out, 10 Per Box",other,192,"3M Vetbond Tissue Adhesive, 3ml Bottles w/MSDS",adhesive_epoxy,0
+1,2576,"First Aid Only 13-040 First Aid Burn Spray, 4oz Pump Bottle",other,2793,"First Aid Only Splinter Out, 10 Per Box",other,1
+1,567,"ProTapes Pro Duct 100 PE-Coated Cloth Economy Duct Tape, 60 yds Length x 2"" Wid…",tape,675,J-B Weld 8265S Original Cold-Weld Steel Reinforced Epoxy - 2 oz.,adhesive_epoxy,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,2383,Inkbird All-Purpose Digital Temperature Controller Fahrenheit &Centigrade Therm…,other,0
+1,444,"HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,1239,Uxcell A13122300UX0934 LED Light Mounting Holders Panel (Pack of 50),other,0
+1,2703,"eSUN 3D 1.75mm PETG Black Filament 1kg (2.2lb), PETG 3D Printer Filament, 1.75m…",3d_filament,2719,"MeltInk3D Silver PLA 3D Printer Filament &Oslash; 1.75mm, 1Kg (2.2 Lb), MADE in…",3d_filament,0
+1,3470,SCStyle 5 Meters GT2 2mm Pitch 6mm Wide Timing Belt for 3D Printer CNC,3d_filament,2924,"Hilitchi 635 Pcs 40 Pin 2.54mm Pitch Single Row Pin Headers,Dupont Connector Ho…",connector_fitting,0
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,2233,"Red Brass Pipe Fitting, Nipple, Schedule 40 Seamless, 1/4"" NPT Male X 4"" Length",connector_fitting,0
+1,1801,"Loos Cableware MS20664C2 Stainless Steel Single Shank Ball for 1/16"" Diameter W…",gauge_meter,665,"608 ZZ Skateboard Bearings, Double Shielded, Silver (Pack of 8)",other,0
+1,3210,Ancor Heat Shrink Ring Terminals,other,1057,50pcs Premium Brass 18-22 (RED) Gauge Male-Female Solderless Crimp Bullet Plug …,connector_fitting,0
+1,450,"X-Treme Tape TPE-X36ZLB Silicone Rubber Self Fusing Tape, 1"" x 36', Triangular,…",tape,214,520 Piece Electrical Terminal Assortment with Storage Box,other,0
+1,3475,"3D Solutech Real Orange 3D Printer PLA Filament 1.75MM Filament, Dimensional Ac…",3d_filament,2513,2 Meters PTFE Teflon Bowden Tube 1.75 Filament 3D printer RepRap Rostock Kossel,3d_filament,0
+1,2063,"3Doodler Create 3D Pen with 50 Plastic Strands, No Mess, Non-Toxic -",other,3677,Dremel 3D Printing BT20-01 Build Sheets (Pack of 3),other,1
+1,2063,"3Doodler Create 3D Pen with 50 Plastic Strands, No Mess, Non-Toxic -",other,2143,"3Doodler Start Emoji & Symbol DoodleBlock Kit with 2 Plastic Packs, (3D Pen not…",other,1
+1,1128,Loctite Heavy Duty Epoxy Quick Set 8-Fluid Ounce Bottle (1365736),adhesive_epoxy,326,J-B Weld 8276 KwikWeld Quick Setting Steel Reinforced Epoxy - 2 oz.,adhesive_epoxy,1
+1,338,Etekcity Lasergrip 1080 Non-Contact Digital Laser Infrared Thermometer Temperat…,gauge_meter,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,0
+1,734,"microtivity IL188 5mm Assorted Clear LED w/Resistors (8 Colors, Pack of 80)",other,569,"Ribbed Plastic Drywall Anchor Kit with Screws and Masonry Drill Bit, #10-12 x 1",fastener,0
+1,1107,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,2507,"HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool,…",3d_filament,2
+1,182,"AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and …",gauge_meter,537,"Industrial & Scientific"" />",metadata_placeholder,0

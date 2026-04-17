@@ -41,10 +41,13 @@ class ResidualVectorQuantizer(nn.Module):
         all_indices = []
 
         x_q = 0
+        # 初始残差为输入
         residual = x
         for quantizer in self.vq_layers:
             x_res, loss, indices = quantizer(residual, use_sk=use_sk)
+            # 更新残差为当前残差减去量化后的结果
             residual = residual - x_res
+            # 更新量化结果为当前量化结果加上之前的量化结果
             x_q = x_q + x_res
 
             all_losses.append(loss)

@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r660_constraint_restoration_20260417/industrial_r660a_seq2graph_push_pull_full_constraints/Apr-17-2026_22-08-00/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r660_constraint_restoration_20260417/generated_indices/Industrial_and_Scientific.r660a_seq2graph_push_pull_full_constraints.index.json",
+  "collision_rate": 0.0032555615843733042,
+  "max_conflict": 2,
+  "collision_rounds_used": 20,
+  "num_items": 3686
+}

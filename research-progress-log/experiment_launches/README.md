@@ -53,6 +53,15 @@ Archive pointer（归档指针）:
 21. `2026-04-16_mgr_sid_r610_selective_separation_industrial/README.md`
 22. `2026-04-16_mgr_sid_diagnostic_audit_industrial/SUMMARY.md`
 23. `2026-04-16_mgr_sid_r630_mid_pull_push_industrial/README.md`
+24. `2026-04-16_mgr_sid_r630c_sft_eval_industrial/README.md`
+25. `2026-04-16_mgr_sid_d640_seq2graph_lite_graph_audit_industrial/README.md`
+26. `2026-04-16_mgr_sid_r640_seq2graph_lite_industrial/README.md`
+27. `2026-04-17_mgr_sid_r640c_sft_eval_industrial/README.md`
+28. `2026-04-17_mgr_sid_r650_seq2graph_push_pull_industrial/README.md`
+29. `2026-04-17_mgr_sid_r650a_sft_eval_industrial/README.md`
+30. `2026-04-17_mgr_sid_r660_constraint_restoration_industrial/README.md`
+31. `2026-04-18_mgr_sid_r670_clean_l1_semantic_l2_push_pull_industrial/README.md`
+32. `2026-04-18_mgr_sid_r680_l1_smooth_l2_contrastive_multihop_industrial/README.md`
 
 ## Stage Map
 
@@ -270,8 +279,175 @@ Archive pointer（归档指针）:
   - restriction of auxiliary intervention（辅助干预） to `L2`（第 2 层） only
   - replacement of the old pair source（物品对来源） with `semantic-near + mid-graph-weak`（语义接近 + 中图弱连接）
 - current status:
-  - launched as the active tokenizer execution stage（活跃分词器执行阶段）
-  - will be judged by downstream transfer（下游迁移）, not by retired prior diagnostics（已退役前验诊断）
+  - tokenizer stage（分词器阶段） completed（已完成）
+  - `R630c` emerged as the only downstream candidate（唯一值得下游推进的候选）
+  - later downstream adjudication（后续下游裁决） was negative（为负）, so this stage is now historical evidence（历史证据）, not an active branch（活跃分支）
+
+### Stage U: `R630c` downstream adjudication
+
+- canonical docs:
+  - `2026-04-16_mgr_sid_r630c_sft_eval_industrial/README.md`
+- covers:
+  - direct promotion of `R630c` into the current strongest graph-aware recipe（当前最强图感知配方）
+  - the first downstream verdict（下游裁决） for the simplified `mid-only pull + push`（仅中层拉近加推远） line
+- current status:
+  - completed（已完成）
+  - final judgment（最终裁决） is negative（为负）
+  - the simplified `mid-only pull + push`（仅中层拉近加推远） line did not survive downstream `SFT -> evaluate`（监督微调到评测）
+
+### Stage V: `Seq2Graph-lite` high-order carrier audit
+
+- canonical docs:
+  - `2026-04-16_mgr_sid_d640_seq2graph_lite_graph_audit_industrial/README.md`
+  - `2026-04-16_mgr_sid_d640_seq2graph_lite_graph_audit_industrial/SUMMARY.md`
+- covers:
+  - the first explicit offline audit（离线审计） for the new `Seq2Graph-lite`（轻量 `Seq2Graph`） high-order rescue carrier（高阶补盲载体）
+  - confirmation that the new coarse variants（粗图变体） are not near-baseline tweaks（近基线微调）, but materially change hotspot neighborhoods（热点邻域）
+  - separation of two useful regimes（有效模式）:
+    - `coarse_seq2g_rel`（可靠性感知粗图） for broader hotspot visibility（更广热点可见性）
+    - `coarse_seq2g_rel_masked`（可靠性感知加掩码粗图） for purer direct-zero rescue（更纯的直接零连接补盲）
+- current status:
+  - completed（已完成） as an engineering filter（工程过滤）
+  - supports direct promotion into `R640a / R640b / R640c` tokenizer screen（分词器筛选）
+
+### Stage W: `Seq2Graph-lite` tokenizer screen
+
+- canonical docs:
+  - `2026-04-16_mgr_sid_r640_seq2graph_lite_industrial/README.md`
+- covers:
+  - the first actual tokenizer training launch（分词器训练启动） after `D640`
+  - direct comparison between a broader reliability-oriented（偏可靠性的） branch and a purer masked-rescue（带掩码补盲） branch
+  - postponement of `R640a`（仅上下文版） as a lower-priority appendix-style（附录式） baseline
+- current status:
+  - completed（已完成）
+  - `R640b` is a catastrophic failure（灾难性失败）:
+    - first visible eval（首次可见评估） already collapsed（塌缩） at `collision = 0.9997`
+    - final generated collision（最终生成冲突率） is `0.4121` with `max_conflict = 310`
+    - the failure is now traced to reliability-only rescue（仅可靠性感知补盲） over-injecting direct-strong family edges（直接强连接家族边）
+  - `R640c` is the only viable candidate（唯一可继续候选）:
+    - final generated collision（最终生成冲突率） `12 / 3686 = 0.0032556`
+    - promoted（已推进） to downstream `R645`
+
+### Stage X: `R640c` downstream adjudication
+
+- canonical docs:
+  - `2026-04-17_mgr_sid_r640c_sft_eval_industrial/README.md`
+- covers:
+  - direct promotion（直接推进） of the only non-catastrophic `Seq2Graph-lite`（轻量 `Seq2Graph`） tokenizer candidate
+  - the first formal downstream verdict（正式下游裁决） for the high-order carrier（高阶载体） branch
+  - reuse of the current strongest graph-aware recipe（当前最强图感知配方） `title_history2sid_on + desc_align_p05`
+- current status:
+  - finished negative（已完成，负结果）
+- result:
+  - `NDCG@10 = 0.09305728`
+  - `HR@10 = 0.13125965`
+- conclusion:
+  - carrier-only smoothness（仅图载体加平滑监督） is not promotable（不可推进） for `RL`（强化学习）
+  - this does not reject high-order carrier + explicit push-pull（高阶载体 + 显式推远拉近） as a later method stage
+
+### Stage Y: `R650a` Seq2Graph push-pull
+
+- canonical docs:
+  - `2026-04-17_mgr_sid_r650_seq2graph_push_pull_industrial/README.md`
+- covers:
+  - the first direct experiment that places the `R640c` `Seq2Graph-lite rel_masked`（轻量 `Seq2Graph` 可靠性感知加掩码版） carrier inside mid-only `push-pull`（仅中层推远拉近）
+  - `pull`（拉近） from `fagsp_mid_seq2g_rel_masked`
+  - `push`（推远） pairs rebuilt from semantic-near + `fagsp_mid_seq2g_rel_masked` weak（语义近 + Seq2Graph 中图弱连接）
+- current status:
+  - tokenizer/generate finished（分词器训练与生成已完成）
+  - `tmux`（终端复用器） session: `mgr_r650a_seq2graph_push_pull`，已退出
+- pair source summary（物品对来源摘要）:
+  - `semantic_pair_count = 82596`
+  - `weak_pair_count = 1190`
+  - `weak_pair_item_coverage_rate = 0.2990`
+- tokenizer result（分词器结果）:
+  - train best collision（训练最佳冲突率）: `0.1142159523`
+  - generated collision（生成后冲突）: `11 / 3686 = 0.0029842648`
+  - max conflict（最大冲突簇）: `2`
+- current conclusion（当前结论）:
+  - non-catastrophic tokenizer candidate（非灾难性分词器候选）
+  - needs `title_history2sid_on + desc_align_p05` downstream verdict（下游裁决）
+
+### Stage Z: `R650a` SFT downstream adjudication
+
+- canonical docs:
+  - `2026-04-17_mgr_sid_r650a_sft_eval_industrial/README.md`
+- covers:
+  - downstream SFT（下游监督微调） for `R650a` under `title_history2sid_on + desc_align_p05`
+  - prepared data root（已准备数据根目录）: `data_experiment/Amazon/r650a_seq2graph_mid_pull_push`
+  - output root（输出根目录）: `/data/leejt/OneRec/output_weights/experiments/mgr_sid_r650a_sft_eval_20260417/title_on_desc_p05/sft`
+- current status:
+  - completed negative（已完成，负结果）
+- result（结果）:
+  - `NDCG@1/3/5/10 = 0.06530 / 0.08132 / 0.08778 / 0.09518`
+  - `HR@1/3/5/10 = 0.06530 / 0.09354 / 0.10920 / 0.13236`
+- conclusion（结论）:
+  - `R650a` does not beat current `v2_on_p05`（当前 v2_on_p05）
+  - it should not be promoted to `RL`（强化学习）
+
+### Stage AA: `R660a` constraint restoration
+
+- canonical docs:
+  - `2026-04-17_mgr_sid_r660_constraint_restoration_industrial/README.md`
+- covers:
+  - direct follow-up to the negative `R650a` downstream verdict（下游裁决）
+  - testing whether the loss of `L1/L3/semantic`（第一层/第三层/语义） constraints caused `R650a` to lose L1 organization quality（第一层组织质量）
+  - keeping the `R650a` `Seq2Graph-lite rel_masked + mid-only push-pull`（轻量 Seq2Graph 加掩码版 + 仅中层推远拉近） carrier fixed while restoring v2-style constraints（v2 风格约束）
+- current status:
+  - tokenizer/generate finished（分词器训练与生成已完成）
+  - `tmux`（终端复用器） session: `mgr_r660a_constraint_restoration`，已退出
+  - GPU（显卡）: `7`
+- tokenizer result（分词器结果）:
+  - train best collision（训练最佳冲突率）: `0.1323928378`
+  - generated collision（生成后冲突）: `12 / 3686 = 0.0032555616`
+  - max conflict（最大冲突簇）: `2`
+- decision target（决策目标）:
+  - because retired prior diagnostics（已退役前验诊断） cannot act as promotion gate（推进门槛）, this branch still needs `title_history2sid_on + desc_align_p05` SFT/evaluate（监督微调/评测） for downstream verdict（下游裁决）
+
+### Stage AB: `R670a` clean L1 semantic + L2 push-pull
+
+- canonical docs:
+  - `2026-04-18_mgr_sid_r670_clean_l1_semantic_l2_push_pull_industrial/README.md`
+- covers:
+  - the first clean hierarchy（干净层级分工） tokenizer（分词器） experiment after the `R650a/R660a` negative signals
+  - replacing full `v2` constraints（全套约束） with a narrower objective:
+    - `L1` high-confidence semantic pull（第一层高置信语义拉近）
+    - `L2` base collaborative pull（第二层基础协同拉近）
+    - `L2` selective separation（第二层选择性分离）
+    - stop-gradient prefix（前缀停梯度）
+- current status:
+  - completed negative（已完成，负结果）
+  - `tmux`（终端复用器） session: `mgr_r670a_clean_l1_semantic_l2_push_pull`，已退出
+  - final generated collision（最终生成冲突）: `162 / 3686 = 0.0439500814`
+  - max conflict（最大冲突簇）: `35`
+  - active L1（活跃第一层码）: `19`
+  - unique L2 pairs（唯一第二层前缀数）: `375`
+- decision target（决策目标）:
+  - branch closed at tokenizer stage（在分词器阶段终止）
+  - do not promote（不要推进） to downstream `SFT -> evaluate`（监督微调到评测）
+
+### Stage AC: `R680a` clean L2 contrastive multihop
+
+- canonical docs:
+  - `2026-04-18_mgr_sid_r680_l1_smooth_l2_contrastive_multihop_industrial/README.md`
+- covers:
+  - the first clean `L2` interface test（第二层接口测试） after the `R670a` collapse（塌缩）
+  - restoring `L1/L3`（第一层/第三层） to stable graph smoothness（图平滑） while changing only the `L2` supervision interface（第二层监督接口）
+  - replacing `L2` graph smoothness（第二层图平滑） with:
+    - `local_multihop`（局部多跳图） pairwise pull（成对拉近）
+    - semantic-near + multihop-weak（语义近 + 多跳弱连接） selective push（选择性推远）
+    - stop-gradient prefix（前缀停梯度）
+- current status:
+  - launched_running（已启动运行中）
+  - `tmux`（终端复用器） session: `mgr_r680a_l1_smooth_l2_contrastive_multihop`
+  - GPU（显卡）: `7`
+  - pair source（物品对来源） already generated（已生成）:
+    - `weak_pair_count = 1738`
+    - `weak_pair_item_coverage_rate = 0.4881`
+    - `weak_threshold = 0.0028070429`
+- decision target（决策目标）:
+  - if tokenizer/generate（分词器训练与生成） is non-catastrophic（非灾难性）, promote directly（直接推进） to downstream `SFT -> evaluate`（监督微调到评测）
+  - if prefix collapse（前缀塌缩） reappears, treat this as a cleaner negative verdict（更干净的负结论） on the `L2` interface hypothesis（第二层接口假设）
 
 ## Artifact Policy Inside Run Folders
 
