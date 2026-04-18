@@ -28,42 +28,15 @@ Archive pointer（归档指针）:
 
 - `/home/leejt/OneRec/research-progress-log/archive/2026-04-16_retired_prior_diagnostics/README.md`
 
-## Recommended Reading Order
+## Active Reading Order（活跃阅读顺序）
 
-1. `2026-04-09_pipeline_alignment_and_reproduction/README.md`
-2. `2026-04-09_mgr_sid_v1_upstream/README.md`
-3. `2026-04-10_mgr_sid_data_experiment_convert/README.md`
-4. `2026-04-10_mgr_sid_sft_eval_industrial/RESULTS.md`
-5. `2026-04-11_mgr_sid_tokenizer_v2_r005/RESULTS.md`
-6. `2026-04-11_mgr_sid_v2_recipe_isolation_industrial/RESULTS.md`
-7. `2026-04-12_mgr_sid_v2_rl_on_p05_industrial/RESULTS.md`
-8. `2026-04-12_mgr_sid_v2_rl_on_p05_industrial/EVAL_ANALYSIS.md`
-9. `2026-04-13_mgr_sid_stage2_stopgrad_industrial/README.md`
-10. `2026-04-13_mgr_sid_stage2_semantic_retention_industrial/RESULTS.md`
-11. `2026-04-13_mgr_sid_stage2_r202a_sft_eval_industrial/RESULTS.md`
-12. `2026-04-14_mgr_sid_stage3_prefix_retained_industrial/README.md`
-13. `2026-04-14_mgr_sid_stage3_sft_eval_industrial/README.md`
-14. `2026-04-15_mgr_sid_tagcf_m0_attribute_graphs/README.md`
-15. `2026-04-15_mgr_sid_tagcf_r510_attr_mid/README.md`
-16. `2026-04-15_mgr_sid_tagcf_r511_mix_mid/README.md`
-17. `2026-04-15_mgr_sid_fagsp_r520_mid_cascade/README.md`
-18. `2026-04-15_mgr_sid_r530_local_multihop_industrial/README.md`
-19. `2026-04-16_mgr_sid_r542_mgdcf_coarse_industrial/README.md`
-20. `2026-04-16_mgr_sid_mgdcf_coarse_isolation_industrial/README.md`
-21. `2026-04-16_mgr_sid_r610_selective_separation_industrial/README.md`
-22. `2026-04-16_mgr_sid_diagnostic_audit_industrial/SUMMARY.md`
-23. `2026-04-16_mgr_sid_r630_mid_pull_push_industrial/README.md`
-24. `2026-04-16_mgr_sid_r630c_sft_eval_industrial/README.md`
-25. `2026-04-16_mgr_sid_d640_seq2graph_lite_graph_audit_industrial/README.md`
-26. `2026-04-16_mgr_sid_r640_seq2graph_lite_industrial/README.md`
-27. `2026-04-17_mgr_sid_r640c_sft_eval_industrial/README.md`
-28. `2026-04-17_mgr_sid_r650_seq2graph_push_pull_industrial/README.md`
-29. `2026-04-17_mgr_sid_r650a_sft_eval_industrial/README.md`
-30. `2026-04-17_mgr_sid_r660_constraint_restoration_industrial/README.md`
-31. `2026-04-18_mgr_sid_r670_clean_l1_semantic_l2_push_pull_industrial/README.md`
-32. `2026-04-18_mgr_sid_r680_l1_smooth_l2_contrastive_multihop_industrial/README.md`
+1. `/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md`
+2. `2026-04-18_mgr_sid_r720_l2_ranking_contrastive_industrial/README.md`
+3. `/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md`
 
-## Stage Map
+All earlier stages（更早阶段） below are archived provenance（归档追溯材料）. They are kept for traceability（可追溯性）, not as active optimization targets（活跃优化目标）.
+
+## Historical Stage Map（历史阶段地图）
 
 ### Stage A: Pipeline provenance and upstream-aligned reproduction
 
@@ -438,16 +411,91 @@ Archive pointer（归档指针）:
     - semantic-near + multihop-weak（语义近 + 多跳弱连接） selective push（选择性推远）
     - stop-gradient prefix（前缀停梯度）
 - current status:
-  - launched_running（已启动运行中）
-  - `tmux`（终端复用器） session: `mgr_r680a_l1_smooth_l2_contrastive_multihop`
+  - tokenizer_generated（分词器已生成）
+  - `tmux`（终端复用器） session: `mgr_r680a_l1_smooth_l2_contrastive_multihop`，已结束
   - GPU（显卡）: `7`
   - pair source（物品对来源） already generated（已生成）:
     - `weak_pair_count = 1738`
     - `weak_pair_item_coverage_rate = 0.4881`
     - `weak_threshold = 0.0028070429`
+  - tokenizer result（分词器结果）:
+    - train best collision（训练最佳冲突率）: `0.0984807379`
+    - generated collision（生成后冲突）: `11 / 3686 = 0.0029842648`
+    - max conflict（最大冲突簇）: `2`
+    - active L1（活跃第一层码）: `226`
+    - unique L2 pairs（唯一第二层前缀数）: `2833`
 - decision target（决策目标）:
-  - if tokenizer/generate（分词器训练与生成） is non-catastrophic（非灾难性）, promote directly（直接推进） to downstream `SFT -> evaluate`（监督微调到评测）
-  - if prefix collapse（前缀塌缩） reappears, treat this as a cleaner negative verdict（更干净的负结论） on the `L2` interface hypothesis（第二层接口假设）
+  - tokenizer/generate（分词器训练与生成） is already non-catastrophic（已确认非灾难性）, so this branch is eligible（可进入） for downstream `SFT -> evaluate`（监督微调到评测）
+  - final method judgment（最终方法判断） still depends on downstream result（仍取决于下游结果）
+
+### Stage AD: `R690` CoST-inspired contrastive quantization
+
+- canonical docs:
+  - `2026-04-18_mgr_sid_r690_cost_inspired_contrastive_quantization_industrial/README.md`
+- covers:
+  - the first formal branch that combines `CoST`（基于对比量化的语义分词） style contrastive tokenization（对比式分词） with our graph-structured collaborative signal（图结构协同信号）
+  - using `fagsp_mid_base`（基础中层图） as `L2` positive carrier（第二层正样本载体）
+  - using semantic-near + mid-weak（语义近但中图弱连接） pairs as `L2 InfoNCE`（第二层对比学习损失） negatives
+  - comparing:
+    - `R690a` pure `L2` graph-guided `InfoNCE`（纯第二层图引导对比损失）
+    - `R690b` hierarchical protected variant（带层级保护的变体）
+- current status:
+  - tokenizer_generated（分词器已生成）
+  - both `tmux`（终端复用器） sessions have ended（均已结束）
+  - GPUs（显卡）:
+    - `R690a -> 3`
+    - `R690b -> 4`
+  - shared pair source（共享物品对来源） already generated（已生成）:
+    - `weak_pair_count = 1211`
+    - `weak_pair_item_coverage_rate = 0.2797`
+    - `weak_threshold = 0.0016112356`
+- decision target（决策目标）:
+  - current evidence（当前证据）:
+    - both branches use `fagsp_mid_base`（基础中层图） as `mid graph`（中图）, not `local_multihop`（局部多跳图）
+    - `R690a` is the better tokenizer candidate（更好的分词器候选）:
+      - generated collision（生成后冲突） `11 / 3686`
+      - active L1（活跃第一层码） `118`
+    - `R690b` shows stronger prefix compression（更强的前缀压缩） risk:
+      - generated collision（生成后冲突） `14 / 3686`
+      - active L1（活跃第一层码） `33`
+  - next step（下一步）:
+    - prioritize `R690a -> SFT -> evaluate`（监督微调到评测） before deciding whether `R690b` is worth downstream compute（下游算力）
+
+### Stage AE: `R680a` downstream SFT adjudication
+
+- canonical docs:
+  - `2026-04-18_mgr_sid_r680a_sft_eval_industrial/README.md`
+- covers:
+  - direct promotion（直接推进） of `R680a` into the current strongest graph-aware recipe（当前最强图感知配方） `title_history2sid_on + desc_align_p05`
+  - a controlled `2`-GPU `SFT`（监督微调） run under effective-batch alignment（有效批大小对齐）
+  - full downstream `SFT -> evaluate`（监督微调到评测） verdict for the clean `L2` contrastive interface（第二层对比式接口） line
+- current status:
+  - completed_negative（已完成，负结果）
+  - GPUs（显卡）: `5,7`
+  - effective batch（有效批大小） kept aligned（已对齐） with prior `4`-GPU runs（4 卡运行）
+  - result（结果）:
+    - `NDCG@10 = 0.09863899`
+    - `HR@10 = 0.13567174`
+- decision target（决策目标）:
+  - verdict obtained（裁决已得到）:
+    - stronger than recent negative branches（强于近期多个负分支） such as `R640c / R650a`
+    - but still below current `v2_on_p05`（当前 `v2_on_p05`）, so not promotable（不可推进） to `RL`（强化学习）
+
+### Stage AF: `R720a` main-method L2 ranking contrastive SID
+
+- canonical docs:
+  - `2026-04-18_mgr_sid_r720_l2_ranking_contrastive_industrial/README.md`
+- covers:
+  - current active method candidate（当前活跃方法候选） after convergence away from broad branching（横向发散）
+  - `L1/L3`（第一层/第三层） light graph pull（轻量图拉近）
+  - `L2`（第二层） ranking contrastive loss（排序对比损失） over collaborative-positive vs semantic-near mid-weak hard negatives（协同正样本与语义近但中图弱连接困难负样本）
+- current status:
+  - implemented（已实现）
+  - pair source generated（物品对来源已生成）
+  - one-epoch smoke run passed（单轮冒烟运行已通过）
+- decision target（决策目标）:
+  - eligible for full tokenizer train -> generate（可进入完整分词器训练到生成）
+  - final verdict still requires downstream `SFT -> evaluate`（监督微调到评测）
 
 ## Artifact Policy Inside Run Folders
 

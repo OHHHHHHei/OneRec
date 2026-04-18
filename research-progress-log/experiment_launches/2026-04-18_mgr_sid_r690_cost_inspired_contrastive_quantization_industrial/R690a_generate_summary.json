@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r690_cost_inspired_20260418/industrial_r690a_l2_graph_infonce/Apr-18-2026_03-16-17/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r690_cost_inspired_20260418/generated_indices/Industrial_and_Scientific.r690a_l2_graph_infonce.index.json",
+  "collision_rate": 0.002984264785675529,
+  "max_conflict": 2,
+  "collision_rounds_used": 20,
+  "num_items": 3686
+}

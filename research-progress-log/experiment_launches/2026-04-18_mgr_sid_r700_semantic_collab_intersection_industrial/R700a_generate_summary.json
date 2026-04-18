@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r700_semantic_collab_intersection_20260418/industrial_r700a_semantic_collab_intersection/Apr-18-2026_19-50-21/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r700_semantic_collab_intersection_20260418/generated_indices/Industrial_and_Scientific.r700a_semantic_collab_intersection.index.json",
+  "collision_rate": 0.0037981551817688553,
+  "max_conflict": 2,
+  "collision_rounds_used": 20,
+  "num_items": 3686
+}

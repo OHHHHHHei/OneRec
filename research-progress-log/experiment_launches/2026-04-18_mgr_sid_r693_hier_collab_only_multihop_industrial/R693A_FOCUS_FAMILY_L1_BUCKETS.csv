@@ -1,0 +1,59 @@
+family,rank,l1_code,family_items_in_bucket,family_coverage,bucket_size,bucket_family_purity,bucket_family_composition_top,unique_l2_for_family_inside_bucket
+3d_filament,1,<a_178>,210,0.5440414507772021,212,0.9905660377358491,3d_filament:210; other:2,46
+3d_filament,2,<a_220>,55,0.14248704663212436,58,0.9482758620689655,3d_filament:55; other:3,20
+3d_filament,3,<a_212>,31,0.08031088082901554,44,0.7045454545454546,3d_filament:31; other:12; tape:1,24
+3d_filament,4,<a_82>,21,0.054404145077720206,26,0.8076923076923077,3d_filament:21; other:5,17
+3d_filament,5,<a_134>,8,0.02072538860103627,80,0.1,other:46; gauge_meter:14; 3d_filament:8; connector_fitting:6; ventilation_fan:3; tape:2,5
+3d_filament,6,<a_152>,6,0.015544041450777202,9,0.6666666666666666,3d_filament:6; tape:3,5
+3d_filament,7,<a_108>,5,0.012953367875647668,17,0.29411764705882354,other:7; 3d_filament:5; tape:4; adhesive_epoxy:1,5
+3d_filament,8,<a_193>,4,0.010362694300518135,19,0.21052631578947367,other:10; 3d_filament:4; tape:3; adhesive_epoxy:2,3
+connector_fitting,1,<a_40>,98,0.35766423357664234,108,0.9074074074074074,connector_fitting:98; gauge_meter:5; other:4; 3d_filament:1,46
+connector_fitting,2,<a_166>,46,0.1678832116788321,46,1.0,connector_fitting:46,16
+connector_fitting,3,<a_231>,42,0.15328467153284672,59,0.711864406779661,connector_fitting:42; other:17,26
+connector_fitting,4,<a_209>,14,0.051094890510948905,75,0.18666666666666668,other:43; connector_fitting:14; fastener:9; gauge_meter:5; 3d_filament:3; adhesive_epoxy:1,9
+connector_fitting,5,<a_115>,10,0.0364963503649635,84,0.11904761904761904,other:33; gauge_meter:30; connector_fitting:10; adhesive_epoxy:9; tape:2,6
+connector_fitting,6,<a_164>,8,0.029197080291970802,75,0.10666666666666667,other:56; connector_fitting:8; fastener:7; ventilation_fan:2; gauge_meter:2,7
+connector_fitting,7,<a_106>,7,0.025547445255474453,51,0.13725490196078433,other:38; connector_fitting:7; 3d_filament:4; gauge_meter:1; fastener:1,6
+connector_fitting,8,<a_126>,6,0.021897810218978103,49,0.12244897959183673,other:42; connector_fitting:6; fastener:1,5
+gauge_meter,1,<a_69>,46,0.13609467455621302,84,0.5476190476190477,gauge_meter:46; other:37; connector_fitting:1,20
+gauge_meter,2,<a_197>,35,0.10355029585798817,48,0.7291666666666666,gauge_meter:35; other:13,25
+gauge_meter,3,<a_190>,31,0.09171597633136094,64,0.484375,gauge_meter:31; other:30; 3d_filament:2; ventilation_fan:1,16
+gauge_meter,4,<a_115>,30,0.08875739644970414,84,0.35714285714285715,other:33; gauge_meter:30; connector_fitting:10; adhesive_epoxy:9; tape:2,10
+gauge_meter,5,<a_243>,19,0.05621301775147929,55,0.34545454545454546,other:26; gauge_meter:19; fastener:5; connector_fitting:3; 3d_filament:2,8
+gauge_meter,6,<a_245>,15,0.04437869822485207,23,0.6521739130434783,gauge_meter:15; other:8,10
+gauge_meter,7,<a_134>,14,0.04142011834319527,80,0.175,other:46; gauge_meter:14; 3d_filament:8; connector_fitting:6; ventilation_fan:3; tape:2,9
+gauge_meter,8,<a_162>,14,0.04142011834319527,36,0.3888888888888889,other:20; gauge_meter:14; 3d_filament:2,4
+tape,1,<a_31>,155,0.7142857142857143,160,0.96875,tape:155; other:3; 3d_filament:2,55
+tape,2,<a_157>,12,0.055299539170506916,51,0.23529411764705882,other:25; tape:12; ventilation_fan:5; gauge_meter:4; adhesive_epoxy:3; 3d_filament:2,9
+tape,3,<a_109>,6,0.027649769585253458,33,0.18181818181818182,other:20; tape:6; connector_fitting:3; gauge_meter:2; 3d_filament:1; fastener:1,6
+tape,4,<a_17>,6,0.027649769585253458,22,0.2727272727272727,other:13; tape:6; adhesive_epoxy:3,5
+tape,5,<a_60>,4,0.018433179723502304,11,0.36363636363636365,adhesive_epoxy:4; tape:4; other:1; gauge_meter:1; 3d_filament:1,4
+tape,6,<a_7>,4,0.018433179723502304,62,0.06451612903225806,other:44; gauge_meter:7; fastener:6; tape:4; 3d_filament:1,4
+tape,7,<a_108>,4,0.018433179723502304,17,0.23529411764705882,other:7; 3d_filament:5; tape:4; adhesive_epoxy:1,4
+tape,8,<a_193>,3,0.013824884792626729,19,0.15789473684210525,other:10; 3d_filament:4; tape:3; adhesive_epoxy:2,3
+adhesive_epoxy,1,<a_124>,34,0.272,39,0.8717948717948718,adhesive_epoxy:34; other:5,25
+adhesive_epoxy,2,<a_78>,26,0.208,26,1.0,adhesive_epoxy:26,18
+adhesive_epoxy,3,<a_180>,18,0.144,30,0.6,adhesive_epoxy:18; other:7; fastener:4; tape:1,16
+adhesive_epoxy,4,<a_65>,12,0.096,64,0.1875,other:50; adhesive_epoxy:12; ventilation_fan:2,12
+adhesive_epoxy,5,<a_115>,9,0.072,84,0.10714285714285714,other:33; gauge_meter:30; connector_fitting:10; adhesive_epoxy:9; tape:2,3
+adhesive_epoxy,6,<a_138>,5,0.04,22,0.22727272727272727,other:13; adhesive_epoxy:5; ventilation_fan:3; tape:1,5
+adhesive_epoxy,7,<a_60>,4,0.032,11,0.36363636363636365,adhesive_epoxy:4; tape:4; other:1; gauge_meter:1; 3d_filament:1,4
+adhesive_epoxy,8,<a_17>,3,0.024,22,0.13636363636363635,other:13; tape:6; adhesive_epoxy:3,3
+fastener,1,<a_235>,79,0.42245989304812837,85,0.9294117647058824,fastener:79; other:6,38
+fastener,2,<a_68>,34,0.18181818181818182,72,0.4722222222222222,fastener:34; other:33; gauge_meter:5,24
+fastener,3,<a_209>,9,0.0481283422459893,75,0.12,other:43; connector_fitting:14; fastener:9; gauge_meter:5; 3d_filament:3; adhesive_epoxy:1,7
+fastener,4,<a_133>,8,0.0427807486631016,62,0.12903225806451613,other:51; fastener:8; gauge_meter:2; tape:1,2
+fastener,5,<a_164>,7,0.0374331550802139,75,0.09333333333333334,other:56; connector_fitting:8; fastener:7; ventilation_fan:2; gauge_meter:2,2
+fastener,6,<a_7>,6,0.03208556149732621,62,0.0967741935483871,other:44; gauge_meter:7; fastener:6; tape:4; 3d_filament:1,5
+fastener,7,<a_137>,6,0.03208556149732621,65,0.09230769230769231,other:57; fastener:6; 3d_filament:1; gauge_meter:1,6
+fastener,8,<a_243>,5,0.026737967914438502,55,0.09090909090909091,other:26; gauge_meter:19; fastener:5; connector_fitting:3; 3d_filament:2,4
+ventilation_fan,1,<a_90>,11,0.1896551724137931,78,0.14102564102564102,other:60; ventilation_fan:11; gauge_meter:4; tape:1; fastener:1; connector_fitting:1,6
+ventilation_fan,2,<a_35>,8,0.13793103448275862,23,0.34782608695652173,other:13; ventilation_fan:8; connector_fitting:2,5
+ventilation_fan,3,<a_157>,5,0.08620689655172414,51,0.09803921568627451,other:25; tape:12; ventilation_fan:5; gauge_meter:4; adhesive_epoxy:3; 3d_filament:2,4
+ventilation_fan,4,<a_168>,4,0.06896551724137931,51,0.0784313725490196,other:45; ventilation_fan:4; fastener:1; gauge_meter:1,2
+ventilation_fan,5,<a_134>,3,0.05172413793103448,80,0.0375,other:46; gauge_meter:14; 3d_filament:8; connector_fitting:6; ventilation_fan:3; tape:2,1
+ventilation_fan,6,<a_138>,3,0.05172413793103448,22,0.13636363636363635,other:13; adhesive_epoxy:5; ventilation_fan:3; tape:1,3
+ventilation_fan,7,<a_65>,2,0.034482758620689655,64,0.03125,other:50; adhesive_epoxy:12; ventilation_fan:2,2
+ventilation_fan,8,<a_164>,2,0.034482758620689655,75,0.02666666666666667,other:56; connector_fitting:8; fastener:7; ventilation_fan:2; gauge_meter:2,2
+test_strip,1,<a_153>,7,0.7777777777777778,33,0.21212121212121213,other:16; gauge_meter:9; test_strip:7; ventilation_fan:1,6
+test_strip,2,<a_159>,2,0.2222222222222222,25,0.08,other:20; test_strip:2; ventilation_fan:1; fastener:1; gauge_meter:1,2

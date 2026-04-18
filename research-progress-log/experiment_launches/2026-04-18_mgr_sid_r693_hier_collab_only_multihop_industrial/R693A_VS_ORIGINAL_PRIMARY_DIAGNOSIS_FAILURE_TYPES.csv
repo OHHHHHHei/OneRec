@@ -1,0 +1,9 @@
+variant,failure_type,count,rate
+original,hit@10,684,0.15089344804765056
+original,L1_miss,2581,0.5693801014780498
+original,L2_miss_after_L1_hit,996,0.21972203838517537
+original,leaf_or_rank_miss_after_L2_hit,272,0.0600044120891242
+r693a,hit@10,642,0.14162806088682992
+r693a,L1_miss,2786,0.6146040150011031
+r693a,L2_miss_after_L1_hit,833,0.18376351202294286
+r693a,leaf_or_rank_miss_after_L2_hit,272,0.0600044120891242

@@ -92,10 +92,26 @@ class MgrSidV2TrainConfig:
     graph_topk: int = 32
     semantic_graph_topk: int = 32
     semantic_external_graph_path: str | None = None
+    l1_contrastive_graph_name: str = "semantic"
+    l1_external_graph_path: str | None = None
     coarse_weight: float = 0.05
     mid_weight: float = 0.15
     local_weight: float = 0.05
+    l1_contrastive_pull_weight: float = 0.0
     l2_contrastive_pull_weight: float = 0.0
+    l2_contrastive_mode: str = "pairwise_pull"
+    l2_infonce_temperature: float = 0.1
+    l2_infonce_negative_pair_csv: str | None = None
+    l2_infonce_negative_pair_rule: str | None = None
+    l2_infonce_use_pair_reliability: bool = True
+    l2_ranking_contrastive_weight: float = 0.0
+    l2_ranking_margin: float = 0.1
+    l2_ranking_positive_topk: int = 8
+    l2_ranking_negative_topk: int = 16
+    l2_ranking_negative_pair_csv: str | None = None
+    l2_ranking_negative_pair_rule: str | None = None
+    l2_ranking_use_pair_reliability: bool = True
+    l3_contrastive_pull_weight: float = 0.0
     semantic_coarse_weight: float = 0.05
     semantic_mid_weight: float = 0.025
     graph_scale_min: float = 0.5
@@ -295,6 +311,120 @@ def _weighted_pairwise_pull_loss(
     return torch.sum(penalties * pair_weights) / denom
 
 
+def _weighted_graph_guided_infonce_loss(
+    representations: torch.Tensor,
+    positive_pair_weights: torch.Tensor,
+    negative_pair_weights: torch.Tensor,
+    item_scales: torch.Tensor,
+    temperature: float,
+) -> torch.Tensor:
+    if representations.size(0) <= 1:
+        return representations.new_tensor(0.0)
+    if temperature <= 0:
+        raise ValueError(f"l2_infonce_temperature must be positive, got {temperature}")
+
+    representations = F.normalize(representations.float(), p=2, dim=1)
+    similarity = (representations @ representations.T) / temperature
+
+    positive_pair_weights = torch.maximum(positive_pair_weights.float(), positive_pair_weights.T.float())
+    negative_pair_weights = torch.maximum(negative_pair_weights.float(), negative_pair_weights.T.float())
+    if item_scales.numel() > 0:
+        pair_scale = torch.sqrt(torch.outer(item_scales.float(), item_scales.float()).clamp_min(0.0))
+        positive_pair_weights = positive_pair_weights * pair_scale
+        negative_pair_weights = negative_pair_weights * pair_scale
+
+    eye_mask = torch.eye(similarity.size(0), dtype=torch.bool, device=similarity.device)
+    positive_pair_weights = positive_pair_weights.masked_fill(eye_mask, 0.0)
+    negative_pair_weights = negative_pair_weights.masked_fill(eye_mask, 0.0)
+
+    active_pair_mask = (positive_pair_weights > 0.0) | (negative_pair_weights > 0.0)
+    positive_row_weight = positive_pair_weights.sum(dim=1)
+    if not torch.any(positive_row_weight > 0.0):
+        return representations.new_tensor(0.0)
+
+    # Empty rows can appear when an item has neither positive nor negative graph pairs in the
+    # current batch. Using exp(similarity - row_max) * 0 on those rows produces inf * 0 = NaN.
+    # We therefore stabilize only over active entries and force empty rows to stay identically zero.
+    masked_similarity = similarity.masked_fill(~active_pair_mask, float("-inf"))
+    row_has_active = active_pair_mask.any(dim=1)
+    row_max = torch.where(
+        row_has_active,
+        masked_similarity.max(dim=1).values,
+        torch.zeros_like(similarity[:, 0]),
+    )
+    stable_logits = masked_similarity - row_max.unsqueeze(1)
+    stable_logits = stable_logits.masked_fill(~active_pair_mask, float("-inf"))
+    stabilized_exp = torch.where(
+        active_pair_mask,
+        torch.exp(stable_logits),
+        torch.zeros_like(stable_logits),
+    )
+
+    numerator = torch.sum(stabilized_exp * positive_pair_weights, dim=1)
+    denominator = numerator + torch.sum(stabilized_exp * negative_pair_weights, dim=1)
+
+    valid_rows = numerator > 0.0
+    if not torch.any(valid_rows):
+        return representations.new_tensor(0.0)
+
+    per_item = torch.zeros_like(numerator)
+    per_item[valid_rows] = -torch.log(
+        numerator[valid_rows].clamp_min(1e-12) / denominator[valid_rows].clamp_min(1e-12)
+    )
+
+    if item_scales.numel() > 0:
+        row_weights = item_scales.float() * valid_rows.float()
+    else:
+        row_weights = valid_rows.float()
+    denom = row_weights.sum().clamp(min=1e-6)
+    return torch.sum(per_item * row_weights) / denom
+
+
+def _weighted_l2_ranking_contrastive_loss(
+    representations: torch.Tensor,
+    positive_pair_weights: torch.Tensor,
+    negative_pair_weights: torch.Tensor,
+    item_scales: torch.Tensor,
+    margin: float,
+    positive_topk: int,
+    negative_topk: int,
+) -> torch.Tensor:
+    if representations.size(0) <= 1:
+        return representations.new_tensor(0.0)
+    if margin < 0.0:
+        raise ValueError(f"l2_ranking_margin must be non-negative, got {margin}")
+
+    representations = F.normalize(representations.float(), p=2, dim=1)
+    similarity = representations @ representations.T
+
+    positive_pair_weights = positive_pair_weights.float().clone()
+    negative_pair_weights = negative_pair_weights.float().clone()
+    eye_mask = torch.eye(similarity.size(0), dtype=torch.bool, device=similarity.device)
+    positive_pair_weights = positive_pair_weights.masked_fill(eye_mask, 0.0)
+    negative_pair_weights = negative_pair_weights.masked_fill(eye_mask, 0.0)
+
+    if item_scales.numel() > 0:
+        pair_scale = torch.sqrt(torch.outer(item_scales.float(), item_scales.float()).clamp_min(0.0))
+        positive_pair_weights = positive_pair_weights * pair_scale
+        negative_pair_weights = negative_pair_weights * pair_scale
+
+    pos_k = min(max(int(positive_topk), 1), positive_pair_weights.size(1))
+    neg_k = min(max(int(negative_topk), 1), negative_pair_weights.size(1))
+    pos_values, pos_indices = torch.topk(positive_pair_weights, k=pos_k, dim=1)
+    neg_values, neg_indices = torch.topk(negative_pair_weights, k=neg_k, dim=1)
+
+    pos_similarity = torch.gather(similarity, dim=1, index=pos_indices)
+    neg_similarity = torch.gather(similarity, dim=1, index=neg_indices)
+
+    triplet_weights = pos_values.unsqueeze(2) * neg_values.unsqueeze(1)
+    if not torch.any(triplet_weights > 0.0):
+        return representations.new_tensor(0.0)
+
+    penalties = F.relu(margin + neg_similarity.unsqueeze(1) - pos_similarity.unsqueeze(2))
+    denom = triplet_weights.sum().clamp(min=1e-6)
+    return torch.sum(penalties * triplet_weights) / denom
+
+
 def _scale_from_prior(prior: torch.Tensor, low: float, high: float) -> torch.Tensor:
     return low + (high - low) * prior
 
@@ -440,6 +570,18 @@ def _build_graph_tensors(cfg: MgrSidV2TrainConfig, device: torch.device, n_items
     semantic_graph = keep_topk_per_row(semantic_graph, topk=cfg.semantic_graph_topk)
     graph_tensors["semantic"] = _to_torch_dense(semantic_graph, device=device)
 
+    if cfg.l1_external_graph_path:
+        l1_graph = sparse.load_npz(cfg.l1_external_graph_path).tocsr().astype(np.float32)
+        if l1_graph.shape[0] != n_items:
+            l1_graph = l1_graph[:n_items, :n_items]
+        l1_graph = row_normalize(l1_graph)
+    elif cfg.l1_contrastive_graph_name == "semantic":
+        l1_graph = semantic_graph
+    else:
+        l1_graph = row_normalize(_view_matrix(cfg.l1_contrastive_graph_name).tocsr().astype(np.float32))
+    l1_graph = keep_topk_per_row(l1_graph, topk=cfg.graph_topk)
+    graph_tensors["l1_contrastive"] = _to_torch_dense(l1_graph, device=device)
+
     for name, tensor in list(graph_tensors.items()):
         if tensor.shape[0] != n_items:
             graph_tensors[name] = tensor[:n_items, :n_items]
@@ -494,6 +636,34 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         if not cfg.selective_separation_use_pair_reliability:
             selective_separation_pair_matrix = (selective_separation_pair_matrix > 0).float()
 
+    l2_infonce_negative_pair_matrix = None
+    if cfg.l2_contrastive_mode == "graph_infonce":
+        if not cfg.l2_infonce_negative_pair_csv:
+            raise ValueError("l2_infonce_negative_pair_csv is required when l2_contrastive_mode=graph_infonce")
+        l2_infonce_negative_pair_matrix = _load_selective_separation_pair_matrix(
+            path=cfg.l2_infonce_negative_pair_csv,
+            n_items=len(dataset),
+            device=device,
+            rule=cfg.l2_infonce_negative_pair_rule,
+        )
+        if not cfg.l2_infonce_use_pair_reliability:
+            l2_infonce_negative_pair_matrix = (l2_infonce_negative_pair_matrix > 0).float()
+
+    l2_ranking_negative_pair_matrix = None
+    if cfg.l2_ranking_contrastive_weight > 0:
+        if not cfg.l2_ranking_negative_pair_csv:
+            raise ValueError(
+                "l2_ranking_negative_pair_csv is required when l2_ranking_contrastive_weight > 0"
+            )
+        l2_ranking_negative_pair_matrix = _load_selective_separation_pair_matrix(
+            path=cfg.l2_ranking_negative_pair_csv,
+            n_items=len(dataset),
+            device=device,
+            rule=cfg.l2_ranking_negative_pair_rule,
+        )
+        if not cfg.l2_ranking_use_pair_reliability:
+            l2_ranking_negative_pair_matrix = (l2_ranking_negative_pair_matrix > 0).float()
+
     model = _build_model_from_cfg(cfg, in_dim=dataset.dim).to(device)
     if cfg.warm_start_ckpt_path:
         _load_checkpoint_state(model, cfg.warm_start_ckpt_path, device=device)
@@ -538,7 +708,10 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         total_coarse_graph_loss = 0.0
         total_mid_graph_loss = 0.0
         total_local_graph_loss = 0.0
+        total_l1_contrastive_pull_loss = 0.0
         total_l2_contrastive_pull_loss = 0.0
+        total_l2_ranking_loss = 0.0
+        total_l3_contrastive_pull_loss = 0.0
         total_semantic_coarse_loss = 0.0
         total_semantic_mid_loss = 0.0
         total_prefix_retain_l1_loss = 0.0
@@ -589,6 +762,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             mid_subgraph = _select_subgraph(graph_tensors["mid"], batch_indices)
             local_subgraph = _select_subgraph(graph_tensors["local"], batch_indices)
             semantic_subgraph = _select_subgraph(graph_tensors["semantic"], batch_indices)
+            l1_contrastive_subgraph = _select_subgraph(graph_tensors["l1_contrastive"], batch_indices)
 
             graph_losses = {
                 "coarse": _weighted_graph_smoothness_loss(level_representations[0], coarse_subgraph, graph_item_scale),
@@ -596,10 +770,48 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 "local": _weighted_graph_smoothness_loss(level_representations[2], local_subgraph, graph_item_scale),
             }
             l2_contrastive_pull = batch_embeddings.new_tensor(0.0)
+            l2_ranking_loss = batch_embeddings.new_tensor(0.0)
+            l1_contrastive_pull = batch_embeddings.new_tensor(0.0)
+            l3_contrastive_pull = batch_embeddings.new_tensor(0.0)
+            if cfg.l1_contrastive_pull_weight > 0:
+                l1_contrastive_pull = _weighted_pairwise_pull_loss(
+                    level_representations[0],
+                    l1_contrastive_subgraph,
+                    semantic_item_scale,
+                )
             if cfg.l2_contrastive_pull_weight > 0:
-                l2_contrastive_pull = _weighted_pairwise_pull_loss(
+                if cfg.l2_contrastive_mode == "pairwise_pull":
+                    l2_contrastive_pull = _weighted_pairwise_pull_loss(
+                        level_representations[1],
+                        mid_subgraph,
+                        graph_item_scale,
+                    )
+                elif cfg.l2_contrastive_mode == "graph_infonce":
+                    pair_subgraph = _select_subgraph(l2_infonce_negative_pair_matrix, batch_indices)
+                    l2_contrastive_pull = _weighted_graph_guided_infonce_loss(
+                        level_representations[1],
+                        positive_pair_weights=mid_subgraph,
+                        negative_pair_weights=pair_subgraph,
+                        item_scales=graph_item_scale,
+                        temperature=cfg.l2_infonce_temperature,
+                    )
+                else:
+                    raise ValueError(f"Unsupported l2_contrastive_mode: {cfg.l2_contrastive_mode}")
+            if cfg.l2_ranking_contrastive_weight > 0:
+                ranking_negative_subgraph = _select_subgraph(l2_ranking_negative_pair_matrix, batch_indices)
+                l2_ranking_loss = _weighted_l2_ranking_contrastive_loss(
                     level_representations[1],
-                    mid_subgraph,
+                    positive_pair_weights=mid_subgraph,
+                    negative_pair_weights=ranking_negative_subgraph,
+                    item_scales=graph_item_scale,
+                    margin=cfg.l2_ranking_margin,
+                    positive_topk=cfg.l2_ranking_positive_topk,
+                    negative_topk=cfg.l2_ranking_negative_topk,
+                )
+            if cfg.l3_contrastive_pull_weight > 0:
+                l3_contrastive_pull = _weighted_pairwise_pull_loss(
+                    level_representations[2],
+                    local_subgraph,
                     graph_item_scale,
                 )
             if cfg.semantic_retention_mode == "smoothness":
@@ -699,7 +911,10 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 + cfg.coarse_weight * graph_losses["coarse"]
                 + cfg.mid_weight * graph_losses["mid"]
                 + cfg.local_weight * graph_losses["local"]
+                + cfg.l1_contrastive_pull_weight * l1_contrastive_pull
                 + cfg.l2_contrastive_pull_weight * l2_contrastive_pull
+                + cfg.l2_ranking_contrastive_weight * l2_ranking_loss
+                + cfg.l3_contrastive_pull_weight * l3_contrastive_pull
                 + cfg.semantic_coarse_weight * graph_losses["semantic_coarse"]
                 + cfg.semantic_mid_weight * graph_losses["semantic_mid"]
                 + cfg.prefix_retention_l1_weight * prefix_retain_l1
@@ -720,7 +935,10 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             total_coarse_graph_loss += float(graph_losses["coarse"].item())
             total_mid_graph_loss += float(graph_losses["mid"].item())
             total_local_graph_loss += float(graph_losses["local"].item())
+            total_l1_contrastive_pull_loss += float(l1_contrastive_pull.item())
             total_l2_contrastive_pull_loss += float(l2_contrastive_pull.item())
+            total_l2_ranking_loss += float(l2_ranking_loss.item())
+            total_l3_contrastive_pull_loss += float(l3_contrastive_pull.item())
             total_semantic_coarse_loss += float(graph_losses["semantic_coarse"].item())
             total_semantic_mid_loss += float(graph_losses["semantic_mid"].item())
             total_prefix_retain_l1_loss += float(prefix_retain_l1.item())
@@ -739,7 +957,10 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             "coarse_graph_loss": total_coarse_graph_loss,
             "mid_graph_loss": total_mid_graph_loss,
             "local_graph_loss": total_local_graph_loss,
+            "l1_contrastive_pull_loss": total_l1_contrastive_pull_loss,
             "l2_contrastive_pull_loss": total_l2_contrastive_pull_loss,
+            "l2_ranking_loss": total_l2_ranking_loss,
+            "l3_contrastive_pull_loss": total_l3_contrastive_pull_loss,
             "semantic_coarse_loss": total_semantic_coarse_loss,
             "semantic_mid_loss": total_semantic_mid_loss,
             "prefix_retain_l1_loss": total_prefix_retain_l1_loss,
@@ -781,7 +1002,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 best["best_collision_ckpt"] = str(ckpt)
 
         logger.info(
-            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f l2_pull=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f sep_l1=%.6f sep_l2=%.6f sep_l3=%.6f collision=%s",
+            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f l1_pull=%.6f l2_pull=%.6f l2_rank=%.6f l3_pull=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f sep_l1=%.6f sep_l2=%.6f sep_l3=%.6f collision=%s",
             epoch,
             record["total_loss"],
             record["recon_loss"],
@@ -789,7 +1010,10 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             record["coarse_graph_loss"],
             record["mid_graph_loss"],
             record["local_graph_loss"],
+            record["l1_contrastive_pull_loss"],
             record["l2_contrastive_pull_loss"],
+            record["l2_ranking_loss"],
+            record["l3_contrastive_pull_loss"],
             record["semantic_coarse_loss"],
             record["semantic_mid_loss"],
             record["prefix_retain_l1_loss"],

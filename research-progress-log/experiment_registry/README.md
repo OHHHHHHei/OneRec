@@ -71,23 +71,23 @@ python scripts/validate_experiment_registry.py
 
 ## 实验记录流水线
 
-这套 registry（登记表）只记录 finalized result（定稿结果），不记录 running run（运行中任务）的中间状态。中间状态留在 stage README（阶段快照）和 `CURRENT_STATE.md`（当前状态）里。
+这套 registry（登记表）只记录 finalized result（定稿结果），不记录 running run（运行中任务）的中间状态。中间状态默认留在对话、日志和运行脚本里；只有当它属于 finalized method design（定稿方法设计）或改变 next-step decision（下一步决策）时，才写入长期文档。
 
 ### Stage 1: launch（启动）
 
 当一个实验正式启动时：
 
-1. 在 `research-progress-log/experiment_launches/<date>_<name>/` 创建或更新 stage README（阶段快照）。
-2. 记录 experiment purpose（实验目的）、variant（变体）、config（配置）、script（脚本）、output dir（输出目录）、log path（日志路径）、GPU（显卡）和初始 status（状态）。
-3. 如果它是 active mainline（活跃主线）实验，更新 `CURRENT_STATE.md`（当前状态）。
-4. 不写入 `tokenizer_registry.csv` / `sft_registry.csv` / `rl_registry.csv`，因为还没有 finalized result（定稿结果）。
+1. 不写入 `tokenizer_registry.csv` / `sft_registry.csv` / `rl_registry.csv`，因为还没有 finalized result（定稿结果）。
+2. 默认不更新 stage README（阶段快照）或 `CURRENT_STATE.md`（当前状态）。
+3. 只有当 launch（启动）本身伴随新的 method design（方法设计）定稿、或改变 active mainline（活跃主线）/ next-step decision（下一步决策）时，才更新对应长期文档。
+4. GPU（显卡）、tmux（终端复用器）、日志路径等运行细节优先在对话和脚本里同步，不作为长期文档必填项。
 
 ### Stage 2: running（运行中）
 
 当实验仍在运行时：
 
-1. 只在 stage README（阶段快照）或 `CURRENT_STATE.md`（当前状态）里维护 running status（运行状态）。
-2. 可以记录 `tmux`（终端复用器） session（会话）、W&B（实验追踪） run id、当前日志和预计完成时间。
+1. 默认不维护长期 running status（运行状态）文档。
+2. `tmux`（终端复用器） session（会话）、W&B（实验追踪） run id、当前日志和预计完成时间优先在对话中同步。
 3. 不把 partial metric（中间指标）写入 split registry（分表总账）。
 
 ### Stage 3: tokenizer finalized（分词器定稿）

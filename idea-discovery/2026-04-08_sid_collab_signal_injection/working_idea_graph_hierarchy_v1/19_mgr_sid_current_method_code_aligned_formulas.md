@@ -4,6 +4,8 @@
 **用途**：这份文档用于把当前仓库里已经实现并实际跑过实验的 `MGR-SID v1 / v2` 方法写成一版严格 code-aligned 的公式说明，方便后续写论文 Method 章节时直接对齐。  
 **重要说明**：本文档只描述**当前代码真实实现**，不描述尚未接入训练的理想化扩展。凡是这里写出的公式，都应当能在当前代码中找到直接对应。
 
+**2026-04-18 主线收口说明**：当前 active mainline（活跃主线）已经切换为第 11 节的 `R720a`。前面关于 `v1/v2/R690` 的内容保留为 code provenance（代码追溯）和 baseline reference（基线参考），不再作为新实验的默认出发点。
+
 ## 1. 对应代码范围
 
 当前文档主要对应以下实现：
@@ -829,15 +831,202 @@ $$
 - `coarse_weight = 0.0`，`local_weight = 0.0`，`semantic_mid_weight = 0.0`。
 - 这个目标不限制 active L1 code count（活跃第一层码数量），只改变 `L1`（第一层）和 `L2`（第二层）的训练信号分工。
 
-## 11. 当前代码没有做什么
+### 10.2 R690 Experimental Objective（R690 实验目标）
+
+`R690a / R690b` 不是当前 v2 的替代定义，而是一个 `CoST-inspired`（受 CoST 启发）的 contrastive quantization（对比式量化）实验分支。
+
+从这一版开始，`train_v2.py` 增加了三类新的可选项：
+
+- `l1_contrastive_pull_weight`（第一层成对拉近权重）
+- `l2_contrastive_mode`（第二层对比模式），支持：
+  - `pairwise_pull`
+  - `graph_infonce`
+- `l3_contrastive_pull_weight`（第三层成对拉近权重）
+
+当 `l2_contrastive_mode = graph_infonce` 时，第二层目标可写成
+
+$$
+\mathcal L_{\mathrm{InfoNCE}}^{(2)}
+=
+- \frac{1}{|\mathcal B'|}
+\sum_{i\in \mathcal B'}
+\log
+\frac{
+\sum_{j} A^{m}_{ij}\exp(\mathrm{sim}(\mathbf H^{(2)}_i,\mathbf H^{(2)}_j)/\tau)
+}{
+\sum_{j} A^{m}_{ij}\exp(\mathrm{sim}(\mathbf H^{(2)}_i,\mathbf H^{(2)}_j)/\tau)
++
+\sum_{k} P^{\mathrm{weak}}_{ik}\exp(\mathrm{sim}(\mathbf H^{(2)}_i,\mathbf H^{(2)}_k)/\tau)
+},
+$$
+
+其中：
+
+- $A^{m}$ 是 `mid_view_name`（中层图视图）对应的 batch subgraph（batch 子图），作为第二层正样本权重。
+- $P^{\mathrm{weak}}$ 是 semantic-near + mid-weak pairs（语义近但中图弱连接物品对）构成的负样本矩阵。
+- $\tau$ 是 `l2_infonce_temperature`（第二层对比温度）。
+
+`R690a` 的实验目标是
+
+$$
+\mathcal L_{\mathrm{R690a}}
+=
+\mathcal L_{\mathrm{sem}}
++
+0.10\,
+\mathcal L_{\mathrm{InfoNCE}}^{(2)}.
+$$
+
+`R690b` 则在同一第二层对比目标外，再加轻量前后层保护：
+
+$$
+\mathcal L_{\mathrm{R690b}}
+=
+\mathcal L_{\mathrm{sem}}
++
+0.03\,
+\mathcal L_{\mathrm{pull}}^{(1)}
++
+0.10\,
+\mathcal L_{\mathrm{InfoNCE}}^{(2)}
++
+0.02\,
+\mathcal L_{\mathrm{pull}}^{(3)}.
+$$
+
+其中：
+
+- $\mathcal L_{\mathrm{pull}}^{(1)}$ 使用 semantic graph（语义图）上的 pairwise pull（成对拉近）。
+- $\mathcal L_{\mathrm{pull}}^{(3)}$ 使用 local graph（局部图）上的 pairwise pull（成对拉近）。
+- `R690b` 额外设置 `hierarchy_stopgrad_previous_levels = true`，使 `L2/L3`（第二层/第三层）辅助损失不再直接反传改写前层前缀。
+
+## 11. R720a：当前主线候选的 L2 排序对比实现
+
+`R720a` 是当前已经接入代码的主线候选，不再是只停留在讨论里的方法。它对应的核心配置是：
+
+- `config/experiments/sid_train_industrial_mgr_sid_collab_ranking_mainline.yaml`
+- `src/onerec/experiments/mgr_sid/train_collab_ranking_sid.py`
+- `scripts/experiment_mgr_sid_collab_ranking_train.py`
+- `scripts/experiment_mgr_sid_collab_ranking_pair_source.py`
+- `scripts/experiment_mgr_sid_collab_ranking_train_generate.sh`
+
+它保留 semantic RQ-VAE backbone（语义残差量化骨干）：
+
+$$
+\mathcal L_{\mathrm{base}}
+=
+\mathcal L_{\mathrm{rec}}
++
+\mathcal L_{\mathrm{rq}}.
+$$
+
+三层职责被固定为：
+
+$$
+L1:\ \text{coarse collaborative routing},
+\qquad
+L2:\ \text{collaborative ranking branch},
+\qquad
+L3:\ \text{local refinement}.
+$$
+
+其中 `L2`（第二层）不再使用 graph smoothness（图平滑），而是使用 ranking contrastive loss（排序对比损失）：对每个 anchor item（锚点物品） $i$，从 `fagsp_mid_base`（基础中层图）中取 positive collaborative items（协同正样本） $p$，从 semantic-near but mid-weak pairs（语义近但中图弱连接物品对）中取 hard negative items（困难负样本） $n$，要求：
+
+$$
+s_{ip}^{(2)}
+\ge
+s_{in}^{(2)}
++
+m.
+$$
+
+当前代码中的具体损失为：
+
+$$
+\mathcal L_{\mathrm{rank}}^{(2)}
+=
+\frac{
+\sum_i
+\sum_{p \in \operatorname{TopK}^{+}(i)}
+\sum_{n \in \operatorname{TopK}^{-}(i)}
+w_{ip}^{+} w_{in}^{-}
+\left[
+m+s_{in}^{(2)}-s_{ip}^{(2)}
+\right]_+
+}{
+\sum_i
+\sum_{p \in \operatorname{TopK}^{+}(i)}
+\sum_{n \in \operatorname{TopK}^{-}(i)}
+w_{ip}^{+} w_{in}^{-}
+}.
+$$
+
+这里：
+
+$$
+s_{ij}^{(2)}
+=
+\operatorname{cos}
+\left(
+\tilde{\mathbf h}_i^{(2)},
+\tilde{\mathbf h}_j^{(2)}
+\right),
+$$
+
+并且在 `hierarchy_stopgrad_previous_levels = true` 时：
+
+$$
+\tilde{\mathbf h}_i^{(2)}
+=
+\operatorname{sg}\left[\mathbf q_i^{(1)}\right]
++
+\mathbf q_i^{(2)}.
+$$
+
+因此 `L2` 排序对比主要更新第二层分叉，而不是直接改写第一层粗路由。
+
+当前 `R720a` 的总目标是：
+
+$$
+\mathcal L_{\mathrm{R720a}}
+=
+\mathcal L_{\mathrm{rec}}
++
+\mathcal L_{\mathrm{rq}}
++
+0.05\,\mathcal L_{\mathrm{pull}}^{(1)}
++
+0.03\,\mathcal L_{\mathrm{rank}}^{(2)}
++
+0.03\,\mathcal L_{\mathrm{pull}}^{(3)}.
+$$
+
+其中：
+
+- $\mathcal L_{\mathrm{pull}}^{(1)}$ 使用 `coarse_purified`（净化粗图）。
+- $\mathcal L_{\mathrm{rank}}^{(2)}$ 使用 `fagsp_mid_base`（基础中层图）作为正样本图。
+- hard negatives（困难负样本）由 `semantic-near + mid-weak`（语义近 + 中图弱连接）规则离线生成。
+- $\mathcal L_{\mathrm{pull}}^{(3)}$ 使用 `local_purified`（净化局部图）。
+- `semantic_coarse_weight = 0` 且 `semantic_mid_weight = 0`，当前主线不再额外堆 semantic retention（语义保持）项。
+- `mid_weight = 0`，当前主线不同时叠加 `L2` graph smoothness（第二层图平滑）。
+
+当前初始超参数是：
+
+$$
+m=0.1,\qquad
+\operatorname{TopK}^{+}=8,\qquad
+\operatorname{TopK}^{-}=16.
+$$
+
+## 12. 当前代码没有做什么
 
 为了防止后续写作时把“想做的版本”和“已经实现的版本”混在一起，这里明确记录：当前代码**没有**做下面这些事。
 
-### 11.1 没有在训练中接入 online uncertainty
+### 12.1 没有在训练中接入 online uncertainty
 
 虽然 `experiment_mgr_sid_v2_proxy_sanity.py` 里分析过 online uncertainty，但当前 `train_v2.py` 训练只读取 `offline_combined`，没有把 online uncertainty 接入 loss。
 
-### 11.2 没有定义 level-wise ambiguity $a_i^{(l)}$
+### 12.2 没有定义 level-wise ambiguity $a_i^{(l)}$
 
 当前代码中 ambiguity 是 item-level scalar
 
@@ -851,15 +1040,15 @@ $$
 a_i^{(l)}.
 $$
 
-### 11.3 没有使用 KL / neighborhood distribution matching 作为 semantic retention
+### 12.3 没有使用 KL / neighborhood distribution matching 作为 semantic retention
 
 当前所谓 semantic retention，真实实现不是 KL 保邻域分布，而是**semantic graph 上的 weighted smoothness loss**。
 
-### 11.4 没有在 level 3 上施加 semantic retention
+### 12.4 没有在 level 3 上施加 semantic retention
 
 当前 semantic graph loss 只加在 level 1 和 level 2。
 
-### 11.5 没有 learned gate
+### 12.5 没有 learned gate
 
 当前 graph-role assignment 仍然是固定的：
 
@@ -871,7 +1060,7 @@ L2 \leftarrow \text{mid},
 L3 \leftarrow \text{local}.
 $$
 
-## 12. 一句话总结
+## 13. 一句话总结
 
 如果只用一句话总结当前代码版本的方法，那么最准确的表述是：
 

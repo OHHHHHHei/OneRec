@@ -1,0 +1,22 @@
+model:
+  base_model: /data/leejt/OneRec/output_weights/experiments/mgr_sid_r680a_sft_eval_20260418/title_on_desc_p05_2gpu/sft/final_checkpoint
+data:
+  test_file: ./data_experiment/Amazon/r680a_l1_smooth_l2_contrastive_multihop/test/Industrial_and_Scientific_5_2016-10-2018-11.csv
+  info_file: ./data_experiment/Amazon/r680a_l1_smooth_l2_contrastive_multihop/info/Industrial_and_Scientific_5_2016-10-2018-11.txt
+  category: Industrial_and_Scientific
+training:
+  seed: 42
+output:
+  output_dir: ./results/experiments/mgr_sid_r680a_sft_eval_20260418/final_result_sft_mgr_r680a_title_on_desc_p05_2gpu_Industrial_and_Scientific.json
+batch_size: 8
+K: 0
+num_beams: 50
+max_new_tokens: 256
+length_penalty: 0.0
+temperature: 1.0
+guidance_scale: null
+runtime:
+  launcher: parallel
+  parallel: true
+  cuda_visible_devices: "5,7"
+  nproc_per_node: 2

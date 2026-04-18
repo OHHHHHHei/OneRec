@@ -1,6 +1,6 @@
 # 2026-04-18 `R680a` L1 Smooth + L2 Contrastive + L3 Smooth（第一层平滑 + 第二层对比式 + 第三层平滑）
 
-Status（状态）: `launched_running（已启动运行中）`
+Status（状态）: `tokenizer_generated（分词器已生成）`
 Launch date（启动日期）: `2026-04-18`
 
 ## 目的
@@ -114,10 +114,54 @@ L_total =
   - 还没有出现像 `R670a` 那样一眼可判的 prefix collapse（前缀塌缩）终局
   - 但早期 collision recovery（冲突恢复）明显偏慢，后续需要继续盯 generate（生成）结果
 
+## Final Tokenizer Result（最终分词器结果）
+
+- run_dir（运行目录）：
+  - `/data/leejt/OneRec/output_weights/experiments/mgr_sid_r680_l1_smooth_l2_contrastive_multihop_20260418/industrial_r680a_l1_smooth_l2_contrastive_multihop/Apr-18-2026_02-23-43`
+- best train collision（训练最佳冲突率）：
+  - `0.0984807379`
+- best epoch（最佳轮次）：
+  - `8749`
+- best loss（最佳损失）：
+  - `0.3416493237`
+- final epoch collision（最终轮次冲突率）：
+  - `0.1025501899`
+- generated collision（生成后冲突）：
+  - `11 / 3686 = 0.0029842648`
+- max conflict（最大冲突簇）：
+  - `2`
+- active L1（活跃第一层码）：
+  - `226`
+- mean / median / max L1 bucket size（第一层桶大小均值 / 中位数 / 最大值）：
+  - `16.31 / 15 / 117`
+- unique L2 pairs（唯一第二层前缀数）：
+  - `2833`
+- generated SID index（生成语义标识索引）：
+  - `/data/leejt/OneRec/output_weights/experiments/mgr_sid_r680_l1_smooth_l2_contrastive_multihop_20260418/generated_indices/Industrial_and_Scientific.r680a_l1_smooth_l2_contrastive_multihop.index.json`
+
+## Tokenizer-Side Comparison（分词器侧对比）
+
+| tokenizer（分词器） | active L1（活跃第一层码） | unique L2 pairs（唯一第二层前缀数） | generated collision（生成后冲突） | max conflict（最大冲突簇） |
+| --- | ---: | ---: | ---: | ---: |
+| original MiniOneRec | 48 | 2295 | 16 / 3686 | 3 |
+| v2 | 203 | 2680 | 13 / 3686 | 2 |
+| R650a | 199 | 2782 | 11 / 3686 | 2 |
+| R660a | 181 | 2598 | 12 / 3686 | 2 |
+| R680a | 226 | 2833 | 11 / 3686 | 2 |
+
+## 当前判读
+
+- `R680a` 没有复现 `R670a` 的 prefix collapse（前缀塌缩）；它是一个明确的 non-catastrophic tokenizer（非灾难性分词器）。
+- 单看 generated collision（生成后冲突），`R680a` 已经达到和 `R650a` 相同的 `11 / 3686`，并优于 `R660a` 的 `12 / 3686`。
+- 但它的 `active L1`（活跃第一层码）和 `unique L2 pairs`（唯一第二层前缀数）都更高，说明这条线更像是在“把中层分辨力拉开”，而不是在“收紧粗前缀”。
+- 这给出的最稳妥结论不是“已经更好”，而是：
+  - `L2 contrastive interface`（第二层对比式接口）至少没有把 tokenizer（分词器）直接打坏
+  - 是否真的带来更好的 SID space（SID 空间），还要看 downstream `SFT -> evaluate`（监督微调到评测）
+
 ## Decision Rule（决策规则）
 
-- 如果 tokenizer/generate（分词器训练与生成）非灾难性，则直接推进 `title_history2sid_on + desc_align_p05` 的 `SFT -> evaluate`（监督微调到评测）
-- 如果出现接近 `R670a` 的 prefix collapse（前缀塌缩），优先怀疑：
-  - `local_multihop`（局部多跳图）正样本覆盖不足或过强
-  - `semantic-near + multihop-weak`（语义近 + 多跳弱连接）负样本仍含伪负样本
-  - stop-gradient prefix（前缀停梯度）导致层间脱耦过强
+- 当前状态下，`R680a` 已满足“非灾难性 tokenizer/generate（非灾难性分词器训练与生成）”条件，可以推进 `title_history2sid_on + desc_align_p05` 的 `SFT -> evaluate`（监督微调到评测）。
+- 若后续下游为负，优先怀疑：
+  - `local_multihop`（局部多跳图）作为 `L2` 正样本载体仍然不够精准
+  - `semantic-near + multihop-weak`（语义近 + 多跳弱连接）负样本构造仍含伪负样本
+  - stop-gradient prefix（前缀停梯度）虽避免塌缩，但也可能让层间协商不足

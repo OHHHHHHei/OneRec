@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r710_v2_no_semantic_retention_20260418/industrial_r710a_v2_no_semantic_retention/Apr-18-2026_22-23-12/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r710_v2_no_semantic_retention_20260418/generated_indices/Industrial_and_Scientific.r710a_v2_no_semantic_retention.index.json",
+  "collision_rate": 0.002984264785675529,
+  "max_conflict": 2,
+  "collision_rounds_used": 20,
+  "num_items": 3686
+}

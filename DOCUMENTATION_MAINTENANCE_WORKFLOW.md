@@ -2,7 +2,7 @@
 
 Status（状态）: `canonical-policy（权威规范）`
 
-Last updated（更新日期）: `2026-04-17`
+Last updated（更新日期）: `2026-04-18`
 
 ## 目的
 
@@ -81,7 +81,7 @@ Last updated（更新日期）: `2026-04-17`
 
 - 角色：`canonical（权威）`
 - 用途：唯一 current-state document（当前状态文档）
-- 更新频率：高
+- 更新频率：中低，只在 decision checkpoint（决策检查点）更新
 - 必须维护的内容：
   - 当前问题
   - 当前方法骨架
@@ -96,7 +96,7 @@ Last updated（更新日期）: `2026-04-17`
 
 - 角色：`registry（总账）`
 - 用途：按实验类型拆分的实验结果总账
-- 更新频率：高
+- 更新频率：中，只在 finalized result（定稿结果）产生后更新
 - 必须维护的内容：
   - tokenizer registry（分词器登记表）
   - SFT registry（监督微调登记表）
@@ -159,7 +159,7 @@ Last updated（更新日期）: `2026-04-17`
 - 用途：阶段索引，不是当前状态摘要
 - 更新频率：中
 - 什么时候更新：
-  - 新 stage（阶段）开始
+  - 新 research idea / method branch（研究想法 / 方法分支）被正式设计并需要进入阅读索引
   - 某 stage 的角色发生收口或结束
 
 #### 9. `research-progress-log/research_progress_log.tex`
@@ -186,7 +186,7 @@ Last updated（更新日期）: `2026-04-17`
 
 - 角色：`stage-snapshot（阶段快照）`
 - 用途：记录单个 stage / run（阶段 / 运行）的发起背景和产物位置
-- 更新频率：仅在该 run 活跃时更新
+- 更新频率：低；优先在 method design（方法设计）和 finalized result（定稿结果）时更新
 - 结束后策略：
   - 保留
   - 冻结
@@ -298,31 +298,27 @@ Snapshot date（快照日期）: `2026-04-14`
 
 ## 文档维护流水线
 
-### 流程 A：新实验启动
+### 流程 A：新想法 / 新方法设计
 
-当一个新 experiment（实验）被正式启动时：
+当一个 new idea / method branch（新想法 / 新方法分支）被正式设计，且后续需要被其他人或 agent（智能体）复用时：
 
-1. 在 `research-progress-log/experiment_launches/<date>_<name>/` 建立 run folder（运行目录）。
-2. 创建该 run 的 `README.md`，记录：
-   - 目的
-   - 变体定义
-   - 配置
-   - 脚本
-   - 输出目录
-   - 初始状态
-3. 如果它属于活跃分支，更新：
-   - `refine-logs/README.md`
-4. 只有在它改变当前主线判断时，才更新：
-   - `CURRENT_STATE.md`
+1. 优先更新已有 method / plan document（方法 / 计划文档），而不是新建零散总结。
+2. 如果确实是新的 research branch（研究分支），可以在 `idea-discovery/` 或 `research-progress-log/experiment_launches/<date>_<name>/` 下创建 stage note（阶段笔记），记录：
+   - motivation（动机）
+   - method definition（方法定义）
+   - loss / graph design（损失 / 图设计）
+   - planned validation（计划验证）
+3. 只有在它改变 active question（活跃问题）、method narrative（方法叙事）或 next-step decision（下一步决策）时，才更新 `CURRENT_STATE.md`。
+4. 不因为单纯 launch（启动）、GPU allocation（显卡分配）、tmux session（终端复用器会话）或 debugging（调试）更新文档。
 5. 不写入 split registry（分表总账），因为 registry（登记表）只记录 finalized result（定稿结果）。
 
 详细实验记录规则见：
 
 - [research-progress-log/experiment_registry/README.md](/home/leejt/OneRec/research-progress-log/experiment_registry/README.md)
 
-### 流程 B：实验完成
+### 流程 B：实验验证完成
 
-当一个 experiment（实验）跑完后：
+当一个 experiment validation（实验验证）完成，结果可以作为 finalized result（定稿结果）使用时：
 
 1. 先更新 `research-progress-log/experiment_registry/` 下对应 split registry（分表总账）
 2. 同步更新 `downstream_scoreboard.csv`（下游指标榜单），如果它是 SFT/RL evaluate（监督微调/强化学习评测）结果
@@ -341,6 +337,14 @@ Snapshot date（快照日期）: `2026-04-14`
    - `research_progress_log.tex`
 
 禁止把 partial metric（中间指标）或 running status（运行状态）写入 split registry（分表总账）。
+
+不要求为以下事件更新文档：
+
+- launch only（仅启动）
+- tmux / process check（终端复用器 / 进程检查）
+- GPU allocation（显卡分配）
+- transient debugging（临时调试）
+- smoke test（冒烟测试），除非它改变了方法实现或解释了 finalized result（定稿结果）
 
 ### 流程 C：方法实现变化
 
@@ -395,6 +399,13 @@ Snapshot date（快照日期）: `2026-04-14`
 3. 如果必须新建文档，先为它指定状态标签
 4. 新文档创建后，要在相应导航页中补入口
 5. 若文档已过时，要么降级为 `snapshot（快照）` / `discussion-only（仅讨论）`，要么移入 `archive（归档）`
+
+同时，agent（智能体）应避免为了“看起来同步”而频繁维护文档。默认只在两个节点写文档：
+
+1. 一个新的 idea / method（想法 / 方法）已经收束到可执行设计。
+2. 一个 experiment validation（实验验证）已经完成，并且结果需要进入 registry（总账）或改变下一步决策。
+
+中间的启动、监控、排错和临时状态，优先在对话里同步，不写入长期文档。
 
 ## 当前建议的最小阅读链
 
