@@ -3,9 +3,19 @@
   "source_root": "/home/leejt/OneRec/data/Amazon",
   "output_root": "/home/leejt/OneRec/data_experiment/Amazon",
   "variants": {
-    "r690b_hier_cost_guided": {
-      "index_json": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r690_cost_inspired_20260418/generated_indices/Industrial_and_Scientific.r690b_hier_cost_guided.index.json",
-      "variant_root": "/home/leejt/OneRec/data_experiment/Amazon/r690b_hier_cost_guided",
+    "original_l3_collab_local": {
+      "index_json": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_original_l3_collab_local_20260420/generated_indices/Industrial_and_Scientific.original_l3_collab_local.index.json",
+      "variant_root": "/home/leejt/OneRec/data_experiment/Amazon/original_l3_collab_local",
+      "num_items": 3686,
+      "split_counts": {
+        "train": 36259,
+        "valid": 4532,
+        "test": 4533
+      }
+    },
+    "original_l2_multihop_ranking": {
+      "index_json": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_original_l2_multihop_ranking_20260421/generated_indices/Industrial_and_Scientific.original_l2_multihop_ranking.index.json",
+      "variant_root": "/home/leejt/OneRec/data_experiment/Amazon/original_l2_multihop_ranking",
       "num_items": 3686,
       "split_counts": {
         "train": 36259,

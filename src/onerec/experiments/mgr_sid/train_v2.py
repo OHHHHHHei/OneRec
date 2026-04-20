@@ -116,9 +116,11 @@ class MgrSidV2TrainConfig:
     semantic_mid_weight: float = 0.025
     graph_scale_min: float = 0.5
     graph_scale_max: float = 1.5
+    coarse_use_inverse_ambiguity: bool = False
     semantic_scale_min: float = 0.5
     semantic_scale_max: float = 1.5
     coarse_view_name: str = "coarse_purified"
+    coarse_external_graph_path: str | None = None
     mid_view_name: str = "fagsp_mid_base"
     local_view_name: str = "local_purified"
     mid_external_graph_path: str | None = None
@@ -537,6 +539,12 @@ def _build_graph_tensors(cfg: MgrSidV2TrainConfig, device: torch.device, n_items
         "local": _view_matrix(cfg.local_view_name),
     }
 
+    if cfg.coarse_external_graph_path:
+        external_coarse = sparse.load_npz(cfg.coarse_external_graph_path).tocsr().astype(np.float32)
+        if external_coarse.shape[0] != n_items:
+            external_coarse = external_coarse[:n_items, :n_items]
+        selected["coarse"] = row_normalize(external_coarse)
+
     if cfg.mid_external_graph_path:
         external_mid = sparse.load_npz(cfg.mid_external_graph_path).tocsr().astype(np.float32)
         if external_mid.shape[0] != n_items:
@@ -743,6 +751,11 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
 
             prior_batch = ambiguity_prior.index_select(0, batch_indices)
             graph_item_scale = _scale_from_prior(prior_batch, cfg.graph_scale_min, cfg.graph_scale_max)
+            coarse_item_scale = (
+                _scale_from_prior(1.0 - prior_batch, cfg.graph_scale_min, cfg.graph_scale_max)
+                if cfg.coarse_use_inverse_ambiguity
+                else graph_item_scale
+            )
             semantic_item_scale = _scale_from_prior(
                 1.0 - prior_batch,
                 cfg.semantic_scale_min,
@@ -765,7 +778,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             l1_contrastive_subgraph = _select_subgraph(graph_tensors["l1_contrastive"], batch_indices)
 
             graph_losses = {
-                "coarse": _weighted_graph_smoothness_loss(level_representations[0], coarse_subgraph, graph_item_scale),
+                "coarse": _weighted_graph_smoothness_loss(level_representations[0], coarse_subgraph, coarse_item_scale),
                 "mid": _weighted_graph_smoothness_loss(level_representations[1], mid_subgraph, graph_item_scale),
                 "local": _weighted_graph_smoothness_loss(level_representations[2], local_subgraph, graph_item_scale),
             }

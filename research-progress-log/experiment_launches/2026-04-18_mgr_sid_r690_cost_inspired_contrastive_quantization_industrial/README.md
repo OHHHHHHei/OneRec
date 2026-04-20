@@ -1,8 +1,8 @@
 # Stage AD: `R690` CoST-inspired contrastive quantization（受 CoST 启发的对比式量化）
 
-Status（状态）: `tokenizer_generated（分词器已生成）`
+Status（状态）: `partial_sft_evaluated（部分完成 SFT 评测）`
 
-Last updated（更新日期）: `2026-04-18`
+Last updated（更新日期）: `2026-04-19`
 
 ## Goal（目标）
 
@@ -130,6 +130,33 @@ Last updated（更新日期）: `2026-04-18`
 - generated SID index（生成语义标识索引）:
   - `/data/leejt/OneRec/output_weights/experiments/mgr_sid_r690_cost_inspired_20260418/generated_indices/Industrial_and_Scientific.r690b_hier_cost_guided.index.json`
 
+### `R690b` downstream `SFT/evaluate`（监督微调/评测） result（结果）
+
+- SFT config（监督微调配置）:
+  - `config/experiments/sft_industrial_mgr_r690b_title_on_desc_p05.yaml`
+- evaluate config（评测配置）:
+  - `config/experiments/evaluate_industrial_mgr_r690b_title_on_desc_p05.yaml`
+- SFT output（监督微调输出）:
+  - `/data/leejt/OneRec/output_weights/experiments/mgr_sid_r690b_sft_eval_20260418/title_on_desc_p05/sft/final_checkpoint`
+- result json（结果文件）:
+  - `./results/experiments/mgr_sid_r690b_sft_eval_20260418/final_result_sft_mgr_r690b_title_on_desc_p05_Industrial_and_Scientific.json`
+- core metrics（核心指标）:
+  - `NDCG@1 = 0.06706`
+  - `NDCG@3 = 0.08149`
+  - `NDCG@5 = 0.08859`
+  - `NDCG@10 = 0.09719`
+  - `HR@1 = 0.06706`
+  - `HR@3 = 0.09221`
+  - `HR@5 = 0.10942`
+  - `HR@10 = 0.13611`
+- decoding diagnosis（解码诊断）:
+  - `root_branch_count = 33`
+  - `constraint_invalid_total = 0`
+  - `num_beams = 50 > first-step valid branches（首步有效分支数） = 33`
+- verdict（结论）:
+  - 结果低于当前 `v2_on_p05` 和严格配方对齐原版基线，不推进到 `RL`（强化学习）
+  - 由于 `constraint_invalid_total = 0`，问题更像是 `code space compression`（码本空间压缩）/ 前缀空间过紧，而不是非法约束解码
+
 ## Mid-Graph Clarification（中图澄清）
 
 这两个实验的 `mid graph`（中图）都**不是** `local_multihop`（局部多跳图）。
@@ -145,20 +172,19 @@ Last updated（更新日期）: `2026-04-18`
 
 ## Current Reading（当前判读）
 
-- `R690a` 是一个明确的 non-catastrophic tokenizer（非灾难性分词器）候选。
-  - 它没有塌缩。
-  - 同时 `L1`（第一层）也没有像 `R670a` 或 `R690b` 那样被压到非常少。
-  - 当前最像“值得推进 `SFT -> evaluate`（监督微调到评测）”的 `CoST-inspired`（受 CoST 启发）分支。
-- `R690b` 没有灾难性失败，但有明显的 over-compression（过度压缩）迹象。
-  - `active L1 = 33` 已经低于 original MiniOneRec（原版 MiniOneRec）的 `48`
-  - 这说明 `L1/L3` 轻量保护 + stop-gradient prefix（前缀停梯度）在当前配置下更像是把前缀空间压紧了，而不是只做轻量保护
-  - 因此它更像一个“有信息量但高风险”的结果，而不是当前首推候选
+- `R690b` 的 tokenizer（分词器）结果本身并没有塌缩，但下游 `SFT/evaluate`（监督微调/评测）已经给出负结论。
+  - `NDCG@10 = 0.09719`，低于当前 `v2_on_p05 = 0.10271`
+  - 也低于严格配方对齐原版基线 `0.09870`
+  - `root_branch_count = 33` 且 `constraint_invalid_total = 0`，说明问题更像是前缀空间压得太紧，而不是解码约束本身坏掉
+- `R690a` 仍然保留为 tokenizer-only（仅分词器侧）候选。
+  - 它没有像 `R690b` 那样出现这么强的前缀压缩
+  - 如果后面要继续回看 `CoST-inspired`（受 CoST 启发）这条支线，`R690a` 仍然比 `R690b` 更值得优先讨论
 
 ## Decision Rule（决策规则）
 
 - 当前结果已经说明：
-  - pure `L2 InfoNCE`（纯第二层对比损失）并没有自动塌缩
-  - 轻量层级保护也不一定天然更稳，因为 `R690b` 反而更容易把 `L1`（第一层）压得过紧
-- 当前最合理的下一步是：
-  - 优先推进 `R690a -> SFT -> evaluate`（监督微调到评测）
-  - `R690b` 是否推进，要取决于我们是否有意专门验证“过度前缀压缩”这条副线
+  - pure `L2 InfoNCE`（纯第二层对比损失）不一定会自动塌缩
+  - 轻量层级保护 + stop-gradient prefix（前缀停梯度）并不天然更稳，`R690b` 反而更容易把前缀空间压得过紧
+- 当前阶段结论是：
+  - `R690b` 不再推进
+  - 这条 `CoST-inspired`（受 CoST 启发）支线若要继续，只应把 `R690a` 作为可能的回看对象，而不是继续围绕 `R690b` 做下游推进

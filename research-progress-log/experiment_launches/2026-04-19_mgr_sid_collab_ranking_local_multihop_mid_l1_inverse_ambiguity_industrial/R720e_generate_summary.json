@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_collab_ranking_local_multihop_mid_l1_inverse_ambiguity_20260419/industrial_r720e_local_multihop_mid_l1_inverse_ambiguity/Apr-19-2026_21-39-32/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_collab_ranking_local_multihop_mid_l1_inverse_ambiguity_20260419/generated_indices/Industrial_and_Scientific.r720e_local_multihop_mid_l1_inverse_ambiguity.index.json",
+  "collision_rate": 0.00352685838307108,
+  "max_conflict": 2,
+  "collision_rounds_used": 20,
+  "num_items": 3686
+}

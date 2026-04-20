@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r720_l2_ranking_contrastive_20260418/industrial_r720a_l2_ranking_contrastive/Apr-18-2026_23-58-41/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r720_l2_ranking_contrastive_20260418/generated_indices/Industrial_and_Scientific.r720a_l2_ranking_contrastive.index.json",
+  "collision_rate": 0.0037981551817688553,
+  "max_conflict": 2,
+  "collision_rounds_used": 20,
+  "num_items": 3686
+}

@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_semantic_l1_collab_deeper_20260420/industrial_semantic_l1_collab_deeper/Apr-20-2026_19-10-34/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_semantic_l1_collab_deeper_20260420/generated_indices/Industrial_and_Scientific.semantic_l1_collab_deeper.index.json",
+  "collision_rate": 0.0037981551817688553,
+  "max_conflict": 2,
+  "collision_rounds_used": 20,
+  "num_items": 3686
+}

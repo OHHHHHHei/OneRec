@@ -31,7 +31,7 @@ Archive pointer（归档指针）:
 ## Active Reading Order（活跃阅读顺序）
 
 1. `/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md`
-2. `2026-04-18_mgr_sid_r720_l2_ranking_contrastive_industrial/README.md`
+2. `2026-04-19_mgr_sid_collab_ranking_local_multihop_mid_industrial/README.md`
 3. `/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md`
 
 All earlier stages（更早阶段） below are archived provenance（归档追溯材料）. They are kept for traceability（可追溯性）, not as active optimization targets（活跃优化目标）.

@@ -1,0 +1,27 @@
+{
+  "n": 4533,
+  "hr1": 0.0670637546878447,
+  "hr3": 0.09838958746966689,
+  "hr5": 0.11824398852856828,
+  "hr10": 0.15089344804765056,
+  "hr50": 0.24531215530553718,
+  "top1_same_l1": 0.2671519964703287,
+  "top1_same_l2": 0.13192146481358924,
+  "top1_same_family": 0.4667990293403927,
+  "top1_same_brand": 0.16258548422678137,
+  "top1_history_repeat": 0.42951687624090007,
+  "top10_has_target_l1": 0.43061989852195015,
+  "top10_has_target_l2": 0.21089786013677475,
+  "target_l1_in_history": 0.40194131921464815,
+  "target_l2_in_history": 0.17229208030002205,
+  "mean_target_l1_bucket_size_hit10": 131.3450292397661,
+  "mean_target_l1_bucket_size_miss10": 113.97661730319564,
+  "mean_target_l2_bucket_size_hit10": 10.223684210526315,
+  "mean_target_l2_bucket_size_miss10": 5.214081579631073,
+  "failure_type_counts": {
+    "l1_routing_miss": 2581,
+    "l2_routing_miss_after_l1_hit": 996,
+    "hit10": 684,
+    "leaf_or_ranking_miss_after_l2_hit": 272
+  }
+}
