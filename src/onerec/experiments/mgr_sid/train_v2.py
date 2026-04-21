@@ -111,6 +111,17 @@ class MgrSidV2TrainConfig:
     l2_ranking_negative_pair_csv: str | None = None
     l2_ranking_negative_pair_rule: str | None = None
     l2_ranking_use_pair_reliability: bool = True
+    qcr_l2_weight: float = 0.0
+    qcr_l2_margin: float = 0.1
+    qcr_l2_positive_topk: int = 8
+    qcr_l2_negative_topk: int = 16
+    qcr_l2_negative_pair_csv: str | None = None
+    qcr_l2_negative_pair_rule: str | None = None
+    qcr_l2_use_pair_reliability: bool = True
+    qcr_l2_conflict_mode: str = "same_l2_prefix"
+    qcr_l2_bucket_downweight: bool = True
+    qcr_l2_warmup_epochs: int = 0
+    qcr_l2_ramp_epochs: int = 0
     l3_contrastive_pull_weight: float = 0.0
     semantic_coarse_weight: float = 0.05
     semantic_mid_weight: float = 0.025
@@ -427,6 +438,94 @@ def _weighted_l2_ranking_contrastive_loss(
     return torch.sum(penalties * triplet_weights) / denom
 
 
+def _qcr_conflict_mask(batch_indices: torch.Tensor, conflict_mode: str) -> torch.Tensor:
+    if batch_indices.size(1) < 2:
+        raise ValueError("QCR-L2 requires at least two SID levels")
+
+    mode = conflict_mode.lower()
+    if mode in {"same_l2_prefix", "l2_prefix"}:
+        return (batch_indices[:, 0:1] == batch_indices[:, 0].unsqueeze(0)) & (
+            batch_indices[:, 1:2] == batch_indices[:, 1].unsqueeze(0)
+        )
+    if mode in {"same_l1_prefix", "same_l1", "l1_prefix"}:
+        return batch_indices[:, 0:1] == batch_indices[:, 0].unsqueeze(0)
+    if mode in {"same_l2_code", "l2_code"}:
+        return batch_indices[:, 1:2] == batch_indices[:, 1].unsqueeze(0)
+    raise ValueError(
+        "Unsupported qcr_l2_conflict_mode: "
+        f"{conflict_mode}. Expected one of same_l2_prefix, same_l1_prefix, same_l2_code."
+    )
+
+
+def _weighted_qcr_l2_ranking_loss(
+    representations: torch.Tensor,
+    sid_indices: torch.Tensor,
+    positive_pair_weights: torch.Tensor,
+    candidate_negative_pair_weights: torch.Tensor,
+    item_scales: torch.Tensor,
+    margin: float,
+    positive_topk: int,
+    negative_topk: int,
+    conflict_mode: str,
+    bucket_downweight: bool,
+) -> torch.Tensor:
+    if representations.size(0) <= 1:
+        return representations.new_tensor(0.0)
+    if margin < 0.0:
+        raise ValueError(f"qcr_l2_margin must be non-negative, got {margin}")
+
+    representations = F.normalize(representations.float(), p=2, dim=1)
+    similarity = representations @ representations.T
+
+    positive_pair_weights = positive_pair_weights.float().clone()
+    negative_pair_weights = candidate_negative_pair_weights.float().clone()
+    eye_mask = torch.eye(similarity.size(0), dtype=torch.bool, device=similarity.device)
+    positive_pair_weights = positive_pair_weights.masked_fill(eye_mask, 0.0)
+    negative_pair_weights = negative_pair_weights.masked_fill(eye_mask, 0.0)
+
+    conflict_mask = _qcr_conflict_mask(sid_indices.detach(), conflict_mode=conflict_mode)
+    conflict_mask = conflict_mask.masked_fill(eye_mask, False)
+    negative_pair_weights = negative_pair_weights * conflict_mask.float()
+
+    if bucket_downweight:
+        bucket_sizes = (conflict_mask.float().sum(dim=1) + 1.0).clamp_min(1.0)
+        bucket_weights = 1.0 / torch.log1p(bucket_sizes)
+        negative_pair_weights = negative_pair_weights * bucket_weights.unsqueeze(1)
+
+    if item_scales.numel() > 0:
+        pair_scale = torch.sqrt(torch.outer(item_scales.float(), item_scales.float()).clamp_min(0.0))
+        positive_pair_weights = positive_pair_weights * pair_scale
+        negative_pair_weights = negative_pair_weights * pair_scale
+
+    pos_k = min(max(int(positive_topk), 1), positive_pair_weights.size(1))
+    neg_k = min(max(int(negative_topk), 1), negative_pair_weights.size(1))
+    pos_values, pos_indices = torch.topk(positive_pair_weights, k=pos_k, dim=1)
+    neg_values, neg_indices = torch.topk(negative_pair_weights, k=neg_k, dim=1)
+
+    pos_similarity = torch.gather(similarity, dim=1, index=pos_indices)
+    neg_similarity = torch.gather(similarity, dim=1, index=neg_indices)
+
+    triplet_weights = pos_values.unsqueeze(2) * neg_values.unsqueeze(1)
+    if not torch.any(triplet_weights > 0.0):
+        return representations.new_tensor(0.0)
+
+    penalties = F.relu(margin + neg_similarity.unsqueeze(1) - pos_similarity.unsqueeze(2))
+    denom = triplet_weights.sum().clamp(min=1e-6)
+    return torch.sum(penalties * triplet_weights) / denom
+
+
+def _scheduled_weight(epoch: int, max_weight: float, warmup_epochs: int, ramp_epochs: int) -> float:
+    if max_weight <= 0.0:
+        return 0.0
+    if epoch < int(warmup_epochs):
+        return 0.0
+    ramp_epochs = int(ramp_epochs)
+    if ramp_epochs <= 0:
+        return float(max_weight)
+    progress = (epoch - int(warmup_epochs) + 1) / ramp_epochs
+    return float(max_weight) * float(np.clip(progress, 0.0, 1.0))
+
+
 def _scale_from_prior(prior: torch.Tensor, low: float, high: float) -> torch.Tensor:
     return low + (high - low) * prior
 
@@ -672,6 +771,19 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         if not cfg.l2_ranking_use_pair_reliability:
             l2_ranking_negative_pair_matrix = (l2_ranking_negative_pair_matrix > 0).float()
 
+    qcr_l2_negative_pair_matrix = None
+    if cfg.qcr_l2_weight > 0:
+        if not cfg.qcr_l2_negative_pair_csv:
+            raise ValueError("qcr_l2_negative_pair_csv is required when qcr_l2_weight > 0")
+        qcr_l2_negative_pair_matrix = _load_selective_separation_pair_matrix(
+            path=cfg.qcr_l2_negative_pair_csv,
+            n_items=len(dataset),
+            device=device,
+            rule=cfg.qcr_l2_negative_pair_rule,
+        )
+        if not cfg.qcr_l2_use_pair_reliability:
+            qcr_l2_negative_pair_matrix = (qcr_l2_negative_pair_matrix > 0).float()
+
     model = _build_model_from_cfg(cfg, in_dim=dataset.dim).to(device)
     if cfg.warm_start_ckpt_path:
         _load_checkpoint_state(model, cfg.warm_start_ckpt_path, device=device)
@@ -719,6 +831,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         total_l1_contrastive_pull_loss = 0.0
         total_l2_contrastive_pull_loss = 0.0
         total_l2_ranking_loss = 0.0
+        total_qcr_l2_loss = 0.0
         total_l3_contrastive_pull_loss = 0.0
         total_semantic_coarse_loss = 0.0
         total_semantic_mid_loss = 0.0
@@ -784,6 +897,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             }
             l2_contrastive_pull = batch_embeddings.new_tensor(0.0)
             l2_ranking_loss = batch_embeddings.new_tensor(0.0)
+            qcr_l2_loss = batch_embeddings.new_tensor(0.0)
             l1_contrastive_pull = batch_embeddings.new_tensor(0.0)
             l3_contrastive_pull = batch_embeddings.new_tensor(0.0)
             if cfg.l1_contrastive_pull_weight > 0:
@@ -820,6 +934,28 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                     margin=cfg.l2_ranking_margin,
                     positive_topk=cfg.l2_ranking_positive_topk,
                     negative_topk=cfg.l2_ranking_negative_topk,
+                )
+            qcr_l2_weight = _scheduled_weight(
+                epoch=epoch,
+                max_weight=cfg.qcr_l2_weight,
+                warmup_epochs=cfg.qcr_l2_warmup_epochs,
+                ramp_epochs=cfg.qcr_l2_ramp_epochs,
+            )
+            if qcr_l2_weight > 0:
+                if qcr_l2_negative_pair_matrix is None:
+                    raise ValueError("qcr_l2_negative_pair_matrix was not initialized")
+                qcr_negative_subgraph = _select_subgraph(qcr_l2_negative_pair_matrix, batch_indices)
+                qcr_l2_loss = _weighted_qcr_l2_ranking_loss(
+                    level_representations[1],
+                    sid_indices=pack["indices"],
+                    positive_pair_weights=mid_subgraph,
+                    candidate_negative_pair_weights=qcr_negative_subgraph,
+                    item_scales=graph_item_scale,
+                    margin=cfg.qcr_l2_margin,
+                    positive_topk=cfg.qcr_l2_positive_topk,
+                    negative_topk=cfg.qcr_l2_negative_topk,
+                    conflict_mode=cfg.qcr_l2_conflict_mode,
+                    bucket_downweight=cfg.qcr_l2_bucket_downweight,
                 )
             if cfg.l3_contrastive_pull_weight > 0:
                 l3_contrastive_pull = _weighted_pairwise_pull_loss(
@@ -927,6 +1063,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 + cfg.l1_contrastive_pull_weight * l1_contrastive_pull
                 + cfg.l2_contrastive_pull_weight * l2_contrastive_pull
                 + cfg.l2_ranking_contrastive_weight * l2_ranking_loss
+                + qcr_l2_weight * qcr_l2_loss
                 + cfg.l3_contrastive_pull_weight * l3_contrastive_pull
                 + cfg.semantic_coarse_weight * graph_losses["semantic_coarse"]
                 + cfg.semantic_mid_weight * graph_losses["semantic_mid"]
@@ -951,6 +1088,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             total_l1_contrastive_pull_loss += float(l1_contrastive_pull.item())
             total_l2_contrastive_pull_loss += float(l2_contrastive_pull.item())
             total_l2_ranking_loss += float(l2_ranking_loss.item())
+            total_qcr_l2_loss += float(qcr_l2_loss.item())
             total_l3_contrastive_pull_loss += float(l3_contrastive_pull.item())
             total_semantic_coarse_loss += float(graph_losses["semantic_coarse"].item())
             total_semantic_mid_loss += float(graph_losses["semantic_mid"].item())
@@ -973,6 +1111,13 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             "l1_contrastive_pull_loss": total_l1_contrastive_pull_loss,
             "l2_contrastive_pull_loss": total_l2_contrastive_pull_loss,
             "l2_ranking_loss": total_l2_ranking_loss,
+            "qcr_l2_loss": total_qcr_l2_loss,
+            "qcr_l2_weight": _scheduled_weight(
+                epoch=epoch,
+                max_weight=cfg.qcr_l2_weight,
+                warmup_epochs=cfg.qcr_l2_warmup_epochs,
+                ramp_epochs=cfg.qcr_l2_ramp_epochs,
+            ),
             "l3_contrastive_pull_loss": total_l3_contrastive_pull_loss,
             "semantic_coarse_loss": total_semantic_coarse_loss,
             "semantic_mid_loss": total_semantic_mid_loss,
@@ -1015,7 +1160,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 best["best_collision_ckpt"] = str(ckpt)
 
         logger.info(
-            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f l1_pull=%.6f l2_pull=%.6f l2_rank=%.6f l3_pull=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f sep_l1=%.6f sep_l2=%.6f sep_l3=%.6f collision=%s",
+            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f l1_pull=%.6f l2_pull=%.6f l2_rank=%.6f qcr_l2=%.6f qcr_w=%.6f l3_pull=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f sep_l1=%.6f sep_l2=%.6f sep_l3=%.6f collision=%s",
             epoch,
             record["total_loss"],
             record["recon_loss"],
@@ -1026,6 +1171,8 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             record["l1_contrastive_pull_loss"],
             record["l2_contrastive_pull_loss"],
             record["l2_ranking_loss"],
+            record["qcr_l2_loss"],
+            record["qcr_l2_weight"],
             record["l3_contrastive_pull_loss"],
             record["semantic_coarse_loss"],
             record["semantic_mid_loss"],

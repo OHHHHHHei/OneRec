@@ -2,15 +2,17 @@
 
 Status（状态）: `canonical（权威）`
 
-Last updated（更新日期）: `2026-04-20`
+Last updated（更新日期）: `2026-04-21`
 
 ## One-Line State（一句话状态）
 
-当前 active mainline（活跃主线）已经收敛为：
+当前 active mainline（活跃主线）已经从横向发散收敛为 diagnostic-driven minimal-edit collaborative injection（诊断驱动的最小编辑协同注入）验证线：
 
-`R720b: collab-ranking SID with local_multihop mid graph`（使用 local_multihop 中层图的协同排序 SID）。
+- `R720e`: collab-ranking SID（协同排序 SID）里当前最强的已入账 SFT（监督微调）候选。
+- `original_l3_collab_local`: original RQ-VAE base（原版残差量化变分自编码器基座）上只加 `L3`（第三层）local collaborative pull（局部协同拉近）的 minimal-edit（最小编辑）正信号。
+- `original_l2_multihop_ranking`: original RQ-VAE base（原版残差量化变分自编码器基座）上只加 `L2`（第二层）local_multihop ranking（局部多跳排序）的当前最强 minimal-edit（最小编辑）SFT（监督微调）结果。
 
-后续不要再横向发散新主线；只围绕 `R720b/R720e` 做小范围微调，例如 loss weight（损失权重）、margin（间隔）、positive/negative pair construction（正负样本构造）和 graph source（图来源）。当前最新、也是 collab-ranking（协同排序）方法族内最强的 SFT（监督微调）候选是 `R720e`：在 `R720b` 基座上只把 `L1`（第一层）粗图加权改成 inverse ambiguity（逆歧义）。
+后续不要再横向发散新主线；下一步先围绕 `original_l2_multihop_ranking`（原版第二层多跳排序）完成 beam / prefix diagnostics（束搜索 / 前缀诊断）和单因素 L2（第二层）扫描，而不是直接叠加 `L2 + L3`（第二层 + 第三层）组合。
 
 ## Core Problem（核心问题）
 
@@ -34,7 +36,7 @@ $$
 
 ## Main Method（主线方法）
 
-当前主线训练目标是：
+上一轮 collab-ranking（协同排序）组合目标是：
 
 $$
 \mathcal L_{\mathrm{collab\_ranking}}
@@ -61,6 +63,8 @@ $$
 - `mid_weight = 0.0`，不叠加 `L2` graph smoothness（第二层图平滑）。
 - `semantic_coarse_weight = 0.0`，`semantic_mid_weight = 0.0`，不额外叠加 semantic retention（语义保持）。
 - `selective_separation_weight = 0.0`，不再使用旧的 selective separation（选择性分离）接口。
+
+Current diagnostic conclusion（当前诊断结论）: this full combination（完整组合） is no longer the immediate next action（立即下一步行动）. Since the project mainly optimizes `@1/@3/@5/@10`（主要评测截断）, the current priority（当前优先级） is not to chase `HR@50`（命中率@50） tail retention（尾部保留）, but to understand why the minimal `L2`（第二层） route-preserving ranking（路由保持排序） fails to improve top ranking / calibration（头部排序 / 校准）.
 
 ## Code Entry Points（代码入口）
 
@@ -152,6 +156,94 @@ $$
     - 相比 `R720a`, `NDCG@10 +0.00860`, `HR@10 +0.01588`
     - 但仍略低于 `v2_on_p05`（`NDCG@10 -0.00176`, `HR@10 -0.00022`）和 strict recipe-aligned original baseline（严格配方对齐原版基线，`NDCG@10 -0.00088`, `HR@10 -0.00022`）
   - 这是当前 collab-ranking（协同排序）方法族内的 strongest SFT candidate（最强监督微调候选），但还不是 RL-promotable（可推进强化学习）的最终版本
+- `R720f`（`K1=128` 的 hard L1 capacity reduction（硬性第一层容量缩减））给出明确负结果：
+  - generated collision（生成冲突）: `11 / 3686 = 0.0029842648`
+  - downstream SFT/evaluate（下游监督微调/评测）:
+    - `NDCG@10 = 0.08955`
+    - `HR@10 = 0.13060`
+  - 说明硬性压缩 `L1` capacity（第一层容量）即便改善 compactness proxy（紧凑性代理指标），也会严重伤害 downstream learnability（下游可学习性）
+- `original_l3_collab_local`（原版基座 + 第三层局部协同）给出最新 minimal-edit（最小编辑）正信号：
+  - tokenizer（分词器）:
+    - generated collision（生成冲突）: `13 / 3686 = 0.0035268584`
+    - max conflict（最大冲突簇）: `2`
+  - downstream SFT/evaluate（下游监督微调/评测）:
+    - `NDCG@1/3/5/10 = 0.06684 / 0.08445 / 0.09226 / 0.10159`
+    - `HR@1/3/5/10 = 0.06684 / 0.09773 / 0.11692 / 0.14604`
+    - 相比 strongest original SFT（原版最强监督微调）: `NDCG@10 -0.00213`, `HR@10 -0.00485`
+    - 相比 `v2_on_p05` SFT（当前 v2_on_p05 监督微调）: `NDCG@10 -0.00112`, `HR@10 -0.00022`
+    - 相比 `R720e` SFT（R720e 监督微调）: `NDCG@10 +0.00065`, `HR@10 +0.00000`
+  - 这条线仍不应直接推进 RL（强化学习），但它说明 original SID routeability（原版 SID 可路由性）很重要，协同信息可能更适合以少扰动方式进入 `L2/L3`（第二/第三层）
+- `original_l2_multihop_ranking`（原版基座 + 第二层局部多跳排序）给出当前最强 minimal-edit（最小编辑）SFT（监督微调）信号：
+  - tokenizer（分词器）:
+    - generated collision（生成冲突）: `15 / 3686 = 0.0040694520`
+    - max conflict（最大冲突簇）: `2`
+    - active L1（活跃第一层码）: `88`
+    - unique L2 pairs（唯一第二层前缀数）: `2449`
+  - downstream SFT/evaluate（下游监督微调/评测）:
+    - `NDCG@1/3/5/10 = 0.06618 / 0.08283 / 0.09144 / 0.10165`
+    - `HR@1/3/5/10 = 0.06618 / 0.09486 / 0.11582 / 0.14736`
+    - 相比 strongest original SFT（原版最强监督微调）: `NDCG@10 -0.00207`, `HR@10 -0.00353`
+    - 相比 `v2_on_p05` SFT（当前 v2_on_p05 监督微调）: `NDCG@10 -0.00106`, `HR@10 +0.00110`
+    - 相比 `original_l3_collab_local` SFT（原版第三层局部协同监督微调）: `NDCG@10 +0.00006`, `HR@10 +0.00132`
+    - 相比 `R720e` SFT（R720e 监督微调）: `NDCG@10 +0.00071`, `HR@10 +0.00132`
+  - 这条线仍未达到 strongest original SFT（原版最强监督微调）或 `v2_on_p05` SFT（当前 v2_on_p05 监督微调）的 `NDCG@10`，所以不应直接推进 RL（强化学习）；但它支持“协同信息下沉到 `L2/L3`（第二/第三层）且少扰动原版可路由性”的判断。
+  - 2026-04-21 bootstrap / proxy diagnostics（自助法 / 代理诊断）进一步收窄了这个判断：
+    - paired bootstrap（配对自助法）显示相对 recipe-aligned original（配方对齐原版）只有 `HR@50 +0.01368` 是稳定信号，95% CI（置信区间）为 `[0.00397, 0.02338]`，approximate p（近似 p 值）为 `0.0048`；但 `HR@50` 只是 secondary diagnostic signal（次级诊断信号），不是主要成功标准
+    - `NDCG@10 -0.00018` 和 `HR@10 +0.00110` 的 confidence interval（置信区间）都跨 0，不能作为稳定收益；因此按 `@1/@3/@5/@10`（主要评测截断）口径，这条线还没有给出 primary downstream win（主要下游胜利）
+    - final Top50 proxy（最终前 50 代理诊断）显示 `GT L2 covered@50`（真实目标第二层前缀覆盖率@50）提高到 `0.32760`，但 `GT L2 covered@10`（真实目标第二层前缀覆盖率@10）没有提高，mean hit rank@50（前 50 命中平均排名）反而变差到 `13.73`
+    - primary-cutoff rerun（主要截断重诊断）确认：相对 recipe-aligned original（配方对齐原版），`original_l2` 在 `NDCG/HR@1/@3/@5/@10`（主要指标）上没有任何稳定正收益；相对 strongest original SFT（原版最强监督微调），所有 primary raw metrics（主要原始指标）都更低
+    - final Top10 proxy（最终前 10 代理诊断）显示 `GT L2 covered@1/3/5/10`（真实目标第二层前缀覆盖率@1/3/5/10）为 `0.11052 / 0.16016 / 0.17935 / 0.20671`，低于 recipe-aligned original（配方对齐原版）的 `0.13016 / 0.16391 / 0.18266 / 0.20869`，所以不能说它改善了前 10 区域的 target prefix survival（目标前缀存活）
+    - tokenizer prefix diagnostics（分词器前缀诊断）没有显示 global graph-neighbor prefix sharing（全局图邻居前缀共享）提升；recipe-aligned original（配方对齐原版）的 graph-neighbor L2 overlap（图邻居第二层前缀重合率）仍更高
+    - code audit（代码审查）确认该配置已经使用 `hierarchy_stopgrad_previous_levels = true`，`L2` ranking representation（第二层排序表示）已经是 `detach(q1) + q2`，所以单纯重做 `route_preserving_teacher_rank`（路由保持教师排序）不是有意义的新机制
+- `original_l3_ambiguity_aware`（原版第三层歧义感知）给出明确 tokenizer-side no-go（分词器侧停止）结果：
+  - intended change（意图变化）: compared with `original_l3_collab_local`（原版第三层局部协同）, only change `graph_scale_min/max`（图缩放范围） from `1.0 / 1.0` to `0.5 / 1.5`, so high-ambiguity items（高歧义物品） receive stronger `L3` local graph smoothing（第三层局部图平滑）
+  - generated collision（生成冲突）: `657 / 3686 = 0.1782419967`
+  - max conflict（最大冲突簇）: `72`
+  - active L1（活跃第一层码）: `18`
+  - unique L2 pairs（唯一第二层前缀数）: `256`
+  - compared with `original_l3_collab_local`（原版第三层局部协同） at `13 / 3686` collision（冲突）, max conflict（最大冲突簇） `2`, active L1（活跃第一层码） `95`, and unique L2（唯一第二层前缀） `2632`, this is a structural collapse（结构塌缩）
+  - ambiguity bucket diagnostic（歧义分桶诊断） shows collided item rate（冲突物品率） is high across all buckets (`21.8%` to `26.4%`), so the failure is global routing collapse（全局路由塌缩）, not only high-ambiguity overfitting（高歧义过拟合）
+  - verdict（裁决）: do not prepare data_experiment（实验数据转换）, do not push to SFT（监督微调）, and do not treat this L3 ambiguity-aware scaling（第三层歧义感知缩放） interface as viable
+- `original_l2_ambiguity_aware`（原版第二层歧义感知）已经完成 tokenizer/generate（分词器训练与生成）：
+  - generated collision（生成冲突）: `13 / 3686 = 0.0035268584`
+  - max conflict（最大冲突簇）: `2`
+  - train best collision（训练最佳冲突率）: `0.1527400977`
+  - active L1（活跃第一层码）: `50`
+  - unique L2 pairs（唯一第二层前缀数）: `1693`
+  - compared with `original_l2_multihop_ranking`（原版第二层多跳排序） at active L1（活跃第一层码） `88` and unique L2（唯一第二层前缀） `2449`, and with `original_l3_collab_local`（原版第三层局部协同） at active L1（活跃第一层码） `95` and unique L2（唯一第二层前缀） `2632`, this branch is structurally much more concentrated（结构上更集中）
+  - top-5 `L1` bucket total（前 5 个第一层桶总覆盖） reaches `808`, versus `516` for `original_l2_multihop_ranking`（原版第二层多跳排序）, `594` for `original_l3_collab_local`（原版第三层局部协同）, and `282` for `v2`
+  - unlike `original_l3_ambiguity_aware`（原版第三层歧义感知）, it is not a catastrophic collapse（灾难性塌缩）; instead, it is a non-catastrophic but over-compressed tokenizer（非灾难性但过度压缩的分词器）
+  - verdict（裁决）: keep as a paired control（成对对照）, but do not prioritize this branch for SFT（监督微调） ahead of `original_l2_ranking_ambiguity_aware`（原版第二层排序歧义感知）
+- `original_l2_ranking_ambiguity_aware`（原版第二层排序歧义感知）已经完成 tokenizer/generate（分词器训练与生成）：
+  - generated collision（生成冲突）: `15 / 3686 = 0.0040694520`
+  - max conflict（最大冲突簇）: `2`
+  - train best collision（训练最佳冲突率）: `0.1855670103`
+  - active L1（活跃第一层码）: `77`
+  - unique L2 pairs（唯一第二层前缀数）: `1649`
+  - compared with `original_l2_multihop_ranking`（原版第二层多跳排序） at the same generated collision（相同生成冲突） `15 / 3686`, this branch is more concentrated（更集中）: active L1（活跃第一层码） `88 -> 77`, unique L2（唯一第二层前缀） `2449 -> 1649`, top-5 L1 total（前 5 个第一层桶总覆盖） `516 -> 743`
+  - compared with `original_l2_ambiguity_aware`（原版第二层歧义感知平滑）, the ranking variant（排序版本） is safer at `L1`（第一层） but still highly compressed（仍明显压缩） at `L2`（第二层）: active L1（活跃第一层码） `50 -> 77`, unique L2（唯一第二层前缀） `1693 -> 1649`
+  - compared with strongest original tokenizer（最强原版分词器）, this branch spreads `L1`（第一层） more (`48 -> 77`) but sharply coarsens `L2`（第二层） (`2295 -> 1649`)
+  - the largest `L1` bucket（第一层最大桶） is a heterogeneous mixed industrial bucket（异质工业混合桶） of size `236`; the second bucket（第二大桶） is a coherent 3D-printing cluster（3D 打印簇） of size `196`
+  - ambiguity bucket diagnostic（歧义分桶诊断） shows no catastrophic collapse（灾难性塌缩）, but active L1（活跃第一层码） drops from `76` in low-ambiguity bucket（低歧义分桶） to `47` in high-ambiguity bucket（高歧义分桶）, consistent with stronger compression（更强压缩） on high-ambiguity items（高歧义物品）
+  - verdict（裁决）: this branch is logically aligned with the push-pull motivation（推拉动机）, but the current ambiguity-aware scaling（歧义感知缩放） still over-compresses the mid-level structure（中层结构）; keep it as tokenizer-side control（分词器侧对照）, do not prioritize it for SFT（监督微调）
+- `v2_l1cap128`（v2 第一层容量限制 128）已经完成 tokenizer/generate（分词器训练与生成）并给出明确 no-go（停止）结果：
+  - intended change（意图变化）: keep original v2 ambiguity-aware graph supervision（歧义感知图监督） and semantic retention（语义保持） unchanged, only reduce `num_emb_list`（码本大小列表） from `[256,256,256]` to `[128,256,256]`
+  - train best collision（训练最佳冲突率）: `0.5919696148`
+  - generated collision（生成冲突）: `114 / 3686 = 0.0309278351`
+  - max conflict（最大冲突簇）: `21`
+  - active L1（活跃第一层码）: `15`
+  - unique L2 pairs（唯一第二层前缀数）: `452`
+  - compared with original v2（原始 v2） at generated collision（生成冲突） `13 / 3686`, max conflict（最大冲突簇） `2`, active L1（活跃第一层码） `203`, and unique L2（唯一第二层前缀） `2680`, this is severe global over-compression（严重全局过度压缩）
+  - verdict（裁决）: do not push to SFT（监督微调）; hard `K1=128` capacity capping（硬性第一层容量限制） is not a safe fix for v2 L1 fragmentation（v2 第一层碎片化）
+- `qcr_l2_conflict_ranking`（量化冲突感知第二层排序）已经完成 tokenizer/generate（分词器训练与生成），是新的 healthy SFT screening candidate（健康监督微调筛选候选）：
+  - intended change（意图变化）: keep original RQ-VAE backbone（原版残差量化变分自编码器主干）, disable global graph propagation（全局图传播） and ordinary L2 ranking（普通第二层排序）, and activate L2 repulsion（第二层推开） only when semantic-near graph-weak negatives（语义近但图弱负样本） currently share the L2 prefix（第二层前缀）
+  - generated collision（生成冲突）: `11 / 3686 = 0.0029842648`
+  - max conflict（最大冲突簇）: `2`
+  - active L1（活跃第一层码）: `117`
+  - unique L2 pairs（唯一第二层前缀数）: `2632`
+  - compared with `original_l2_multihop_ranking`（原版第二层多跳排序）, QCR（量化冲突感知排序） is structurally healthier: collision（冲突） `15 -> 11`, active L1（活跃第一层码） `88 -> 117`, unique L2（唯一第二层前缀） `2449 -> 2632`
+  - on the QCR negative-pair set（QCR 负样本对集合）, same-L2 rate（同第二层率） drops from `0.01217` in `original_l2_multihop_ranking`（原版第二层多跳排序） to `0.01119`, but remains above v2/original_l3_collab_local（原始 v2 / 原版第三层局部协同）的 `0.01025`
+  - verdict（裁决）: worth SFT/evaluate screening（值得监督微调/评测筛选）, but not yet downstream validated（下游已验证）
 
 ## Strongest Validated Line（最强已验证线）
 
@@ -163,13 +255,14 @@ $$
 
 ## Next Steps（下一步）
 
-1. 后续所有 collab-ranking（协同排序）微调都应以 `R720b` 为基座，而不是回到 `R720a`。
-2. 当前最核心的 tokenizer-side（分词器侧）候选已经从 `R720b` 的原始形态推进到 `R720e`：它在不引入新 loss（损失）、不换图的前提下，给出了最清晰的 `L1`（第一层）收缩正信号，并且已经转化为 SFT（监督微调）收益。
-3. 当前不应直接推进任何 collab-ranking（协同排序）分支到 `RL`（强化学习）；`R720e` 虽然是 collab-ranking（协同排序）家族内最强 SFT（监督微调）候选，但仍略低于 `v2_on_p05` 和 strict recipe-aligned original baseline（严格配方对齐原版基线）。
-4. 下一步优先做 `R720e` 的 layerwise/output error analysis（分层命中率与输出错误分析），确认 SFT 收益来自 `L1` hit（第一层命中）改善，还是来自候选束覆盖/后层细分变化。
-5. 后续微调应优先围绕 `R720e` 的 existing loss weighting（现有损失加权）和 `L2 ranking`（第二层排序）细节做小改；不应重新开启横向方法发散。
-6. `prism_anchor_coarse`（语义锚定粗图）这条 `L1`（第一层）载体路线在当前实现下不应继续推进；后续 `L1` 修复应继续坚持“小改现有损失/加权方式”，避免再次引入会导致根码塌缩的 coarse graph source（粗图来源）。
-7. `R690b` 相关 legacy（历史）入口可以在确认不再复跑后归档。
+1. 下一步诊断必须围绕 `@1/@3/@5/@10`（主要评测截断），尤其是 `NDCG@10` 和 `HR@10`，不要把 `HR@50`（命中率@50）作为晋级依据。
+2. `original_l2_multihop_ranking`（原版第二层多跳排序）按当前 primary objective（主要目标）应视为 no-go（停止），不能作为方法扩展基座；如果继续训练，只能做 tightly controlled L2-only repair（严格受控的仅第二层小修复），例如只改 `lambda_2`（第二层损失权重）或 teacher pairs（教师样本对）质量，并以 `@1/@3/@5/@10`（主要评测截断）是否改善作为 go / no-go gate（推进 / 停止门槛）。
+3. `original_l3_ambiguity_aware`（原版第三层歧义感知）和 `original_l2_ranking_ambiguity_aware`（原版第二层排序歧义感知）都已经完成 tokenizer-side（分词器侧）检查；前者是 clear no-go（明确停止），后者是 non-catastrophic but over-compressed（非灾难性但过度压缩）. 当前不应优先把这两条线推进到 SFT（监督微调）。
+4. 当前不应直接推进 `R720e`、`original_l3_collab_local`、`original_l2_multihop_ranking` 或 `R720f` 到 `RL`（强化学习）；它们都没有超过 `v2_on_p05` SFT（当前 v2_on_p05 监督微调）和 strongest original SFT（原版最强监督微调）的 `NDCG@10`。
+5. `R720f` 已经否定当前 hard L1 capacity reduction（硬性第一层容量缩减）方向；不要再把 L1 compactness proxy（第一层紧凑性代理指标）当作可靠晋级依据。
+6. `v2_l1cap128`（v2 第一层容量限制 128）进一步说明：即使问题来自 v2 L1 fragmentation（第一层碎片化），也不能简单靠 hard codebook cap（硬码本限制）修复；后续若修 L1（第一层），应考虑 soft usage / entropy / routing regularization（软使用率 / 熵 / 路由正则），而不是直接缩小 `K1`（第一层码本大小）。
+7. `qcr_l2_conflict_ranking`（量化冲突感知第二层排序）已经通过 tokenizer-side screening（分词器侧筛选），下一步可以按 `title_history2sid_on + desc_align_p05`（标题历史转 SID 开启 + 描述对齐 0.05）做一次 SFT/evaluate（监督微调/评测），但必须用 `@1/@3/@5/@10`（主要评测截断）判断是否继续。
+8. `prism_anchor_coarse`（语义锚定粗图）这条 `L1`（第一层）载体路线在当前实现下不应继续推进；后续 `L1` 修复应继续坚持“小改现有损失/加权方式”，避免再次引入会导致根码塌缩的 coarse graph source（粗图来源）。
 
 ## Reading Rule（阅读规则）
 
