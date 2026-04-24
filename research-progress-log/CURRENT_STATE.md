@@ -235,7 +235,7 @@ Current diagnostic conclusion（当前诊断结论）: this full combination（�
   - unique L2 pairs（唯一第二层前缀数）: `452`
   - compared with original v2（原始 v2） at generated collision（生成冲突） `13 / 3686`, max conflict（最大冲突簇） `2`, active L1（活跃第一层码） `203`, and unique L2（唯一第二层前缀） `2680`, this is severe global over-compression（严重全局过度压缩）
   - verdict（裁决）: do not push to SFT（监督微调）; hard `K1=128` capacity capping（硬性第一层容量限制） is not a safe fix for v2 L1 fragmentation（v2 第一层碎片化）
-- `qcr_l2_conflict_ranking`（量化冲突感知第二层排序）已经完成 tokenizer/generate（分词器训练与生成），是新的 healthy SFT screening candidate（健康监督微调筛选候选）：
+- `qcr_l2_conflict_ranking`（量化冲突感知第二层排序）已经完成 tokenizer/generate（分词器训练与生成）和 SFT/evaluate（监督微调/评测）；tokenizer-side（分词器侧）健康，但 downstream learnability（下游可学习性）没有兑现：
   - intended change（意图变化）: keep original RQ-VAE backbone（原版残差量化变分自编码器主干）, disable global graph propagation（全局图传播） and ordinary L2 ranking（普通第二层排序）, and activate L2 repulsion（第二层推开） only when semantic-near graph-weak negatives（语义近但图弱负样本） currently share the L2 prefix（第二层前缀）
   - generated collision（生成冲突）: `11 / 3686 = 0.0029842648`
   - max conflict（最大冲突簇）: `2`
@@ -243,7 +243,11 @@ Current diagnostic conclusion（当前诊断结论）: this full combination（�
   - unique L2 pairs（唯一第二层前缀数）: `2632`
   - compared with `original_l2_multihop_ranking`（原版第二层多跳排序）, QCR（量化冲突感知排序） is structurally healthier: collision（冲突） `15 -> 11`, active L1（活跃第一层码） `88 -> 117`, unique L2（唯一第二层前缀） `2449 -> 2632`
   - on the QCR negative-pair set（QCR 负样本对集合）, same-L2 rate（同第二层率） drops from `0.01217` in `original_l2_multihop_ranking`（原版第二层多跳排序） to `0.01119`, but remains above v2/original_l3_collab_local（原始 v2 / 原版第三层局部协同）的 `0.01025`
-  - verdict（裁决）: worth SFT/evaluate screening（值得监督微调/评测筛选）, but not yet downstream validated（下游已验证）
+  - downstream SFT/evaluate（下游监督微调/评测） under `title_history2sid_on + desc_align_p05`（标题历史转 SID 开启 + 描述对齐 0.05）: `NDCG@10 = 0.09980951`, `HR@10 = 0.13876020`, `constraint_invalid_total = 0`
+  - compared with `original_l2_multihop_ranking`（原版第二层多跳排序）: `NDCG@10 -0.00184`, `HR@10 -0.00860`
+  - compared with `R720e`（协同排序强候选）: `NDCG@10 -0.00114`, `HR@10 -0.00728`
+  - compared with strongest original SFT（原版最强监督微调）: `NDCG@10 -0.00391`, `HR@10 -0.01213`
+  - verdict（裁决）: no-go（停止） for RL promotion（强化学习晋级）; QCR（量化冲突感知排序） improved structural proxies（结构代理指标） but hurt the primary downstream objective（主要下游目标）
 
 ## Strongest Validated Line（最强已验证线）
 
@@ -261,7 +265,7 @@ Current diagnostic conclusion（当前诊断结论）: this full combination（�
 4. 当前不应直接推进 `R720e`、`original_l3_collab_local`、`original_l2_multihop_ranking` 或 `R720f` 到 `RL`（强化学习）；它们都没有超过 `v2_on_p05` SFT（当前 v2_on_p05 监督微调）和 strongest original SFT（原版最强监督微调）的 `NDCG@10`。
 5. `R720f` 已经否定当前 hard L1 capacity reduction（硬性第一层容量缩减）方向；不要再把 L1 compactness proxy（第一层紧凑性代理指标）当作可靠晋级依据。
 6. `v2_l1cap128`（v2 第一层容量限制 128）进一步说明：即使问题来自 v2 L1 fragmentation（第一层碎片化），也不能简单靠 hard codebook cap（硬码本限制）修复；后续若修 L1（第一层），应考虑 soft usage / entropy / routing regularization（软使用率 / 熵 / 路由正则），而不是直接缩小 `K1`（第一层码本大小）。
-7. `qcr_l2_conflict_ranking`（量化冲突感知第二层排序）已经通过 tokenizer-side screening（分词器侧筛选），下一步可以按 `title_history2sid_on + desc_align_p05`（标题历史转 SID 开启 + 描述对齐 0.05）做一次 SFT/evaluate（监督微调/评测），但必须用 `@1/@3/@5/@10`（主要评测截断）判断是否继续。
+7. `qcr_l2_conflict_ranking`（量化冲突感知第二层排序）已经完成 SFT/evaluate（监督微调/评测）且主指标为负；不要推进 RL（强化学习），也不要把 tokenizer-side structural health（分词器侧结构健康）单独当作晋级依据。
 8. `prism_anchor_coarse`（语义锚定粗图）这条 `L1`（第一层）载体路线在当前实现下不应继续推进；后续 `L1` 修复应继续坚持“小改现有损失/加权方式”，避免再次引入会导致根码塌缩的 coarse graph source（粗图来源）。
 
 ## Reading Rule（阅读规则）
