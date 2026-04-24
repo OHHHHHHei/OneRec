@@ -1,10 +1,13 @@
 # MGR-SID 当前方法公式说明（与当前代码实现严格对齐）
 
 **日期**：2026-04-12  
-**用途**：这份文档用于把当前仓库里已经实现并实际跑过实验的 `MGR-SID v1 / v2` 方法写成一版严格 code-aligned 的公式说明，方便后续写论文 Method 章节时直接对齐。  
+**状态**：archived code-aligned reference（已归档代码对齐参考）  
+**用途**：这份文档用于把仓库里已经实现并实际跑过实验的 `MGR-SID v1 / v2 / R720 / QCR` 方法写成一版严格 code-aligned（代码对齐）的公式说明，方便后续复盘或方法追溯。  
 **重要说明**：本文档只描述**当前代码真实实现**，不描述尚未接入训练的理想化扩展。凡是这里写出的公式，都应当能在当前代码中找到直接对应。
 
-**2026-04-18 主线收口说明**：当前 active mainline（活跃主线）已经切换为第 11 节的 `R720a`。前面关于 `v1/v2/R690` 的内容保留为 code provenance（代码追溯）和 baseline reference（基线参考），不再作为新实验的默认出发点。
+**2026-04-24 归档说明**：MGR-SID / ACLR / QCR 研究线已经归档为 negative-result stage（负结果阶段）。本文档保留为 code provenance（代码追溯）和 method reference（方法参考），不再作为新实验的默认出发点。归档入口见 [MGR-SID Negative Research Archive](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md)。
+
+**2026-04-18 历史主线收口说明**：当时 active mainline（活跃主线）曾切换为第 11 节的 `R720a`。前面关于 `v1/v2/R690` 的内容保留为 code provenance（代码追溯）和 baseline reference（基线参考）。
 
 ## 1. 对应代码范围
 
@@ -900,7 +903,7 @@ $$
 - $\mathcal L_{\mathrm{pull}}^{(3)}$ 使用 local graph（局部图）上的 pairwise pull（成对拉近）。
 - `R690b` 额外设置 `hierarchy_stopgrad_previous_levels = true`，使 `L2/L3`（第二层/第三层）辅助损失不再直接反传改写前层前缀。
 
-## 11. R720a：当前主线候选的 L2 排序对比实现
+## 11. R720a：历史主线候选的 L2 排序对比实现
 
 `R720a` 是当前已经接入代码的主线候选，不再是只停留在讨论里的方法。它对应的核心配置是：
 
@@ -1007,8 +1010,8 @@ $$
 - $\mathcal L_{\mathrm{rank}}^{(2)}$ 使用 `fagsp_mid_base`（基础中层图）作为正样本图。
 - hard negatives（困难负样本）由 `semantic-near + mid-weak`（语义近 + 中图弱连接）规则离线生成。
 - $\mathcal L_{\mathrm{pull}}^{(3)}$ 使用 `local_purified`（净化局部图）。
-- `semantic_coarse_weight = 0` 且 `semantic_mid_weight = 0`，当前主线不再额外堆 semantic retention（语义保持）项。
-- `mid_weight = 0`，当前主线不同时叠加 `L2` graph smoothness（第二层图平滑）。
+- `semantic_coarse_weight = 0` 且 `semantic_mid_weight = 0`，当时主线不再额外堆 semantic retention（语义保持）项。
+- `mid_weight = 0`，当时主线不同时叠加 `L2` graph smoothness（第二层图平滑）。
 
 当前初始超参数是：
 

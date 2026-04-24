@@ -20,7 +20,9 @@ preprocess -> embed -> sid-train -> sid-generate -> convert -> sft -> rl -> eval
 - [文档维护工作流](/home/leejt/OneRec/DOCUMENTATION_MAINTENANCE_WORKFLOW.md)
   - 适合先理解当前文档体系、权威入口、以及后续 agent（智能体）应如何维护文档。
 - [当前状态](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
-  - 适合快速同步当前研究主线、baseline（基线）口径、最强已验证主线、进行中实验和下一步动作。
+  - 适合快速同步当前裁决、baseline（基线）口径、已归档研究线和下一步动作。
+- [MGR-SID 负结果归档](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md)
+  - 适合快速了解 MGR-SID / ACLR / QCR 研究线为什么被冻结归档。
 - [实验结果总账](/home/leejt/OneRec/research-progress-log/experiment_registry/README.md)
   - 适合查 tokenizer（分词器）、SFT（监督微调）、RL（强化学习）的分表总账。
 - [下游指标榜单](/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv)

@@ -2,9 +2,7 @@
 
 Status（状态）: `stage-index（阶段索引）`
 
-Last updated（更新日期）: `2026-04-24`
-
-This directory keeps the experiment-by-experiment record（逐实验记录） for the now-archived MGR-SID line（已归档 MGR-SID 线）.
+This directory keeps the experiment-by-experiment record for the current MGR-SID line.
 
 The goal of this index is simple:
 
@@ -12,18 +10,16 @@ The goal of this index is simple:
 - detailed raw artifacts stay inside the stage folder
 - old flat notes are archived after they are merged into a clearer stage summary
 
-Every folder here is now a historical stage record（历史阶段记录） by default.
-There is no active execution path（活跃执行路径） in this index after the
-2026-04-24 archive checkpoint（归档检查点）.
+Every folder here is a historical stage record by default.
+The latest stage is the current active execution path; earlier stages should be
+read as provenance, not as the current optimization target.
 
 This file is not the canonical current-state summary（权威当前状态摘要） anymore（不再承担该角色）.
 
 If you want the live project status first, read:
 
 1. `/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md`
-2. `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md`
-3. `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/CLASSIFIED_STAGE_MANIFEST.md`
-4. `/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv`
+2. `/home/leejt/OneRec/experiment_results.csv`
 
 Diagnostic-only stages（仅诊断阶段） that failed the `S000` audit have been retired from
 active reading and decision use（活跃阅读与决策用途）.
@@ -31,24 +27,18 @@ active reading and decision use（活跃阅读与决策用途）.
 Archive pointer（归档指针）:
 
 - `/home/leejt/OneRec/research-progress-log/archive/2026-04-16_retired_prior_diagnostics/README.md`
-- `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md`
 
-## Archived Reading Order（归档阅读顺序）
+## Active Reading Order（活跃阅读顺序）
 
 1. `/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md`
-2. `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md`
-3. `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/NEGATIVE_RESULT_POSTMORTEM.md`
-4. `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/CLASSIFIED_STAGE_MANIFEST.md`
-5. `/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv`
+2. `2026-04-21_mgr_sid_original_l2_multihop_ranking_industrial/README.md`
+3. `2026-04-20_mgr_sid_original_l3_collab_local_industrial/README.md`
+4. `2026-04-19_mgr_sid_collab_ranking_local_multihop_mid_industrial/README.md`
+5. `/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md`
 
-All stages（全部阶段） below are archived provenance（归档追溯材料）. They are kept for traceability（可追溯性）, not as active optimization targets（活跃优化目标）.
+All earlier stages（更早阶段） below are archived provenance（归档追溯材料）. They are kept for traceability（可追溯性）, not as active optimization targets（活跃优化目标）.
 
 ## Historical Stage Map（历史阶段地图）
-
-The stage map below is a frozen narrative index（冻结叙事索引） that was written while the line was active（活跃期间）.
-For the complete 61-folder classified archive（完整 61 个目录分类归档）, use:
-
-- `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/CLASSIFIED_STAGE_MANIFEST.md`
 
 ### Stage A: Pipeline provenance and upstream-aligned reproduction
 
@@ -498,17 +488,16 @@ For the complete 61-folder classified archive（完整 61 个目录分类归档�
 - canonical docs:
   - `2026-04-18_mgr_sid_r720_l2_ranking_contrastive_industrial/README.md`
 - covers:
-  - formerly active method candidate（曾经活跃方法候选） after convergence away from broad branching（横向发散）
+  - current active method candidate（当前活跃方法候选） after convergence away from broad branching（横向发散）
   - `L1/L3`（第一层/第三层） light graph pull（轻量图拉近）
   - `L2`（第二层） ranking contrastive loss（排序对比损失） over collaborative-positive vs semantic-near mid-weak hard negatives（协同正样本与语义近但中图弱连接困难负样本）
 - current status:
-  - archived（已归档）
   - implemented（已实现）
   - pair source generated（物品对来源已生成）
   - one-epoch smoke run passed（单轮冒烟运行已通过）
 - decision target（决策目标）:
-  - superseded by later collab-ranking / minimal-edit / QCR（协同排序 / 最小编辑 / 量化冲突感知排序） runs in the archive manifest（归档清单）
-  - not an active launch target（不再是活跃启动目标）
+  - eligible for full tokenizer train -> generate（可进入完整分词器训练到生成）
+  - final verdict still requires downstream `SFT -> evaluate`（监督微调到评测）
 
 ## Artifact Policy Inside Run Folders
 

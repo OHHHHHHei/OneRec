@@ -1,31 +1,35 @@
-# Active Experiment Configs（活跃实验配置）
+# Archived Experiment Configs（已归档实验配置）
 
 Status（状态）: `navigation（导航）`
 
-Last updated（更新日期）: `2026-04-18`
+Last updated（更新日期）: `2026-04-24`
 
-## Mainline（主线）
+## Archive Status（归档状态）
 
-当前主线 tokenizer（分词器）训练配置只有一个：
+This directory now contains archived MGR-SID research configs（已归档 MGR-SID 研究配置）.
 
-- `sid_train_industrial_mgr_sid_collab_ranking_mainline.yaml`
+Do not treat any config（配置） here as an active launch target（活跃启动目标） unless a future `CURRENT_STATE.md`（当前状态） explicitly reactivates it.
 
-它对应当前主线方法：`ambiguity-aware stop-gradient L2 ranking contrastive SID`（歧义感知停止梯度中层排序对比 SID）。
+Archive entry（归档入口）:
 
-## Temporary Legacy（临时历史保留）
+- `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md`
+- `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/CLASSIFIED_STAGE_MANIFEST.md`
 
-以下 `R690b` 文件暂时保留在原位，因为 `mgr_r690b_sft_eval_4gpu` 这个 tmux（终端复用器）会话仍在运行，后续 evaluate（评测）阶段还会读取这些配置：
+## Preserved Current-Level Configs（保留在当前层的配置）
 
-- `sid_train_industrial_mgr_sid_r690b_hier_cost_guided.yaml`
-- `sft_industrial_mgr_r690b_title_on_desc_p05.yaml`
-- `evaluate_industrial_mgr_r690b_title_on_desc_p05.yaml`
+The configs（配置） remain here to avoid breaking historical scripts（历史脚本） and registry artifact pointers（总账产物指针）.
 
-等该运行结束并完成结果登记后，这三个配置也应归档。
+They include:
+
+- collab-ranking（协同排序） configs
+- minimal-edit original-RQVAE（最小编辑原版残差量化变分自编码器） configs
+- QCR-L2 conflict ranking（量化冲突感知第二层排序） configs
+- late R690 / R720 variants（后期 R690 / R720 变体）
 
 ## Archive（归档）
 
-旧分支配置已经移动到：
+Older branch configs（更早分支配置） already moved to:
 
 - `/home/leejt/OneRec/config/archive/2026-04-18_pre_r720_legacy_experiments/`
 
-这些配置只用于 provenance（追溯）和历史复现，不应作为新实验起点。
+All configs（全部配置） are now provenance（追溯） and historical reproduction（历史复现） material, not new experiment starting points（新实验起点）.

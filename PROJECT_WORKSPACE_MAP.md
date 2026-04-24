@@ -2,17 +2,19 @@
 
 Status（状态）: `reference（参考）`
 
+Last updated（更新日期）: `2026-04-24`
+
 This file is the shortest reliable entry point（最短可靠入口） for the current repository layout（当前仓库布局）.
 
 If you need to sync to the project quickly, read in this order:
 
 1. `DOCUMENTATION_MAINTENANCE_WORKFLOW.md`
 2. `research-progress-log/CURRENT_STATE.md`
-3. `research-progress-log/experiment_registry/README.md`
-4. `research-progress-log/experiment_registry/downstream_scoreboard.csv`
-5. `research-progress-log/experiment_launches/README.md`
-6. `idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md`
-7. `idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md`
+3. `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md`
+4. `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/NEGATIVE_RESULT_POSTMORTEM.md`
+5. `research-progress-log/experiment_registry/README.md`
+6. `research-progress-log/experiment_registry/downstream_scoreboard.csv`
+7. `research-progress-log/experiment_launches/README.md`
 
 ## Folder Roles（目录角色）
 
@@ -20,7 +22,7 @@ If you need to sync to the project quickly, read in this order:
 
 Research-direction and method-design workspace（研究方向与方法设计工作区）.
 
-- current mainline:
+- archived MGR-SID workspace（已归档 MGR-SID 工作区）:
   `idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/`
 - archived earlier branches stay under sibling `archive/` folders
 
@@ -78,7 +80,7 @@ Local `output/` may contain only lightweight links or compatibility paths.
 
 ### `paper-mgr-sid-draft/` and `paper-mgr-sid-draft-zh/`
 
-Current English and Chinese paper drafts（当前中英文论文草稿）.
+Archived English and Chinese paper drafts（已归档中英文论文草稿） for the negative MGR-SID line（负结果 MGR-SID 线）.
 
 Keep only:
 
@@ -98,20 +100,23 @@ Generated LaTeX auxiliaries should not be kept unless actively debugging compila
 - `research-progress-log/experiment_registry/downstream_scoreboard.csv`
 - `experiment_results.csv` as legacy wide registry（历史宽表总账）
 
-### Method and direction（方法与方向）
+### Archived method and direction（已归档方法与方向）
 
 - `idea-discovery/2026-04-08_sid_collab_signal_injection/README.md`
 - `idea-discovery/2026-04-08_sid_collab_signal_injection/RESEARCH_DIRECTION.md`
 - `idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/CURRENT_TASK_ALIGNMENT.md`
 - `idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md`
 - `idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/19_mgr_sid_current_method_code_aligned_formulas.md`
+- `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md`
+- `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/CLASSIFIED_STAGE_MANIFEST.md`
+- `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/NEGATIVE_RESULT_POSTMORTEM.md`
 
 ### Experiment status（实验状态）
 
 - `research-progress-log/experiment_launches/README.md`
 - `research-progress-log/research_progress_log.tex`
 
-### Latest strongest run family（当前最强运行线）
+### Archived strongest/reference run family（已归档最强/参考运行线）
 
 - `research-progress-log/experiment_launches/2026-04-11_mgr_sid_v2_recipe_isolation_industrial/RESULTS.md`
 - `research-progress-log/experiment_launches/2026-04-12_mgr_sid_v2_rl_on_p05_industrial/RESULTS.md`

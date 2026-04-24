@@ -1,8 +1,9 @@
 # MGR-SID v2: Ambiguity-Aware Graph Supervision with Semantic-Structure Retention
 
 **Date**: 2026-04-10  
-**Status**: current proposed next-step method after `MGR-SID v1`  
-**Positioning**: this is not a post-hoc patch. It is a **training-time refinement** of hierarchy-aware graph regularization, motivated by the current tokenizer and SFT evidence.
+**Status**: archived method narrative（已归档方法叙事）  
+**Archive update**: as of 2026-04-24, the full MGR-SID / ACLR / QCR research line（研究线） is archived as a negative-result stage（负结果阶段）. This document is preserved for provenance（追溯） and method reconstruction（方法复原）, not as a current proposed next-step method（当前下一步方法）.
+**Positioning at the time（当时定位）**: this was not a post-hoc patch. It was a **training-time refinement** of hierarchy-aware graph regularization, motivated by tokenizer and SFT evidence available at that time.
 
 ---
 

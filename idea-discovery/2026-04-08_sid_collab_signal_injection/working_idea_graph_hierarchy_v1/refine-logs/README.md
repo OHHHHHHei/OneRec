@@ -1,8 +1,10 @@
 # Refine Logs（细化日志）
 
-Status（状态）: `plan-index（计划索引）`
+Status（状态）: `archived（归档）`
 
-This folder now keeps the most relevant planning entry（计划入口） for the current method line（当前方法主线）.
+Last updated（更新日期）: `2026-04-24`
+
+This folder keeps planning entries（计划入口） for the archived method line（已归档方法线）.
 
 Older stage-specific plans（阶段计划） and trackers（跟踪器） were moved out of the root on
 `2026-04-14` so they stop competing with the current narrative（当前叙事）.
@@ -14,10 +16,10 @@ Read this only after:
 1. [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
 2. [experiment_results.csv](/home/leejt/OneRec/experiment_results.csv)
 
-## Current Active Plan（当前活跃计划）
+## Previously Active Plan（曾经活跃计划）
 
 - `EXPERIMENT_PLAN_L1_SMOOTH_L2_CONTRASTIVE_MULTIHOP.md`
-  - current active interface plan（当前活跃接口计划）
+  - previous active interface plan（曾经活跃接口计划）
   - focuses on:
     - `L1 smooth + L2 contrastive + L3 smooth`（第一层平滑 + 第二层对比式 + 第三层平滑）
     - `G_mid <- local_multihop`（中图改为局部多跳图）
@@ -26,7 +28,7 @@ Read this only after:
   - use this when:
     - the active question is whether the current bottleneck sits in the `L2` supervision interface（第二层监督接口） rather than only in graph-carrier quality（图载体质量）
 
-Current reading order（当前阅读顺序） for this branch:
+Archived reading order（归档阅读顺序） for this branch:
 
 1. [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
 2. [18_mgr_sid_v2_ambiguity_aware_method.md](/home/leejt/OneRec/idea-discovery/2026-04-08_sid_collab_signal_injection/working_idea_graph_hierarchy_v1/18_mgr_sid_v2_ambiguity_aware_method.md)
@@ -60,7 +62,7 @@ Current reading order（当前阅读顺序） for this branch:
   - downstream verdict for stage-3
   - records that both `R401b` and `R401d` were negative relative to current `v2_on_p05`
 
-## Current Mainline Reference Plans
+## Archived Mainline Reference Plans
 
 - `EXPERIMENT_PLAN_SELECTIVE_SEPARATION.md`
   - current method-reference document（方法参考文档）

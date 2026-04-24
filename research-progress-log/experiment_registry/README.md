@@ -1,7 +1,13 @@
 # Experiment Registry（实验登记表）
 
 Status（状态）: `registry（总账）`
-Last updated（更新日期）: `2026-04-18`
+Last updated（更新日期）: `2026-04-24`
+
+Archive note（归档说明）:
+
+- The MGR-SID / ACLR / QCR research line（研究线） was archived（已归档） on `2026-04-24`.
+- This registry（总账） remains the source of finalized metrics（定稿指标） for that archived line（已归档线）.
+- The archive entry（归档入口） is [2026-04-24_mgr_sid_negative_research_archive](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md).
 
 ## 目的
 
