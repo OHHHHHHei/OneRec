@@ -3,12 +3,10 @@ import logging
 import os
 from collections import Counter
 
-import pandas as pd
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, LogitsProcessorList
 from tqdm import tqdm
 
-from onerec.evaluate.collaborative_rerank import CollaborativeReranker, parse_id_list
 from onerec.evaluate.constrained_decoding import ConstrainedLogitsProcessor
 from onerec.evaluate.datasets import EvalSidDataset
 from onerec.evaluate.semantic_id import canonicalize_semantic_id
@@ -73,29 +71,6 @@ def _build_generation_config(tokenizer, num_beams: int, max_new_tokens: int, len
         bos_token_id=tokenizer.bos_token_id,
         length_penalty=length_penalty,
     )
-
-
-def _maybe_build_aclr_lite(config):
-    enabled = bool(_resolve_eval_param(config, "aclr_lite_enable", False))
-    if not enabled:
-        return None, None, "baseline"
-    train_csv = _resolve_eval_param(config, "aclr_train_csv", "")
-    index_json = _resolve_eval_param(config, "aclr_index_json", "")
-    rerank_mode = _resolve_eval_param(config, "aclr_lite_mode", "ambiguity_l2")
-    history_k = int(_resolve_eval_param(config, "aclr_history_k", 10))
-    sid_score_mode = _resolve_eval_param(config, "aclr_sid_score_mode", "best")
-    ambiguity_leaf_threshold = int(_resolve_eval_param(config, "aclr_ambiguity_leaf_threshold", 8))
-    if not train_csv or not index_json:
-        raise ValueError("ACLR-lite requires aclr_train_csv and aclr_index_json when aclr_lite_enable=true")
-    reranker = CollaborativeReranker.from_files(
-        train_csv=train_csv,
-        index_json=index_json,
-        history_k=history_k,
-        sid_score_mode=sid_score_mode,
-        ambiguity_leaf_threshold=ambiguity_leaf_threshold,
-    )
-    raw_test_df = pd.read_csv(config.data.test_file)
-    return reranker, raw_test_df, rerank_mode
 
 
 def run_evaluate(config) -> str:
@@ -174,29 +149,6 @@ def run_evaluate(config) -> str:
     )
     encodings = [val_dataset[i] for i in range(len(val_dataset))]
     test_data = val_dataset.get_all()
-    aclr_reranker, aclr_test_df, aclr_mode = _maybe_build_aclr_lite(config)
-    aclr_activation_count = 0
-    if aclr_reranker is not None:
-        if len(aclr_test_df) != len(test_data):
-            raise ValueError(f"ACLR-lite test alignment mismatch: df={len(aclr_test_df)} dataset={len(test_data)}")
-        mismatches = 0
-        for idx, row in aclr_test_df.iterrows():
-            expected = canonicalize_semantic_id(row["item_sid"])
-            observed = canonicalize_semantic_id(test_data[idx]["output"])
-            if expected != observed:
-                mismatches += 1
-                if mismatches <= 3:
-                    logger.warning("[worker=%s] ACLR-lite alignment mismatch row=%d test=%s eval=%s", worker_id, idx, expected, observed)
-        if mismatches:
-            raise ValueError(f"ACLR-lite detected {mismatches} row-order mismatches between test CSV and eval dataset")
-        logger.info(
-            "[worker=%s] ACLR-lite enabled: mode=%s train_csv=%s index_json=%s ambiguous_prefix_count=%d",
-            worker_id,
-            aclr_mode,
-            _resolve_eval_param(config, "aclr_train_csv", ""),
-            _resolve_eval_param(config, "aclr_index_json", ""),
-            len(aclr_reranker.ambiguous_prefixes or set()),
-        )
 
     model.config.pad_token_id = tokenizer.eos_token_id
     model.config.eos_token_id = tokenizer.eos_token_id
@@ -263,17 +215,6 @@ def run_evaluate(config) -> str:
             decoded = tokenizer.batch_decode(completions, skip_special_tokens=True)
         decoded = [canonicalize_semantic_id(entry.split("Response:\n")[-1]) for entry in decoded]
         grouped = [decoded[i : i + num_beams] for i in range(0, len(decoded), num_beams)]
-        if aclr_reranker is not None:
-            block_start = block_idx * batch_size
-            reranked_grouped: list[list[str]] = []
-            for local_idx, predicts in enumerate(grouped):
-                global_idx = block_start + local_idx
-                history = parse_id_list(aclr_test_df.iloc[global_idx]["history_item_id"])
-                reranked_predicts, activated = aclr_reranker.rerank_predict_list(predicts, history, aclr_mode)
-                if activated:
-                    aclr_activation_count += 1
-                reranked_grouped.append(reranked_predicts)
-            grouped = reranked_grouped
         outputs.extend(grouped)
         if not is_primary_worker and ((block_idx + 1) % 50 == 0 or (block_idx + 1) == blocks):
             logger.info("[worker=%s] Evaluate progress: %d/%d blocks", worker_id, block_idx + 1, blocks)
@@ -292,14 +233,6 @@ def run_evaluate(config) -> str:
         )
     else:
         logger.info("[worker=%s] Constraint mismatch summary: total_invalid=0", worker_id)
-    if aclr_reranker is not None:
-        logger.info(
-            "[worker=%s] ACLR-lite summary: mode=%s activated_count=%d total_examples=%d",
-            worker_id,
-            aclr_mode,
-            aclr_activation_count,
-            len(test_data),
-        )
 
     for idx, row in enumerate(test_data):
         row["predict"] = outputs[idx]

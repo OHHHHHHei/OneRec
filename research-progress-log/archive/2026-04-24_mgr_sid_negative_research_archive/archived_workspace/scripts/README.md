@@ -15,9 +15,9 @@ Archive entry（归档入口）:
 - `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md`
 - `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/CLASSIFIED_STAGE_MANIFEST.md`
 
-## Preserved Current-Level Scripts（保留在当前层的脚本）
+## Preserved Late-Stage Scripts（保留的后期脚本）
 
-The following families（脚本族） remain at the root of `scripts/` to preserve historical reproducibility（历史复现性） and avoid breaking artifact pointers（产物指针）:
+The following families（脚本族） remain at the root of this archived `scripts/` folder（已归档脚本目录） to preserve historical reproducibility（历史复现性） and avoid breaking artifact pointers（产物指针）:
 
 - `experiment_mgr_sid_collab_ranking_*`
 - `launch_mgr_sid_collab_ranking_*`
@@ -33,7 +33,7 @@ The following families（脚本族） remain at the root of `scripts/` to preser
 - `experiment_mgr_sid_v1_generate.py`
 - `experiment_mgr_sid_prepare_data.py`
 
-Registry utilities（总账工具）仍保留在明面：
+Registry utilities（总账工具）也保留在这个归档脚本目录里：
 
 - `validate_experiment_registry.py`
 - `split_experiment_results_registry.py`
@@ -44,6 +44,6 @@ Registry utilities（总账工具）仍保留在明面：
 
 旧分支脚本已经移动到：
 
-- `/home/leejt/OneRec/scripts/archive/pre_r720_legacy_experiments_20260418/`
+- `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/archive/pre_r720_legacy_experiments_20260418/`
 
 这些脚本只用于 provenance（追溯）或 historical reproduction（历史复现），不应作为新实验入口。

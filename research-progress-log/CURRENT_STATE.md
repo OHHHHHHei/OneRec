@@ -79,16 +79,17 @@ The following families（方法族） are closed under current evidence（当前
 
 ## Repository State（仓库状态）
 
-This archive is logical（逻辑归档） rather than physical relocation（物理搬移）:
+This archive is now both logical（逻辑归档） and physical（物理归档） for the visible research workspace（显式研究工作区）:
 
 - Experiment folders（实验文件夹） remain under `research-progress-log/experiment_launches/`.
-- Research configs（研究配置） remain under `config/experiments/`.
-- Research scripts（研究脚本） remain under `scripts/` and `scripts/archive/`.
-- Method code（方法代码） remains under `src/onerec/experiments/mgr_sid/`.
+- Research configs（研究配置） were moved under `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/config/`.
+- Research scripts（研究脚本） were moved under `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/`.
+- Method code（方法代码） was moved under `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/src/onerec/experiments/`.
+- ACLR-lite / collaborative rerank（协同重排） evaluation code was moved under `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/src/onerec/evaluate/`.
 - Research data variants（研究数据变体） remain under `data_experiment/`.
 - Large checkpoints（大模型权重） remain under `/data/leejt/OneRec/output_weights/experiments/`.
 
-This avoids breaking registry pointers（总账指针） and artifact paths（产物路径）.
+Experiment result folders（实验结果文件夹） and registry pointers（总账指针） were not mass-moved, so artifact paths（产物路径） remain traceable（可追溯）.
 
 ## Next Steps（下一步）
 
@@ -99,4 +100,3 @@ This avoids breaking registry pointers（总账指针） and artifact paths（�
 ## Reading Rule（阅读规则）
 
 All dated MGR-SID notes（带日期 MGR-SID 笔记）, old stage README files（旧阶段说明）, old configs（旧配置）, and old scripts（旧脚本） are archived provenance（归档追溯材料） unless explicitly reactivated by a future canonical current-state update（未来权威当前状态更新）.
-

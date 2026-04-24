@@ -50,19 +50,19 @@ Archive note（归档说明）:
 source /home/leejt/miniconda3/etc/profile.d/conda.sh
 conda activate MiniOneRec
 cd /home/leejt/OneRec
-python scripts/split_experiment_results_registry.py --overwrite
+python research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/split_experiment_results_registry.py --overwrite
 ```
 
 生成脚本：
 
-- [scripts/split_experiment_results_registry.py](/home/leejt/OneRec/scripts/split_experiment_results_registry.py)
+- [split_experiment_results_registry.py](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/split_experiment_results_registry.py)
 
 校验脚本：
 
-- [scripts/validate_experiment_registry.py](/home/leejt/OneRec/scripts/validate_experiment_registry.py)
+- [validate_experiment_registry.py](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/validate_experiment_registry.py)
 
 ```bash
-python scripts/validate_experiment_registry.py
+python research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/validate_experiment_registry.py
 ```
 
 ## 维护规则
@@ -106,7 +106,7 @@ python scripts/validate_experiment_registry.py
 4. 运行：
 
 ```bash
-python scripts/validate_experiment_registry.py
+python research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/validate_experiment_registry.py
 ```
 
 5. 如果该 tokenizer（分词器）进入下游验证，更新 `CURRENT_STATE.md`（当前状态）的 next step（下一步）。
@@ -122,7 +122,7 @@ python scripts/validate_experiment_registry.py
 5. 运行：
 
 ```bash
-python scripts/validate_experiment_registry.py
+python research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/validate_experiment_registry.py
 ```
 
 6. 如果结果改变 strongest line（最强主线）、baseline comparison（基线比较）或 next step（下一步），更新 `CURRENT_STATE.md`（当前状态）。
@@ -138,7 +138,7 @@ python scripts/validate_experiment_registry.py
 5. 运行：
 
 ```bash
-python scripts/validate_experiment_registry.py
+python research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/validate_experiment_registry.py
 ```
 
 6. 如果结果改变 strongest line（最强主线）或 paper claim（论文主张），更新 `CURRENT_STATE.md`（当前状态）和必要的 method/narrative docs（方法/叙事文档）。

@@ -10,8 +10,8 @@ Use them only for provenance（追溯）or exact reproduction（精确复现）o
 
 Current mainline config（当前主线配置）:
 
-- `/home/leejt/OneRec/config/experiments/sid_train_industrial_mgr_sid_collab_ranking_mainline.yaml`
+- `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/config/experiments/sid_train_industrial_mgr_sid_collab_ranking_mainline.yaml`
 
 Temporary exception（临时例外）:
 
-- `R690b` SFT/evaluate（监督微调/评测）configs remain in `/home/leejt/OneRec/config/experiments/` until its currently running tmux（终端复用器）session finishes.
+- Late-stage SFT/evaluate（监督微调/评测）configs are now preserved in `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/config/experiments/`.

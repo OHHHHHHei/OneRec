@@ -15,9 +15,9 @@ Archive entry（归档入口）:
 - `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md`
 - `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/CLASSIFIED_STAGE_MANIFEST.md`
 
-## Preserved Current-Level Configs（保留在当前层的配置）
+## Preserved Late-Stage Configs（保留的后期配置）
 
-The configs（配置） remain here to avoid breaking historical scripts（历史脚本） and registry artifact pointers（总账产物指针）.
+The configs（配置） remain inside this archived workspace（已归档工作区） to preserve historical scripts（历史脚本） and registry artifact pointers（总账产物指针）.
 
 They include:
 
@@ -30,6 +30,6 @@ They include:
 
 Older branch configs（更早分支配置） already moved to:
 
-- `/home/leejt/OneRec/config/archive/2026-04-18_pre_r720_legacy_experiments/`
+- `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/config/archive/2026-04-18_pre_r720_legacy_experiments/`
 
 All configs（全部配置） are now provenance（追溯） and historical reproduction（历史复现） material, not new experiment starting points（新实验起点）.

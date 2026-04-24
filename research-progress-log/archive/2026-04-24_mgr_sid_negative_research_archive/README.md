@@ -24,15 +24,18 @@ Important nuance（重要口径）:
 
 ## What Was Archived（归档范围）
 
-Logical archive（逻辑归档）, not physical relocation（物理搬移）:
+This archive now has two layers（两层）:
 
-- Experiment stages（实验阶段） remain in `research-progress-log/experiment_launches/` so registry（总账） and artifact pointers（产物指针） do not break.
-- Research configs（研究配置） remain in `config/experiments/`.
-- Research scripts（研究脚本） remain in `scripts/` and `scripts/archive/`.
-- Method code（方法代码） remains in `src/onerec/experiments/mgr_sid/`.
-- Research notes（研究笔记） remain under `idea-discovery/` and `research-progress-log/`.
+- Logical archive（逻辑归档） for experiment stages（实验阶段）:
+  - Experiment stages（实验阶段） remain in `research-progress-log/experiment_launches/` so registry（总账） and artifact pointers（产物指针） do not break.
+  - Research notes（研究笔记） remain under `idea-discovery/` and `research-progress-log/`.
+- Physical archive（物理归档） for visible research workspace（显式研究工作区）:
+  - Research configs（研究配置） moved to `archived_workspace/config/`.
+  - Research scripts（研究脚本） moved to `archived_workspace/scripts/`.
+  - MGR-SID method code（方法代码） moved to `archived_workspace/src/onerec/experiments/`.
+  - ACLR-lite collaborative rerank code（协同重排代码） moved to `archived_workspace/src/onerec/evaluate/`.
 
-This archive adds a classification layer（分类层） and closes the active decision loop（活跃决策循环）.
+This archive adds a classification layer（分类层）, closes the active decision loop（活跃决策循环）, and restores the visible baseline layout（显式基线布局）.
 
 ## Archive Files（归档文件）
 
@@ -40,6 +43,7 @@ This archive adds a classification layer（分类层） and closes the active de
 - `EXPERIMENT_LAUNCH_INDEX_before_archive.md`: stage index（阶段索引） before this archive checkpoint.
 - `CLASSIFIED_STAGE_MANIFEST.md`: classified map（分类地图） of all current research stage folders and research assets（研究资产）.
 - `NEGATIVE_RESULT_POSTMORTEM.md`: concise postmortem（复盘） of what failed, what remains informative, and what should not be continued.
+- `archived_workspace/`: physically archived research configs（配置）, scripts（脚本）, and method code（方法代码）.
 - `root_tmp_diagnostics/`: archived root-level `tmp_*` diagnostic artifacts（根目录临时诊断产物）.
 
 ## Closed Families（已关闭方法族）

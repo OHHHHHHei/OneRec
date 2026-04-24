@@ -3,20 +3,20 @@
 Status（状态）: `archived（归档）`
 Snapshot date（快照日期）: `2026-04-24`
 
-This manifest（清单） classifies the current research workspace（研究工作区） without moving the original folders（原始目录）.
+This manifest（清单） classifies the archived research workspace（已归档研究工作区） after the 2026-04-24 physical archive（物理归档）.
 
 ## Asset Counts（资产计数）
 
 - Experiment stage folders（实验阶段目录）: `61`
-- Research configs（研究配置） in `config/experiments/`: `38`
+- Research configs（研究配置） in `archived_workspace/config/experiments/`: `38`
 - Root-level MGR-SID scripts（根层 MGR-SID 脚本）: `52`
-- Main method code（主方法代码）: `src/onerec/experiments/mgr_sid/`
+- Main method code（主方法代码）: `archived_workspace/src/onerec/experiments/mgr_sid/`
 
 ## Research Asset Boundaries（研究资产边界）
 
 ### Method Code（方法代码）
 
-- `src/onerec/experiments/mgr_sid/`
+- `archived_workspace/src/onerec/experiments/mgr_sid/`
   - `train_v1.py`
   - `train_v2.py`
   - `train_collab_ranking_sid.py`
@@ -27,16 +27,17 @@ This manifest（清单） classifies the current research workspace（研究工�
 
 ### Configs（配置）
 
-- Archived current-level research configs（已归档当前层研究配置）: `config/experiments/`
-- Archived legacy configs（已归档历史配置）: `config/archive/2026-04-18_pre_r720_legacy_experiments/`
-- Non-MGR OneRec baseline configs（非 MGR OneRec 基线配置） stay in `config/*.yaml`.
+- Archived current-level research configs（已归档当前层研究配置）: `archived_workspace/config/experiments/`
+- Archived legacy configs（已归档历史配置）: `archived_workspace/config/archive/2026-04-18_pre_r720_legacy_experiments/`
+- Archived top-level ACLR/TDCF configs（已归档顶层 ACLR/TDCF 配置）: `archived_workspace/config/legacy_top_level/`
+- Non-MGR OneRec baseline configs（非 MGR OneRec 基线配置） stay in top-level `config/*.yaml`.
 
 ### Scripts（脚本）
 
-- Archived current-level research scripts（已归档当前层研究脚本）: `scripts/experiment_mgr_sid_*`, `scripts/launch_mgr_sid_*`
+- Archived current-level research scripts（已归档当前层研究脚本）: `archived_workspace/scripts/experiment_mgr_sid_*`, `archived_workspace/scripts/launch_mgr_sid_*`
 - Archived legacy scripts（已归档历史脚本）:
-  - `scripts/archive/pre_r720_legacy_experiments_20260418/`
-  - `scripts/archive/retired_prior_diagnostics/`
+  - `archived_workspace/scripts/archive/pre_r720_legacy_experiments_20260418/`
+  - `archived_workspace/scripts/archive/retired_prior_diagnostics/`
 - Standard OneRec baseline entrypoints（标准 OneRec 基线入口） stay at repository root（仓库根目录）: `sid_train.sh`, `sid_generate.sh`, `sft.sh`, `rl.sh`, `evaluate.sh`.
 
 ### Data / Outputs（数据 / 输出）

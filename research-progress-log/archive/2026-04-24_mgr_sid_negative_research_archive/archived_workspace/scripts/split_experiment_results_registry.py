@@ -9,7 +9,15 @@ from pathlib import Path
 from typing import Callable
 
 
-ROOT = Path(__file__).resolve().parents[1]
+def _find_repo_root() -> Path:
+    candidates = [Path.cwd(), *Path(__file__).resolve().parents]
+    for candidate in candidates:
+        if (candidate / "pyproject.toml").exists() and (candidate / "research-progress-log").exists():
+            return candidate
+    return Path(__file__).resolve().parents[1]
+
+
+ROOT = _find_repo_root()
 DEFAULT_SOURCE = ROOT / "experiment_results.csv"
 DEFAULT_OUTPUT_DIR = ROOT / "research-progress-log" / "experiment_registry"
 

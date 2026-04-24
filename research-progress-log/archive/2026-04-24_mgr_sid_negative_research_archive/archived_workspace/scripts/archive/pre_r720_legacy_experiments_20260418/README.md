@@ -10,8 +10,8 @@ Use them only for provenance（追溯）or exact reproduction（精确复现）o
 
 Current mainline launcher（当前主线启动脚本）:
 
-- `/home/leejt/OneRec/scripts/launch_mgr_sid_collab_ranking_tmux.sh`
+- `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/launch_mgr_sid_collab_ranking_tmux.sh`
 
 Temporary exception（临时例外）:
 
-- `R690b` SFT/evaluate（监督微调/评测）scripts remain in `/home/leejt/OneRec/scripts/` until its currently running tmux（终端复用器）session finishes.
+- Late-stage SFT/evaluate（监督微调/评测）scripts are now preserved in `/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/`.
