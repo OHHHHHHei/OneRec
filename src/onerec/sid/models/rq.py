@@ -36,9 +36,10 @@ class ResidualVectorQuantizer(nn.Module):
             all_codebook.append(codebook)
         return torch.stack(all_codebook)
 
-    def forward(self, x, use_sk=True):
+    def forward(self, x, use_sk=True, return_quantized=False):
         all_losses = []
         all_indices = []
+        all_quantized = []
 
         x_q = 0
         # 初始残差为输入
@@ -52,8 +53,14 @@ class ResidualVectorQuantizer(nn.Module):
 
             all_losses.append(loss)
             all_indices.append(indices)
+            if return_quantized:
+                all_quantized.append(x_res)
 
         mean_losses = torch.stack(all_losses).mean()
         all_indices = torch.stack(all_indices, dim=-1)
+
+        if return_quantized:
+            all_quantized = torch.stack(all_quantized, dim=1)
+            return x_q, mean_losses, all_indices, all_quantized
 
         return x_q, mean_losses, all_indices

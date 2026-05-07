@@ -1,0 +1,42 @@
+model:
+  base_model: ../Qwen3-1.7B
+  train_from_scratch: false
+data:
+  train_file: ./data/Amazon/train/%{split_stem}.csv
+  eval_file: ./data/Amazon/valid/%{split_stem}.csv
+  sid_index_path: ./data/Amazon/index/%{artifact_stem}.index.json
+  item_meta_path: ./data/Amazon/index/%{artifact_stem}.item.json
+  category: "%{category}"
+training:
+  batch_size: 1024
+  micro_batch_size: 2
+  cutoff_len: 512
+  enable_title_history2sid_dataset: false
+  enable_title_description_alignment: true
+  description_task_probability: 0.5
+  num_epochs: 10
+  learning_rate: 0.0003
+  seed: 42
+  freeze_llm: false
+  group_by_length: false
+  warmup_steps: 20
+  load_best_model_at_end: true
+  early_stopping_patience: 3
+  eval_step: 0.05
+  attnres_readout_enable: true
+  attnres_readout_mode: global
+  attnres_source_layers: last8
+  attnres_init_mode: final_layer_biased
+  attnres_bias_strength: 10.0
+  attnres_use_rmsnorm: true
+logging:
+  wandb_project: OneRec
+  wandb_run_name: "sft_%{category}_attnres_h1_global_title_off_desc_p05_20260506_fixloss"
+  report_to: wandb
+output:
+  output_dir: "/data/leejt/OneRec/output_weights/sft_%{category}_attnres_h1_global_title_off_desc_p05_20260506_fixloss"
+  save_total_limit: 2
+runtime:
+  launcher: torchrun
+  cuda_visible_devices: "2,3,4,5"
+  nproc_per_node: 4

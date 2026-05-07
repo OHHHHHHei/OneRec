@@ -11,6 +11,18 @@ from onerec.sid.datasets import EmbDataset
 from onerec.sid.models.rqvae import RQVAE
 from onerec.sid.trainer import Trainer
 
+
+def str2bool(value):
+    if isinstance(value, bool):
+        return value
+    lowered = value.lower()
+    if lowered in {"true", "1", "yes", "y"}:
+        return True
+    if lowered in {"false", "0", "no", "n"}:
+        return False
+    raise argparse.ArgumentTypeError(f"Boolean value expected, got {value!r}")
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Index")
 
@@ -28,9 +40,9 @@ def parse_args():
 
     parser.add_argument("--weight_decay", type=float, default=0.0, help='l2 regularization weight')
     parser.add_argument("--dropout_prob", type=float, default=0.0, help="dropout ratio")
-    parser.add_argument("--bn", type=bool, default=False, help="use bn or not")
+    parser.add_argument("--bn", type=str2bool, default=False, help="use bn or not")
     parser.add_argument("--loss_type", type=str, default="mse", help="loss_type")
-    parser.add_argument("--kmeans_init", type=bool, default=True, help="use kmeans_init or not")
+    parser.add_argument("--kmeans_init", type=str2bool, default=True, help="use kmeans_init or not")
     parser.add_argument("--kmeans_iters", type=int, default=100, help="max kmeans iters")
     parser.add_argument('--sk_epsilons', type=float, nargs='+', default=[0.0, 0.0, 0.0], help="sinkhorn epsilons")
     parser.add_argument("--sk_iters", type=int, default=50, help="max sinkhorn iters")
@@ -42,6 +54,16 @@ def parse_args():
     parser.add_argument('--quant_loss_weight', type=float, default=1.0, help='vq quantion loss weight')
     parser.add_argument("--beta", type=float, default=0.25, help="Beta for commitment loss")
     parser.add_argument('--layers', type=int, nargs='+', default=[2048,1024,512,256,128,64], help='hidden sizes of every layer')
+    parser.add_argument("--attn_residual_enable", type=str2bool, default=False,
+                        help="enable identity-initialized attentive residual composition")
+    parser.add_argument("--attn_residual_mode", type=str, default="dynamic", choices=["dynamic", "static"],
+                        help="attentive residual weighting mode")
+    parser.add_argument("--attn_residual_reg_weight", type=float, default=0.0,
+                        help="regularization weight for keeping attentive residual weights near 1")
+    parser.add_argument("--attn_residual_use_rmsnorm", type=str2bool, default=True,
+                        help="normalize residual code vectors before attention scoring")
+    parser.add_argument("--attn_residual_temperature", type=float, default=1.0,
+                        help="softmax temperature for attentive residual weights")
 
     parser.add_argument('--save_limit', type=int, default=5)
     parser.add_argument("--ckpt_dir", type=str, default="", help="output directory for model")
@@ -81,6 +103,11 @@ if __name__ == '__main__':
                   kmeans_iters=args.kmeans_iters,
                   sk_epsilons=args.sk_epsilons,
                   sk_iters=args.sk_iters,
+                  attn_residual_enable=args.attn_residual_enable,
+                  attn_residual_mode=args.attn_residual_mode,
+                  attn_residual_reg_weight=args.attn_residual_reg_weight,
+                  attn_residual_use_rmsnorm=args.attn_residual_use_rmsnorm,
+                  attn_residual_temperature=args.attn_residual_temperature,
                   )
     print(model)
     data_loader = DataLoader(data,num_workers=args.num_workers,
@@ -91,5 +118,4 @@ if __name__ == '__main__':
 
     print("Best Loss",best_loss)
     print("Best Collision Rate", best_collision_rate)
-
 

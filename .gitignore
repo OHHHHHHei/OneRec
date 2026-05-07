@@ -95,3 +95,9 @@ data/**/*.npy
 # Do not track runtime dataset caches under curated Amazon artifacts
 data/Amazon/**/.cache/
 data/Amazon/**/.cache/**
+
+# AI Agent local skills
+.claude/skills/
+
+# Local downloaded papers
+papers/

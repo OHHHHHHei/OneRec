@@ -2,17 +2,25 @@
 
 Status（状态）: `canonical（权威）`
 
-Last updated（更新日期）: `2026-04-24`
+Last updated（更新日期）: `2026-05-01`
 
 ## One-Line State（一句话状态）
 
-The MGR-SID / ACLR / QCR research line（研究线） is now archived（已归档） as a negative-result stage（负结果阶段）.
+The MGR-SID / ACLR / QCR research line（研究线） is archived（已归档） as a negative-result stage（负结果阶段）.
 
 Current decision（当前决策）:
 
 > Do not continue the present collaborative-SID construction（协同 SID 构建） variants. No current branch gives a robust primary downstream win（主要下游稳定胜利） over the strongest OneRec baseline（最强 OneRec 基线） on `@1/@3/@5/@10`（主要评测截断）.
 
 The repository should now treat this line as provenance（追溯材料）, not as an active optimization target（活跃优化目标）.
+
+Active exploratory branch（活跃探索分支）:
+
+> `AttnRQ-Identity`（保持恒等初始化的注意力残差量化） tests whether the RQ-VAE tokenizer（残差量化变分自编码器分词器） is limited by fixed residual-code summation（固定残差码求和）. It keeps semantic embedding input（语义嵌入输入） and residual quantization（残差量化） intact, and only replaces the reconstruction-path composition（重构路径组合） with identity-initialized residual attention weights（恒等初始化残差注意力权重）.
+
+Branch pointer（分支指针）:
+
+- [Attentive Residual RQ-VAE Tokenizer](/home/leejt/OneRec/idea-discovery/2026-05-01_attentive_residual_rqvae_tokenizer/README.md)
 
 ## Archive Pointer（归档指针）
 
@@ -93,9 +101,9 @@ Experiment result folders（实验结果文件夹） and registry pointers（总
 
 ## Next Steps（下一步）
 
-1. If sending code to the advisor（导师）, export the clean OneRec baseline（干净 OneRec 基线） from the historical commit（历史提交）, not from the current research-polluted workspace（研究污染工作区）.
-2. Do not launch more MGR-SID / QCR / R720-style experiments（实验） unless a genuinely new mechanism（新机制） is defined.
-3. If a new research direction starts, create a new dated idea folder（带日期想法目录） and a fresh experiment plan（实验计划） with a clean baseline protocol（干净基线协议）.
+1. Implement the AttnRQ-Identity（保持恒等初始化的注意力残差量化） tokenizer pilot（分词器小试验） from the new experiment plan（实验计划）.
+2. Use downstream SFT/evaluate（下游监督微调/评测）, not tokenizer-only proxies（仅分词器代理指标）, as the first go / no-go（推进 / 停止） gate.
+3. Do not reopen MGR-SID / QCR / R720-style graph-loss variants（图损失变体） unless the new tokenizer branch first shows a downstream learnability signal（下游可学习性信号）.
 
 ## Reading Rule（阅读规则）
 

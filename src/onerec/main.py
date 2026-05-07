@@ -50,6 +50,14 @@ def _run_module(module_name: str, argv: list[str]) -> None:
         sys.argv = old_argv
 
 
+def _append_cli_arg(argv: list[str], key: str, value) -> None:
+    if isinstance(value, list):
+        argv.append(f"--{key}")
+        argv.extend(str(item) for item in value)
+        return
+    argv.extend([f"--{key}", str(value)])
+
+
 def _run_preprocess(config_path: str | None, overrides: list[str]) -> None:
     config = load_config(PreprocessConfig, resolve_config_path("preprocess", config_path), overrides)
     target = "onerec.preprocess.amazon18" if config.extras.get("source", "amazon18") == "amazon18" else "onerec.preprocess.amazon23"
@@ -57,7 +65,7 @@ def _run_preprocess(config_path: str | None, overrides: list[str]) -> None:
     for key, value in config.extras.items():
         if key == "source":
             continue
-        argv.extend([f"--{key}", str(value)])
+        _append_cli_arg(argv, key, value)
     _run_module(target, argv)
 
 
@@ -91,7 +99,7 @@ def _run_sid_train(config_path: str | None, overrides: list[str]) -> None:
     for key, value in config.extras.items():
         if key == "kind":
             continue
-        argv.extend([f"--{key}", str(value)])
+        _append_cli_arg(argv, key, value)
     _run_module(module_name, argv)
 
 
@@ -103,7 +111,7 @@ def _run_sid_generate(config_path: str | None, overrides: list[str]) -> None:
     for key, value in config.extras.items():
         if key == "kind":
             continue
-        argv.extend([f"--{key}", str(value)])
+        _append_cli_arg(argv, key, value)
     _run_module(module_name, argv)
 
 

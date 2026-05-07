@@ -10,6 +10,7 @@ from tqdm import tqdm
 from onerec.evaluate.constrained_decoding import ConstrainedLogitsProcessor
 from onerec.evaluate.datasets import EvalSidDataset
 from onerec.evaluate.semantic_id import canonicalize_semantic_id
+from onerec.sft.attnres_readout import maybe_apply_saved_attnres_readout
 from onerec.utils.seed import set_global_seed
 
 
@@ -113,6 +114,8 @@ def run_evaluate(config) -> str:
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
     tokenizer.padding_side = "left"
+    model = maybe_apply_saved_attnres_readout(model, tokenizer, config.model.base_model)
+    model.eval()
     hash_dict = build_prefix_allowed_tokens(tokenizer, config.data.info_file, config.model.base_model)
     response_prefix = "### Response:\n"
     response_prefix_ids = tokenizer(response_prefix).input_ids[1:] if "llama" in config.model.base_model.lower() else tokenizer(response_prefix).input_ids

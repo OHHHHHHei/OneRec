@@ -61,6 +61,11 @@ def main():
         kmeans_iters=ckpt_args.kmeans_iters,
         sk_epsilons=ckpt_args.sk_epsilons,
         sk_iters=ckpt_args.sk_iters,
+        attn_residual_enable=getattr(ckpt_args, "attn_residual_enable", False),
+        attn_residual_mode=getattr(ckpt_args, "attn_residual_mode", "dynamic"),
+        attn_residual_reg_weight=getattr(ckpt_args, "attn_residual_reg_weight", 0.0),
+        attn_residual_use_rmsnorm=getattr(ckpt_args, "attn_residual_use_rmsnorm", True),
+        attn_residual_temperature=getattr(ckpt_args, "attn_residual_temperature", 1.0),
     )
     model.load_state_dict(state_dict)
     model = model.to(device)
@@ -112,4 +117,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -55,6 +55,12 @@ class SFTTrainConfig(CommonTrainConfig):
     learning_rate: float = 1e-4
     freeze_llm: bool = False
     eval_step: float = 0.1
+    attnres_readout_enable: bool = False
+    attnres_readout_mode: str = "sid_only"
+    attnres_source_layers: str = "last8"
+    attnres_init_mode: str = "final_layer_biased"
+    attnres_bias_strength: float = 10.0
+    attnres_use_rmsnorm: bool = True
 
 
 @dataclass

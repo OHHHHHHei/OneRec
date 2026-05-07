@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_l2_local_multihop_rescue_20260506/industrial_r690b_l2_infonce_local_multihop/May-06-2026_22-40-38/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_l2_local_multihop_rescue_20260506/generated_indices/Industrial_and_Scientific.r690b_l2_infonce_local_multihop.index.json",
+  "collision_rate": 0.41942485078676073,
+  "max_conflict": 129,
+  "collision_rounds_used": 20,
+  "num_items": 3686
+}

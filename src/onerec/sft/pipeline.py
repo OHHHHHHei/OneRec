@@ -12,6 +12,7 @@ from onerec.utils.seed import set_global_seed
 from onerec.sft.datasets import FusionSeqRecDataset, SidItemFeatDataset, SidSFTDataset, TitleHistory2SidSFTDataset
 from onerec.sft.token_extension import TokenExtender
 from onerec.sft.trainer import concat_dataset_to_hf
+from onerec.sft.attnres_readout import apply_attnres_readout, save_attnres_readout
 
 
 logger = logging.getLogger(__name__)
@@ -81,6 +82,25 @@ def run_sft(config) -> str:
 
         embedding_layer.weight.register_hook(mask_grad)
 
+    if bool(config.training.attnres_readout_enable):
+        logger.info(
+            "Enable AttnRes readout: mode=%s source_layers=%s init=%s bias_strength=%s rmsnorm=%s",
+            config.training.attnres_readout_mode,
+            config.training.attnres_source_layers,
+            config.training.attnres_init_mode,
+            config.training.attnres_bias_strength,
+            config.training.attnres_use_rmsnorm,
+        )
+        model = apply_attnres_readout(
+            model,
+            tokenizer,
+            mode=config.training.attnres_readout_mode,
+            source_layers=config.training.attnres_source_layers,
+            init_mode=config.training.attnres_init_mode,
+            bias_strength=float(config.training.attnres_bias_strength),
+            use_rmsnorm=bool(config.training.attnres_use_rmsnorm),
+        )
+
     if int(os.environ.get("WORLD_SIZE", "1")) == 1 and torch.cuda.device_count() > 1:
         model.is_parallelizable = True
         model.model_parallel = True
@@ -146,6 +166,8 @@ def run_sft(config) -> str:
         metric_for_best_model="eval_loss",
         greater_is_better=False,
         group_by_length=bool(config.training.group_by_length),
+        remove_unused_columns=not bool(config.training.attnres_readout_enable),
+        prediction_loss_only=bool(config.training.attnres_readout_enable),
         report_to=config.logging.report_to,
     )
     trainer = transformers.Trainer(
@@ -160,5 +182,7 @@ def run_sft(config) -> str:
     trainer.train(resume_from_checkpoint=config.output.resume_from_checkpoint)
     final_checkpoint = os.path.join(config.output.output_dir, "final_checkpoint")
     trainer.model.save_pretrained(final_checkpoint)
+    model_to_save = trainer.model.module if hasattr(trainer.model, "module") else trainer.model
+    save_attnres_readout(model_to_save, final_checkpoint)
     tokenizer.save_pretrained(final_checkpoint)
     return final_checkpoint

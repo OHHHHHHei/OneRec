@@ -1,0 +1,19 @@
+Status（状态）: `reference（参考）`
+Last updated（更新日期）: `2026-05-06`
+
+# Experiment Tracker（实验跟踪表）
+
+| Run ID（运行编号） | Milestone（里程碑） | Purpose（目的） | System / Variant（系统 / 变体） | Split（划分） | Metrics（指标） | Priority（优先级） | Status（状态） | Notes（备注） |
+|---|---|---|---|---|---|---|---|---|
+| R001 | M0 | initialization equivalence（初始化等价） | RQBase vs AttnRQ-Identity before training（训练前对比） | synthetic subset（合成小子集） | max diff, \(\gamma\) mean/std（最大差异，权重均值/标准差） | MUST（必跑） | DONE（完成） | Passed locally; output/loss diff = 0, \(\gamma=[1,1,1]\). Result: `results/attnrq_identity_sanity.json` |
+| R001b | M1 | baseline parity（基线对齐） | RQBase with strong OneRec tokenizer hyperparameters（强 OneRec 分词器超参） | full train（完整训练集） | MSE, RQ loss, collision（均方误差、量化损失、冲突） | MUST（必跑） | DONE（完成） | `10000/20480`; best train loss `0.20211`; raw best collision（原始最佳冲突） `0.09929`; generated collision（生成冲突） `16/3686=0.00434075`; checkpoint（检查点） `/data/leejt/OneRec/output_weights/rqbase_onerec_aligned/May-01-2026_17-15-18/best_collision_model.pth` |
+| R002 | M1 | tokenizer smoke（分词器冒烟） | AttnRQ-Identity, \(\lambda_{\mathrm{attn}}=0.001\) | full train（完整训练集） | MSE, RQ loss, collision, \(\gamma\)（均方误差、量化损失、冲突、权重） | MUST（必跑） | SUPERSEDED（已替代） | Old smoke run used `epochs=10,batch_size=256`; not comparable to original OneRec tokenizer（原版 OneRec 分词器）. Superseded by aligned config（对齐配置）. |
+| R002b | M1 | tokenizer smoke（分词器冒烟） | AttnRQ-Identity, \(\lambda_{\mathrm{attn}}=0.001\), strong OneRec hyperparameters（强 OneRec 超参） | full train（完整训练集） | MSE, RQ loss, collision, \(\gamma\)（均方误差、量化损失、冲突、权重） | MUST（必跑） | DONE（完成） | `10000/20480`; best train loss `0.25450`; raw best collision（原始最佳冲突） `0.10255`; generated collision（生成冲突） `12/3686=0.00325556`; \(\bar\gamma\approx[1.070,0.965,0.965]\); checkpoint（检查点） `/data/leejt/OneRec/output_weights/attnrq_identity_lam0001/May-01-2026_17-15-18/best_collision_model.pth` |
+| R003 | M1 | tokenizer smoke（分词器冒烟） | AttnRQ-Identity, \(\lambda_{\mathrm{attn}}=0.01\) | train subset（训练子集） | MSE, RQ loss, collision, \(\gamma\)（均方误差、量化损失、冲突、权重） | MUST（必跑） | TODO（待做） | Stronger identity pull（更强恒等约束） |
+| R004 | M2 | full tokenizer（完整分词器） | Best AttnRQ-Identity from smoke（冒烟最佳变体） | full train（完整训练集） | tokenizer diagnostics（分词器诊断） | MUST（必跑） | TODO（待做） | Save checkpoint（保存检查点） under `/data/leejt/OneRec/output_weights` |
+| R005 | M2 | baseline parity（基线对齐） | Clean OneRec RQBase（干净 OneRec 残差量化基线） | full train（完整训练集） | tokenizer diagnostics（分词器诊断） | MUST（必跑） | TODO（待做） | Reuse existing baseline if artifact is valid（若产物有效则复用） |
+| R006 | M3 | downstream gate（下游门槛） | SFT/evaluate with best AttnRQ SID（最佳注意力残差量化语义 ID） | held-out test（保留测试集） | NDCG/HR @1/@3/@5/@10 | MUST（必跑） | TODO（待做） | Decides whether branch continues（决定是否继续） |
+| R007 | M4 | static ablation（静态消融） | StaticRQ global \(\gamma^{(l)}\)（全局层权重） | full train + downstream（完整训练 + 下游） | same as R006（同 R006） | CONDITIONAL（条件执行） | TODO（待做） | Run only if R006 is promising（仅 R006 有希望时运行） |
+| R008 | M4 | normalization ablation（归一化消融） | AttnRQ without RMSNorm（无均方根归一化） | full train + downstream（完整训练 + 下游） | same as R006（同 R006） | CONDITIONAL（条件执行） | TODO（待做） | Tests magnitude bias（测试幅值偏置） |
+| R009 | M4 | regularizer ablation（正则消融） | AttnRQ without \(\mathcal L_{\mathrm{attn}}\)（无注意力正则） | full train（完整训练集） | train loss, raw/generated collision, \(\gamma\)（训练损失、原始/生成冲突、权重） | CONDITIONAL（条件执行） | DONE（完成） | `10000/20480`; best train loss `0.26489`; raw best collision（原始最佳冲突） `0.12127`; generated collision（生成冲突） `13/3686=0.00352686`; \(\bar\gamma\approx[1.010,0.995,0.995]\). Removing the regularizer did not improve tokenizer structure（去正则未改善分词器结构）. |
+| R010 | M5 | attention diagnosis（注意力诊断） | Best AttnRQ-Identity（最佳注意力残差量化） | train/valid/test analysis（训练/验证/测试分析） | \(\gamma\) by popularity / ambiguity / hit-miss（按流行度/歧义/命中情况分组） | NICE（可选） | TODO（待做） | Upgrade to MUST if writing（写论文时升为必跑） |

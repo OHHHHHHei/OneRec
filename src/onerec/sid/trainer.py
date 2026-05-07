@@ -101,6 +101,7 @@ class Trainer(object):
 
         total_loss = 0
         total_recon_loss = 0
+        total_attn_residual_loss = 0
         iter_data = tqdm(
                     train_data,
                     total=len(train_data),
@@ -113,6 +114,9 @@ class Trainer(object):
             self.optimizer.zero_grad()
             out, rq_loss, indices = self.model(data)
             loss, loss_recon = self.model.compute_loss(out, rq_loss, xs=data)
+            attn_residual_loss = None
+            if hasattr(self.model, "get_last_attn_residual_loss"):
+                attn_residual_loss = self.model.get_last_attn_residual_loss()
             self._check_nan(loss)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
@@ -121,8 +125,10 @@ class Trainer(object):
             # print(self.scheduler.get_last_lr())
             total_loss += loss.item()
             total_recon_loss += loss_recon.item()
+            if attn_residual_loss is not None:
+                total_attn_residual_loss += attn_residual_loss.item()
 
-        return total_loss, total_recon_loss
+        return total_loss, total_recon_loss, total_attn_residual_loss
 
     @torch.no_grad()
     def _valid_epoch(self, valid_data):
@@ -171,7 +177,7 @@ class Trainer(object):
 
         return ckpt_path
 
-    def _generate_train_loss_output(self, epoch_idx, s_time, e_time, loss, recon_loss):
+    def _generate_train_loss_output(self, epoch_idx, s_time, e_time, loss, recon_loss, attn_residual_loss=0):
         train_loss_output = (
             set_color("epoch %d training", "green")
             + " ["
@@ -181,6 +187,9 @@ class Trainer(object):
         train_loss_output += set_color("train loss", "blue") + ": %.4f" % loss
         train_loss_output +=", "
         train_loss_output += set_color("reconstruction loss", "blue") + ": %.4f" % recon_loss
+        if getattr(self.model, "attn_residual_enable", False):
+            train_loss_output +=", "
+            train_loss_output += set_color("attn_residual loss", "blue") + ": %.4f" % attn_residual_loss
         return train_loss_output + "]"
 
 
@@ -191,10 +200,10 @@ class Trainer(object):
         for epoch_idx in range(self.epochs):
             # train
             training_start_time = time()
-            train_loss, train_recon_loss = self._train_epoch(data, epoch_idx)
+            train_loss, train_recon_loss, train_attn_residual_loss = self._train_epoch(data, epoch_idx)
             training_end_time = time()
             train_loss_output = self._generate_train_loss_output(
-                epoch_idx, training_start_time, training_end_time, train_loss, train_recon_loss
+                epoch_idx, training_start_time, training_end_time, train_loss, train_recon_loss, train_attn_residual_loss
             )
             self.logger.info(train_loss_output)
 
@@ -249,7 +258,6 @@ class Trainer(object):
 
 
         return self.best_loss, self.best_collision_rate
-
 
 
 
