@@ -1,0 +1,22 @@
+{
+  "index_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_l2_lmh_sweep_20260507/generated_indices/Industrial_and_Scientific.r690b_lmh_l2_contrastive_pull_weight003.index.json",
+  "num_items": 3686,
+  "active_l1": 2,
+  "unique_l12": 21,
+  "unique_sid": 1862,
+  "collision_count": 1824,
+  "collision_rate": 0.4948453608247423,
+  "max_conflict": 103,
+  "max_l1_bucket": 3110,
+  "top5_l1_cover": 3686,
+  "top5_l1": [
+    [
+      "<a_146>",
+      3110
+    ],
+    [
+      "<a_184>",
+      576
+    ]
+  ]
+}

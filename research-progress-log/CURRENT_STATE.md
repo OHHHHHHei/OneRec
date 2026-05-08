@@ -2,109 +2,158 @@
 
 Status（状态）: `canonical（权威）`
 
-Last updated（更新日期）: `2026-05-01`
+Last updated（更新日期）: `2026-05-07`
 
 ## One-Line State（一句话状态）
 
-The MGR-SID / ACLR / QCR research line（研究线） is archived（已归档） as a negative-result stage（负结果阶段）.
+The active mainline（活跃主线） has shifted to:
 
-Current decision（当前决策）:
+> `R690b local_multihop L2 rescue + weak contrastive pull=0.01`（R690b 局部多跳第二层救援 + 弱对比拉近 0.01） for SID tokenizer（语义标识分词器） construction, followed by standard OneRec SFT / RL（监督微调 / 强化学习）.
 
-> Do not continue the present collaborative-SID construction（协同 SID 构建） variants. No current branch gives a robust primary downstream win（主要下游稳定胜利） over the strongest OneRec baseline（最强 OneRec 基线） on `@1/@3/@5/@10`（主要评测截断）.
+Reason（原因）:
 
-The repository should now treat this line as provenance（追溯材料）, not as an active optimization target（活跃优化目标）.
+- It is the first tokenizer-side（分词器侧） line in this stage that beats the strongest original SFT baseline（原版最强监督微调基线） on `NDCG@1/@3/@5/@10`（归一化折损累计增益 @1/@3/@5/@10）.
+- It also beats `v2_on_p05` SFT（监督微调） on all primary `NDCG/HR@1/@3/@5/@10`（主要排序/命中指标） checkpoints.
+- Error analysis（错误分析） shows the gain is structurally meaningful: it improves rank quality（排序质量） especially when the target shares L2 prefix（第二层前缀） with historical items（历史物品）.
 
-Active exploratory branch（活跃探索分支）:
+Current caveat（当前限制）:
 
-> `AttnRQ-Identity`（保持恒等初始化的注意力残差量化） tests whether the RQ-VAE tokenizer（残差量化变分自编码器分词器） is limited by fixed residual-code summation（固定残差码求和）. It keeps semantic embedding input（语义嵌入输入） and residual quantization（残差量化） intact, and only replaces the reconstruction-path composition（重构路径组合） with identity-initialized residual attention weights（恒等初始化残差注意力权重）.
+- `HR@10`（命中率@10） is still below strongest original SFT（原版最强监督微调）.
+- The method improves ranking depth（排序靠前程度） more than coverage（覆盖面）.
+- RL/evaluate（强化学习/评测） is running and is the current decisive test（当前裁决实验）.
 
 Branch pointer（分支指针）:
 
-- [Attentive Residual RQ-VAE Tokenizer](/home/leejt/OneRec/idea-discovery/2026-05-01_attentive_residual_rqvae_tokenizer/README.md)
+- [L2 Local Multihop Rescue Tokenizers](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/README.md)
 
-## Archive Pointer（归档指针）
+## Current Mainline Experiment（当前主线实验）
 
-Canonical archive（权威归档）:
+Variant（变体）:
 
-- [MGR-SID Negative Research Archive](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md)
-- [Classified Stage Manifest](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/CLASSIFIED_STAGE_MANIFEST.md)
-- [Negative Result Postmortem](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/NEGATIVE_RESULT_POSTMORTEM.md)
+- `r690b_lmh_l2_contrastive_pull_weight001`
 
-Snapshots（快照） from before this archive checkpoint（归档检查点）:
+Tokenizer idea（分词器想法）:
 
-- [CURRENT_STATE_before_archive.md](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/CURRENT_STATE_before_archive.md)
-- [EXPERIMENT_LAUNCH_INDEX_before_archive.md](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/EXPERIMENT_LAUNCH_INDEX_before_archive.md)
+- Start from the R690b hierarchy-cost guided tokenizer（层级代价引导分词器） family.
+- Replace the stale/overweighted prior graph（旧先验图） setting with a refreshed local multihop graph（刷新后的局部多跳图）.
+- Apply a weak L2 contrastive pull（弱第二层对比拉近） with weight `0.01`.
+- Keep the downstream recipe（下游配方） aligned with the strongest comparable OneRec setup（OneRec 可比设置）.
 
-Registries（总账） remain the source for finalized metrics（定稿指标）:
+SFT result（监督微调结果）:
 
-- [experiment_registry/README.md](/home/leejt/OneRec/research-progress-log/experiment_registry/README.md)
-- [tokenizer_registry.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/tokenizer_registry.csv)
-- [sft_registry.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/sft_registry.csv)
-- [rl_registry.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/rl_registry.csv)
-- [downstream_scoreboard.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv)
+| Metric（指标） | @1 | @3 | @5 | @10 |
+| --- | ---: | ---: | ---: | ---: |
+| NDCG（归一化折损累计增益） | 0.070593 | 0.088131 | 0.094889 | 0.104383 |
+| HR（命中率） | 0.070593 | 0.100816 | 0.117362 | 0.146923 |
 
-## Core Verdict（核心裁决）
+Primary comparisons（主要对比）:
 
-The tested hypothesis（被测试假设） was:
+- Versus strongest original SFT（原版最强监督微调）:
+  - `NDCG@1/@3/@5/@10` all improve（全部提升）.
+  - `HR@1/@3` improve（提升）.
+  - `HR@5/@10` regress（下降）, with `HR@10 -0.003971`.
+- Versus `v2_on_p05` SFT:
+  - `NDCG/HR@1/@3/@5/@10` are all tied or improved（全部持平或提升）.
 
-> Collaborative hierarchy information（协同层级信息） can be injected into SID construction（语义标识构建） to produce a SID codebook space（SID 码本空间） that is easier for downstream SFT / RL（下游监督微调 / 强化学习） than the standard OneRec baseline（标准 OneRec 基线）.
+Interpretation（解释）:
 
-Current result（当前结果）:
+- The model is not winning by simple hit-count expansion（命中数量扩张）.
+- It wins because more correct items move into earlier ranks（正确物品被排到更靠前位置）.
+- Pairwise against strongest original SFT（逐样本对比原版最强监督微调）:
+  - New Hit@10（本次命中@10）: `666`
+  - Original Hit@10（原版命中@10）: `684`
+  - New rank-better examples（本次排名更优样本）: `268`
+  - New rank-worse examples（本次排名更差样本）: `251`
+  - Net `NDCG@10` improvement（净提升）: `+0.000663`
 
-- Not supported（不支持） as a paper-level claim（论文级主张）.
-- Some variants improved tokenizer-side structure（分词器侧结构）.
-- Some variants improved over weaker MGR-SID variants（较弱 MGR-SID 变体）.
-- None established a robust win（稳定胜利） over the strongest baseline（最强基线） on the primary metrics（主要指标）.
+Error analysis（错误分析）:
 
-Primary gate（主要门槛）:
+- Strongest slice（最强切片） versus `v2_on_p05`:
+  - `same_L2_seen`（历史中出现同第二层前缀）:
+    - `NDCG@10 +0.044051`
+    - `HR@10 +0.066845`
+- Main weakness（主要弱点）:
+  - `no_same_L1`（历史中没有同第一层前缀） has little gain.
+  - Fine-grained sibling items（同族兄弟物品） such as filament color/material variants（耗材颜色/材料变体） are still confused.
 
-- `NDCG@1/@3/@5/@10`（归一化折损累计增益）
-- `HR@1/@3/@5/@10`（命中率）
+Analysis artifacts（分析产物）:
 
-Secondary diagnostics（次级诊断） such as `HR@50`（命中率@50）, tokenizer collision（分词器冲突）, active L1 count（活跃第一层码数量）, and L2 prefix spread（第二层前缀展开） are not promotion criteria（推进标准） by themselves.
+- [report.md](/home/leejt/OneRec/results/analysis/r690b_lmh_pull001_error_analysis_20260507/report.md)
+- [summary.json](/home/leejt/OneRec/results/analysis/r690b_lmh_pull001_error_analysis_20260507/summary.json)
+- [slice_comparison.csv](/home/leejt/OneRec/results/analysis/r690b_lmh_pull001_error_analysis_20260507/slice_comparison.csv)
 
-## Closed Method Families（已关闭方法族）
+## Current Running Experiment（当前运行实验）
 
-The following families（方法族） are closed under current evidence（当前证据）:
+RL/evaluate（强化学习/评测） is running:
 
-- MGR-SID v1/v2 graph hierarchy（图层级） construction.
-- Stage-2 / Stage-3 retention and codebook-space refinement（保持项与码本空间修复）.
-- TAGCF / FaGSP / MGDCF / Seq2Graph-lite graph-carrier upgrades（图载体升级）.
-- Selective separation（选择性分离） and mid-only pull-push（中层拉近推远）.
-- CoST-inspired contrastive quantization（受 CoST 启发的对比量化）.
-- Collab-ranking（协同排序） R720 variants.
-- Minimal-edit original-RQVAE（最小编辑原版残差量化变分自编码器） L2/L3 variants.
-- QCR-L2 conflict ranking（量化冲突感知第二层排序）.
-- Hard L1 capacity reduction（硬性第一层容量缩减）.
+- tmux session（会话）: `mgr_r690b_lmh_pull001_rl_eval_0507`
+- GPUs（显卡）: `2,3,4,5`
+- W&B run（实验追踪）: `fug78gw7`
+- Log（日志）: [mgr_r690b_lmh_pull001_rl_eval_0507.log](/home/leejt/OneRec/logs/l2_lmh_rl/mgr_r690b_lmh_pull001_rl_eval_0507.log)
+- RL config（强化学习配置）: [rl_industrial_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_4gpu.yaml](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/configs/rl_industrial_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_4gpu.yaml)
+- Eval config（评测配置）: [evaluate_industrial_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_rl_4gpu.yaml](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/configs/evaluate_industrial_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_rl_4gpu.yaml)
+- Expected result（预期结果路径）: [final_result_rl_mgr_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_4gpu_Industrial_and_Scientific.json](/home/leejt/OneRec/results/experiments/mgr_sid_l2_lmh_sweep_rl_eval_20260507/final_result_rl_mgr_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_4gpu_Industrial_and_Scientific.json)
 
-## What Remains Useful（仍然有用的结论）
+Do not write this RL run to `rl_registry.csv`（强化学习总账） until evaluate（评测） finishes and metrics are finalized（指标定稿）.
 
-- Original OneRec SID routeability（原始 OneRec 语义标识可路由性） is a strong baseline property（强基线性质）.
-- Low-disturbance collaborative injection（低扰动协同注入） is safer than heavy graph propagation（重图传播）.
-- Local multihop（局部多跳） is more informative than broad mid-graph carriers（宽中图载体）, but still not enough for a primary downstream win（主要下游胜利）.
-- Tokenizer-side proxies（分词器侧代理指标） cannot replace downstream SFT/evaluate（下游监督微调/评测）.
-- Future work must explain downstream learnability（下游可学习性） directly, not only hierarchy structure（层级结构）.
+## Core Research Question（核心研究问题）
 
-## Repository State（仓库状态）
+Current phrasing（当前表述）:
 
-This archive is now both logical（逻辑归档） and physical（物理归档） for the visible research workspace（显式研究工作区）:
+> Can collaborative hierarchy information（协同层级信息） be injected into SID tokenizer construction（语义标识分词器构建） so that the downstream model can learn item routing（物品路由） more easily than with the original OneRec SID（原版 OneRec 语义标识）?
 
-- Experiment folders（实验文件夹） remain under `research-progress-log/experiment_launches/`.
-- Research configs（研究配置） were moved under `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/config/`.
-- Research scripts（研究脚本） were moved under `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/scripts/`.
-- Method code（方法代码） was moved under `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/src/onerec/experiments/`.
-- ACLR-lite / collaborative rerank（协同重排） evaluation code was moved under `research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/archived_workspace/src/onerec/evaluate/`.
-- Research data variants（研究数据变体） remain under `data_experiment/`.
-- Large checkpoints（大模型权重） remain under `/data/leejt/OneRec/output_weights/experiments/`.
+Working answer（阶段性答案）:
 
-Experiment result folders（实验结果文件夹） and registry pointers（总账指针） were not mass-moved, so artifact paths（产物路径） remain traceable（可追溯）.
+- Heavy graph propagation（重图传播） and broad graph-carrier upgrades（宽图载体升级） remain unsupported（不支持）.
+- Low-disturbance local hierarchy shaping（低扰动局部层级塑形） is now reopened as the most promising direction（最有希望方向）.
+- The useful signal appears to be at L2 local multihop structure（第二层局部多跳结构）, not broad mid-graph spectral/carrier features（宽中图谱/载体特征）.
+
+## Baseline Gate（基线门槛）
+
+Primary baseline（主要基线）:
+
+- Strongest original OneRec SFT（原版最强监督微调）:
+  - `NDCG@10 = 0.10372025`
+  - `HR@10 = 0.15089345`
+
+Upper reference（上界参考）:
+
+- Strongest original OneRec RL（原版最强强化学习）:
+  - `NDCG@10 = 0.10726345`
+  - `HR@10 = 0.15133466`
+
+Current mainline SFT（当前主线监督微调）:
+
+- `NDCG@10 = 0.10438342`
+- `HR@10 = 0.14692257`
+
+Decision rule（决策规则）:
+
+- SFT（监督微调） has established a real positive signal（真实正向信号）, especially on `NDCG@1/@3/@5/@10`.
+- RL（强化学习） decides whether this becomes a strong main result（强主结果） or remains a promising SFT-only lead（仅监督微调有希望线索）.
+- A clean RL win should improve or at least preserve the SFT ranking gain（排序增益） while recovering `HR@10`（命中率@10）.
+
+## Closed Or Deprioritized Lines（关闭或降优先级路线）
+
+Still closed under current evidence（在当前证据下仍关闭）:
+
+- Heavy RQ-VAE graph propagation（重残差量化变分自编码器图传播）.
+- QCR-L2 conflict ranking（量化冲突感知第二层排序） as previously tested.
+- FaGSP-mid-base style broad mid graph（宽中图） carriers.
+- Hard L1 capacity reduction（硬第一层容量压缩）.
+- AttnRQ reconstruction-only residual weighting（仅重构路径注意力残差加权） as a mainline, unless reused in a more directly downstream-aligned tokenizer design（更直接对齐下游的分词器设计）.
+
+Reopened with constraints（有条件重启）:
+
+- L2 local multihop（第二层局部多跳） structure.
+- Weak pull strength（弱拉近强度） around `0.01`, not the earlier overweighted `0.15` setup.
+- R690b-style hierarchy-aware codebook shaping（层级感知码本塑形）, if it preserves downstream learnability（下游可学习性）.
 
 ## Next Steps（下一步）
 
-1. Implement the AttnRQ-Identity（保持恒等初始化的注意力残差量化） tokenizer pilot（分词器小试验） from the new experiment plan（实验计划）.
-2. Use downstream SFT/evaluate（下游监督微调/评测）, not tokenizer-only proxies（仅分词器代理指标）, as the first go / no-go（推进 / 停止） gate.
-3. Do not reopen MGR-SID / QCR / R720-style graph-loss variants（图损失变体） unless the new tokenizer branch first shows a downstream learnability signal（下游可学习性信号）.
-
-## Reading Rule（阅读规则）
-
-All dated MGR-SID notes（带日期 MGR-SID 笔记）, old stage README files（旧阶段说明）, old configs（旧配置）, and old scripts（旧脚本） are archived provenance（归档追溯材料） unless explicitly reactivated by a future canonical current-state update（未来权威当前状态更新）.
+1. Monitor the running RL/evaluate（强化学习/评测） chain and finalize metrics（定稿指标） into `rl_registry.csv` and `downstream_scoreboard.csv`.
+2. If RL improves over the strongest original RL（原版最强强化学习） or gives a clear `NDCG@10` gain without further HR collapse（命中率坍塌）, promote this branch to the strongest result line（最强结果线）.
+3. If RL is mixed, analyze whether RL recovers coverage（覆盖面） or amplifies sibling confusion（兄弟物品混淆） before deciding between:
+   - nearby pull-weight ablation（近邻拉近权重消融）: `0.005 / 0.02`
+   - weak sibling separation（弱兄弟物品分离）
+   - preserving this as SFT-only evidence（仅监督微调证据）
