@@ -1,0 +1,8 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_office_lmh_main_20260509/office_r690b_lmh_l1w030_l2w010_l3w020/May-09-2026_00-26-34/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_office_lmh_main_20260509/generated_indices/Office_Products.office_r690b_lmh_l1w030_l2w010_l3w020.index.json",
+  "collision_rate": 0.005203816131830009,
+  "max_conflict": 2,
+  "collision_rounds_used": 20,
+  "num_items": 3459
+}

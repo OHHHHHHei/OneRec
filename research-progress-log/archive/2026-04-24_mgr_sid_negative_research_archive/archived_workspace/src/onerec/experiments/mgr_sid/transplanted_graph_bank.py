@@ -50,6 +50,7 @@ def build_transplanted_graph_bank(
     fagsp_cascade_boost_alpha: float,
     local_multihop_alpha: float = 0.35,
     local_multihop_max_hop: int = 2,
+    local_multihop_base_weight: float = 1.0,
     mgdcf_keep_ratio: float = 0.1,
     mgdcf_binarize_edges: bool = True,
     seq2g_mix_alpha: float = 0.35,
@@ -320,5 +321,6 @@ def build_transplanted_graph_bank(
         name="local_multihop",
         alpha=local_multihop_alpha,
         max_hop=local_multihop_max_hop,
+        base_weight=local_multihop_base_weight,
     )
     return views

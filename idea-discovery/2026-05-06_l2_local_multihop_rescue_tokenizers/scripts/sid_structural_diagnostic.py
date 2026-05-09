@@ -144,6 +144,28 @@ CANDIDATES = [
         note="Prospective upper L3 local-pull candidate; initial generation gate failed.",
     ),
     Candidate(
+        label="R690b L3 ranking",
+        tokenizer_record_id="tok_industrial_r690b_lmh_l2_weight001_l3_ranking002_20260509",
+        index_path=Path(
+            "/data/leejt/OneRec/output_weights/experiments/"
+            "mgr_sid_l3_ranking_20260509/generated_indices/"
+            "Industrial_and_Scientific.r690b_lmh_l2_weight001_l3_ranking002.index.json"
+        ),
+        split="prospective",
+        note="Fixed L2=0.010 anchor; L3 local pull replaced by pairwise ranking loss.",
+    ),
+    Candidate(
+        label="R690b L2 square dominant b025",
+        tokenizer_record_id="tok_industrial_r690b_lmh_l2_square_dominant_b025_20260509",
+        index_path=Path(
+            "/data/leejt/OneRec/output_weights/experiments/"
+            "mgr_sid_l2_square_20260509/generated_indices/"
+            "Industrial_and_Scientific.r690b_lmh_l2_square_dominant_b025.index.json"
+        ),
+        split="prospective",
+        note="L2 graph uses a square-dominant local multihop view: RowNorm(0.25 * A_local + A_local^2).",
+    ),
+    Candidate(
         label="Original L2 multihop ranking",
         tokenizer_record_id="tok_industrial_original_l2_multihop_ranking_20260421",
         index_path=Path(
@@ -764,6 +786,7 @@ def render_case_studies(df: pd.DataFrame) -> str:
         "QCR L2 conflict ranking",
         "V2 offline",
         "R690b L3=0.010 pending",
+        "R690b L2 square dominant b025",
     ]
     lines = ["# Diagnostic Case Studies（诊断案例分析）", ""]
     for label in selected:

@@ -81,6 +81,21 @@ VARIANTS = [
         ),
         registry_variant="mgr_r690b_lmh_l2_weight001_l3_weight010_title_on_desc_p05_4gpu",
     ),
+    Variant(
+        key="l3_ranking002",
+        label="L3 ranking=0.020",
+        index_path=Path(
+            "/data/leejt/OneRec/output_weights/experiments/"
+            "mgr_sid_l3_ranking_20260509/generated_indices/"
+            "Industrial_and_Scientific.r690b_lmh_l2_weight001_l3_ranking002.index.json"
+        ),
+        result_json_path=Path(
+            "results/experiments/mgr_sid_l3_ranking_sft_eval_20260509/"
+            "final_result_sft_mgr_r690b_lmh_l2_weight001_l3_ranking002_"
+            "title_on_desc_p05_4gpu_Industrial_and_Scientific.json"
+        ),
+        registry_variant="mgr_r690b_lmh_l2_weight001_l3_ranking002_title_on_desc_p05_4gpu",
+    ),
 ]
 
 
@@ -621,13 +636,16 @@ def render_report(
         "它比 `L2=0.003` 更能把 semantic-near collaborative-far（语义近但协同远）物品保留在同一 L1（第一层）粗类下，并在 L2/L3（第二/三层）拆开；对应 SFT（监督微调）NDCG@10 也更高。"
     )
     lines.append(
-        "- `L3=0.010` 的结构指标和 pair-level（物品对级）指标最像一个强候选：same L1（同第一层）更高、same L12（同前两层）不升反降，说明它保留语义粗类同时进一步增强后层分辨。"
+        "- `L3=0.010` 的结构指标和 pair-level（物品对级）指标看起来很强，但已完成 SFT（监督微调）没有超过当前主线；这说明单纯的 pair-level reasonableness（物品对级合理性）还不足以预测下游收益。"
+    )
+    lines.append(
+        "- `L3 ranking=0.020` 的 collision（碰撞）更低，但 L1 routing（第一层路由）明显更碎：active L1（活跃第一层）升高、same L1（同第一层）下降，属于需要等待 SFT（监督微调）验证的 borderline（边界型）候选。"
     )
     lines.append(
         "- `S-far C-near`（语义远但协同近）上三组 tokenizer（分词器）的后层 token overlap（token 重合）都很弱；当前方法主要解决了“语义近但协同远要拆开”，还没有很好解决“语义远但协同近要拉近”。"
     )
     lines.append(
-        "- 因为 `L3=0.010` 的 SFT（监督微调）结果当前仍是 pending（待完成），现在不能声称“结构越合理下游一定越好”；只能说 `L2=0.003 -> 当前主线` 这组已完成对比支持该趋势。"
+        "- 目前更稳妥的判断是：结构诊断适合作为筛选器（screening tool，筛选工具），不能单独作为结论；尤其要结合 route distribution（路由分布）和下游 SFT（监督微调）结果。"
     )
     lines.append("")
 
@@ -799,10 +817,10 @@ def render_report(
         "2. 当前主线的结构合理性和下游 SFT（监督微调）是一致的：它在 `S-near C-far` 上更会“同粗类、后层拆”，同时 NDCG@10 从 `0.095737` 提到 `0.104383`。"
     )
     lines.append(
-        "3. `L3=0.010` 在结构上目前最漂亮：same L1（同第一层）最高，same L12（同前两层）与当前主线相近甚至略低，split after L1（同第一层后拆开）最高。若它的 SFT（监督微调）结果也提升，就能更强地支持“码本合理性 -> 下游收益”的叙事。"
+        "3. `L3=0.010` 在结构上很漂亮：same L1（同第一层）最高，same L12（同前两层）与当前主线相近甚至略低，split after L1（同第一层后拆开）最高；但它的 SFT（监督微调）低于当前主线，说明这类结构指标只能解释一部分下游效果。"
     )
     lines.append(
-        "4. 如果 `L3=0.010` 下游没有提升，优先怀疑 learnability（可学习性）或 route distribution（路由分布）问题，而不是单纯否定 pair-level reasonableness（物品对级合理性）。"
+        "4. `L3 ranking=0.020` 的核心风险是 L1 routing（第一层路由）碎片化：它降低了 collision（碰撞），但削弱了语义粗类稳定性；如果下游不提升，优先看 learnability（可学习性）和 route distribution（路由分布）。"
     )
     lines.append("")
     lines.append("## 输出文件")

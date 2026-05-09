@@ -1,0 +1,1 @@
+../../scripts/launch_r690b_lmh_pull001_after_v2_tmux.sh

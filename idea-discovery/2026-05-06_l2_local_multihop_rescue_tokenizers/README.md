@@ -1,8 +1,26 @@
 # L2 Local Multihop Rescue Tokenizers（第二层局部多跳救援分词器）
 
-Status（状态）: `stage-snapshot（阶段快照）`
+Status（状态）: `navigation + stage-snapshot（导航 + 阶段快照）`
 
-Last updated（更新日期）: `2026-05-07`
+Last updated（更新日期）: `2026-05-09`
+
+## Reading Order（阅读顺序）
+
+This branch is now organized around the current mainline（当前主线） and near-term candidates（近期候选）.
+
+Read in this order（按这个顺序阅读）:
+
+1. [MAINLINE.md](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/MAINLINE.md): current mainline（当前主线）.
+2. [mainline/](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/mainline): clean mainline view（干净主线视图）.
+3. [active_candidates/](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/active_candidates): candidates still worth running or interpreting（仍值得运行或解释的候选）.
+4. [ablations/](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/ablations): completed/lower-priority ablations（已完成或低优先级消融）.
+5. [archive/](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/archive): superseded helpers（已替代辅助脚本） and old queue wrappers（旧队列脚本）.
+
+Implementation note（实现备注）:
+
+- The organized directories use symlinks（软链接） first.
+- Original paths（原始路径） are preserved for reproducibility（可复现性） and running tmux jobs（运行中会话任务）.
+- Physical moves（物理移动） should happen only after active SFT/eval（监督微调/评测） jobs finish.
 
 ## Role（角色）
 

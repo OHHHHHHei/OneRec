@@ -1,0 +1,22 @@
+model:
+  base_model: /data/leejt/OneRec/output_weights/experiments/mgr_sid_l1_lmh_sweep_sft_eval_20260508/r690b_lmh_l1_weight040_l2_weight001_l3_weight002_title_on_desc_p05_4gpu/sft/final_checkpoint
+data:
+  test_file: ./data_experiment/Amazon/r690b_lmh_l1_weight040_l2_weight001_l3_weight002/test/Industrial_and_Scientific_5_2016-10-2018-11.csv
+  info_file: ./data_experiment/Amazon/r690b_lmh_l1_weight040_l2_weight001_l3_weight002/info/Industrial_and_Scientific_5_2016-10-2018-11.txt
+  category: Industrial_and_Scientific
+training:
+  seed: 42
+output:
+  output_dir: ./results/experiments/mgr_sid_l1_lmh_sweep_sft_eval_20260508/final_result_sft_mgr_r690b_lmh_l1_weight040_l2_weight001_l3_weight002_title_on_desc_p05_4gpu_Industrial_and_Scientific.json
+batch_size: 8
+K: 0
+num_beams: 50
+max_new_tokens: 256
+length_penalty: 0.0
+temperature: 1.0
+guidance_scale: null
+runtime:
+  launcher: parallel
+  parallel: true
+  cuda_visible_devices: "2,3,4,5"
+  nproc_per_node: 4

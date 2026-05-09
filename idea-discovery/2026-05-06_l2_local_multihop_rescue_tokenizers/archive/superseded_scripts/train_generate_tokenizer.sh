@@ -1,0 +1,1 @@
+../../scripts/train_generate_tokenizer.sh

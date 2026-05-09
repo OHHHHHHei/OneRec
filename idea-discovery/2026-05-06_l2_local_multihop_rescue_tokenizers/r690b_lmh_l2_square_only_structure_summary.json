@@ -1,0 +1,34 @@
+{
+  "index_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_l2_square_20260509/generated_indices/Industrial_and_Scientific.r690b_lmh_l2_square_only.index.json",
+  "num_items": 3686,
+  "active_l1": 55,
+  "unique_l12": 1052,
+  "unique_sid": 3568,
+  "collision_count": 118,
+  "collision_rate": 0.032013022246337494,
+  "max_conflict": 41,
+  "max_l1_bucket": 204,
+  "top5_l1_cover": 731,
+  "top5_l1": [
+    [
+      "<a_223>",
+      204
+    ],
+    [
+      "<a_43>",
+      136
+    ],
+    [
+      "<a_239>",
+      132
+    ],
+    [
+      "<a_72>",
+      130
+    ],
+    [
+      "<a_112>",
+      129
+    ]
+  ]
+}

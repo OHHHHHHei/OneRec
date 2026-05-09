@@ -1,0 +1,1 @@
+../../../scripts/run_r690b_lmh_l2_square_stage1_queue.sh

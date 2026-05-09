@@ -20,7 +20,7 @@
 | R690b L2=0.005 weak          | calibration | over-separated-unstable    | low                  | low               | match                    |       0.0944 |     0.1315 | fail      | pass              | fail                | warn                |
 | R690b L2=0.015 fragmented    | calibration | separating-but-risky       | low                  | low               | match                    |       0.0941 |     0.1350 | warn      | pass              | warn                | warn                |
 | R690b no L1 semantic         | calibration | over-separated-unstable    | low                  | low               | match                    |       0.0938 |     0.1319 | warn      | pass              | fail                | warn                |
-| R690b L3=0.010 pending       | prospective | balanced-positive          | high                 | pending           | pending                  |     nan      |   nan      | pass      | pass              | pass                | pass                |
+| R690b L3=0.010 pending       | prospective | balanced-positive          | high                 | medium            | partial                  |       0.0975 |     0.1427 | pass      | pass              | pass                | pass                |
 | R690b L3=0.005 pending       | prospective | separating-but-risky       | low                  | pending           | pending                  |     nan      |   nan      | pass      | pass              | warn                | pass                |
 | R690b L3=0.015 gate-failed   | prospective | structurally-risky         | low                  | pending           | pending                  |     nan      |   nan      | warn      | fail              | warn                | pass                |
 | Original semantic            | validation  | semantic-stable-baseline   | high                 | high              | match                    |       0.1037 |     0.1509 | pass      | pass              | pass                | pass                |
@@ -33,7 +33,7 @@
 
 ## Consistency Summary（一致性总结）
 
-- available SFT（已有监督微调）样本数: 12; match（完全匹配）=7, partial（部分匹配）=4, mismatch（不匹配）=0, out-of-scope（超出适用域）=1.
+- available SFT（已有监督微调）样本数: 13; match（完全匹配）=7, partial（部分匹配）=5, mismatch（不匹配）=0, out-of-scope（超出适用域）=1.
 - calibration（校准集）样本数: 5; match=4, partial=1, mismatch=0.
 
 ## Structure Distribution（码本结构分布）

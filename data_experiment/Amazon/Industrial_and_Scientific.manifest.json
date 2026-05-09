@@ -3,9 +3,9 @@
   "source_root": "/home/leejt/OneRec/data/Amazon",
   "output_root": "/home/leejt/OneRec/data_experiment/Amazon",
   "variants": {
-    "r690b_lmh_l2_weight001_l3_weight010": {
-      "index_json": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_l3_lmh_sweep_20260508/generated_indices/Industrial_and_Scientific.r690b_lmh_l2_weight001_l3_weight010.index.json",
-      "variant_root": "/home/leejt/OneRec/data_experiment/Amazon/r690b_lmh_l2_weight001_l3_weight010",
+    "r690b_lmh_l2_weight001_l3_ranking002": {
+      "index_json": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_l3_ranking_20260509/generated_indices/Industrial_and_Scientific.r690b_lmh_l2_weight001_l3_ranking002.index.json",
+      "variant_root": "/home/leejt/OneRec/data_experiment/Amazon/r690b_lmh_l2_weight001_l3_ranking002",
       "num_items": 3686,
       "split_counts": {
         "train": 36259,

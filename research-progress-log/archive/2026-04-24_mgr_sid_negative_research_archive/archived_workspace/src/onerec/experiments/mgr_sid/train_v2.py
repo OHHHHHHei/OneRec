@@ -77,6 +77,7 @@ class MgrSidV2TrainConfig:
     temporal_mix: float = 0.35
     local_multihop_alpha: float = 0.35
     local_multihop_max_hop: int = 2
+    local_multihop_base_weight: float = 1.0
     fagsp_cascade_high_rank: int = 16
     fagsp_cascade_low_rank: int = 32
     fagsp_cascade_support_quantile: float = 0.8
@@ -123,6 +124,13 @@ class MgrSidV2TrainConfig:
     qcr_l2_warmup_epochs: int = 0
     qcr_l2_ramp_epochs: int = 0
     l3_contrastive_pull_weight: float = 0.0
+    l3_contrastive_mode: str = "pairwise_pull"
+    l3_ranking_margin: float = 0.1
+    l3_ranking_positive_topk: int = 8
+    l3_ranking_negative_topk: int = 16
+    l3_ranking_negative_pair_csv: str | None = None
+    l3_ranking_negative_pair_rule: str | None = None
+    l3_ranking_use_pair_reliability: bool = True
     semantic_coarse_weight: float = 0.05
     semantic_mid_weight: float = 0.025
     graph_scale_min: float = 0.5
@@ -609,6 +617,7 @@ def _build_graph_tensors(cfg: MgrSidV2TrainConfig, device: torch.device, n_items
         temporal_mix=cfg.temporal_mix,
         local_multihop_alpha=cfg.local_multihop_alpha,
         local_multihop_max_hop=cfg.local_multihop_max_hop,
+        local_multihop_base_weight=cfg.local_multihop_base_weight,
         fagsp_cascade_high_rank=cfg.fagsp_cascade_high_rank,
         fagsp_cascade_low_rank=cfg.fagsp_cascade_low_rank,
         fagsp_cascade_support_quantile=cfg.fagsp_cascade_support_quantile,
@@ -784,6 +793,22 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         if not cfg.qcr_l2_use_pair_reliability:
             qcr_l2_negative_pair_matrix = (qcr_l2_negative_pair_matrix > 0).float()
 
+    l3_ranking_negative_pair_matrix = None
+    if cfg.l3_contrastive_pull_weight > 0 and cfg.l3_contrastive_mode == "ranking":
+        if not cfg.l3_ranking_negative_pair_csv:
+            raise ValueError(
+                "l3_ranking_negative_pair_csv is required when "
+                "l3_contrastive_mode=ranking and l3_contrastive_pull_weight > 0"
+            )
+        l3_ranking_negative_pair_matrix = _load_selective_separation_pair_matrix(
+            path=cfg.l3_ranking_negative_pair_csv,
+            n_items=len(dataset),
+            device=device,
+            rule=cfg.l3_ranking_negative_pair_rule,
+        )
+        if not cfg.l3_ranking_use_pair_reliability:
+            l3_ranking_negative_pair_matrix = (l3_ranking_negative_pair_matrix > 0).float()
+
     model = _build_model_from_cfg(cfg, in_dim=dataset.dim).to(device)
     if cfg.warm_start_ckpt_path:
         _load_checkpoint_state(model, cfg.warm_start_ckpt_path, device=device)
@@ -833,6 +858,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         total_l2_ranking_loss = 0.0
         total_qcr_l2_loss = 0.0
         total_l3_contrastive_pull_loss = 0.0
+        total_l3_ranking_loss = 0.0
         total_semantic_coarse_loss = 0.0
         total_semantic_mid_loss = 0.0
         total_prefix_retain_l1_loss = 0.0
@@ -900,6 +926,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             qcr_l2_loss = batch_embeddings.new_tensor(0.0)
             l1_contrastive_pull = batch_embeddings.new_tensor(0.0)
             l3_contrastive_pull = batch_embeddings.new_tensor(0.0)
+            l3_ranking_loss = batch_embeddings.new_tensor(0.0)
             if cfg.l1_contrastive_pull_weight > 0:
                 l1_contrastive_pull = _weighted_pairwise_pull_loss(
                     level_representations[0],
@@ -958,11 +985,30 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                     bucket_downweight=cfg.qcr_l2_bucket_downweight,
                 )
             if cfg.l3_contrastive_pull_weight > 0:
-                l3_contrastive_pull = _weighted_pairwise_pull_loss(
-                    level_representations[2],
-                    local_subgraph,
-                    graph_item_scale,
-                )
+                if cfg.l3_contrastive_mode == "pairwise_pull":
+                    l3_contrastive_pull = _weighted_pairwise_pull_loss(
+                        level_representations[2],
+                        local_subgraph,
+                        graph_item_scale,
+                    )
+                elif cfg.l3_contrastive_mode == "ranking":
+                    if l3_ranking_negative_pair_matrix is None:
+                        raise ValueError("l3_ranking_negative_pair_matrix was not initialized")
+                    l3_ranking_negative_subgraph = _select_subgraph(
+                        l3_ranking_negative_pair_matrix,
+                        batch_indices,
+                    )
+                    l3_ranking_loss = _weighted_l2_ranking_contrastive_loss(
+                        level_representations[2],
+                        positive_pair_weights=local_subgraph,
+                        negative_pair_weights=l3_ranking_negative_subgraph,
+                        item_scales=graph_item_scale,
+                        margin=cfg.l3_ranking_margin,
+                        positive_topk=cfg.l3_ranking_positive_topk,
+                        negative_topk=cfg.l3_ranking_negative_topk,
+                    )
+                else:
+                    raise ValueError(f"Unsupported l3_contrastive_mode: {cfg.l3_contrastive_mode}")
             if cfg.semantic_retention_mode == "smoothness":
                 graph_losses["semantic_coarse"] = _weighted_graph_smoothness_loss(
                     level_representations[0], semantic_subgraph, semantic_item_scale
@@ -1064,7 +1110,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 + cfg.l2_contrastive_pull_weight * l2_contrastive_pull
                 + cfg.l2_ranking_contrastive_weight * l2_ranking_loss
                 + qcr_l2_weight * qcr_l2_loss
-                + cfg.l3_contrastive_pull_weight * l3_contrastive_pull
+                + cfg.l3_contrastive_pull_weight * (l3_contrastive_pull + l3_ranking_loss)
                 + cfg.semantic_coarse_weight * graph_losses["semantic_coarse"]
                 + cfg.semantic_mid_weight * graph_losses["semantic_mid"]
                 + cfg.prefix_retention_l1_weight * prefix_retain_l1
@@ -1090,6 +1136,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             total_l2_ranking_loss += float(l2_ranking_loss.item())
             total_qcr_l2_loss += float(qcr_l2_loss.item())
             total_l3_contrastive_pull_loss += float(l3_contrastive_pull.item())
+            total_l3_ranking_loss += float(l3_ranking_loss.item())
             total_semantic_coarse_loss += float(graph_losses["semantic_coarse"].item())
             total_semantic_mid_loss += float(graph_losses["semantic_mid"].item())
             total_prefix_retain_l1_loss += float(prefix_retain_l1.item())
@@ -1119,6 +1166,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 ramp_epochs=cfg.qcr_l2_ramp_epochs,
             ),
             "l3_contrastive_pull_loss": total_l3_contrastive_pull_loss,
+            "l3_ranking_loss": total_l3_ranking_loss,
             "semantic_coarse_loss": total_semantic_coarse_loss,
             "semantic_mid_loss": total_semantic_mid_loss,
             "prefix_retain_l1_loss": total_prefix_retain_l1_loss,
@@ -1160,7 +1208,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                 best["best_collision_ckpt"] = str(ckpt)
 
         logger.info(
-            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f l1_pull=%.6f l2_pull=%.6f l2_rank=%.6f qcr_l2=%.6f qcr_w=%.6f l3_pull=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f sep_l1=%.6f sep_l2=%.6f sep_l3=%.6f collision=%s",
+            "epoch=%d total=%.6f recon=%.6f rq=%.6f coarse=%.6f mid=%.6f local=%.6f l1_pull=%.6f l2_pull=%.6f l2_rank=%.6f qcr_l2=%.6f qcr_w=%.6f l3_pull=%.6f l3_rank=%.6f sem_coarse=%.6f sem_mid=%.6f retain_l1=%.6f retain_l2=%.6f anchor_l1=%.6f anchor_l2=%.6f sep_l1=%.6f sep_l2=%.6f sep_l3=%.6f collision=%s",
             epoch,
             record["total_loss"],
             record["recon_loss"],
@@ -1174,6 +1222,7 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
             record["qcr_l2_loss"],
             record["qcr_l2_weight"],
             record["l3_contrastive_pull_loss"],
+            record["l3_ranking_loss"],
             record["semantic_coarse_loss"],
             record["semantic_mid_loss"],
             record["prefix_retain_l1_loss"],

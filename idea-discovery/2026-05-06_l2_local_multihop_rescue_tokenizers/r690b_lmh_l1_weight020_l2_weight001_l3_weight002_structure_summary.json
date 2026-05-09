@@ -1,0 +1,34 @@
+{
+  "index_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_l1_lmh_sweep_20260508/generated_indices/Industrial_and_Scientific.r690b_lmh_l1_weight020_l2_weight001_l3_weight002.index.json",
+  "num_items": 3686,
+  "active_l1": 50,
+  "unique_l12": 2282,
+  "unique_sid": 3675,
+  "collision_count": 11,
+  "collision_rate": 0.002984264785675529,
+  "max_conflict": 2,
+  "max_l1_bucket": 276,
+  "top5_l1_cover": 839,
+  "top5_l1": [
+    [
+      "<a_254>",
+      276
+    ],
+    [
+      "<a_98>",
+      147
+    ],
+    [
+      "<a_130>",
+      142
+    ],
+    [
+      "<a_236>",
+      137
+    ],
+    [
+      "<a_111>",
+      137
+    ]
+  ]
+}

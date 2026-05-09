@@ -1,0 +1,17 @@
+{
+  "dataset": "Office_Products",
+  "source_root": "/home/leejt/OneRec/data/Amazon",
+  "output_root": "/home/leejt/OneRec/data_experiment/Amazon",
+  "variants": {
+    "office_r690b_lmh_l1w030_l2w010_l3w020": {
+      "index_json": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_office_lmh_main_20260509/generated_indices/Office_Products.office_r690b_lmh_l1w030_l2w010_l3w020.index.json",
+      "variant_root": "/home/leejt/OneRec/data_experiment/Amazon/office_r690b_lmh_l1w030_l2w010_l3w020",
+      "num_items": 3459,
+      "split_counts": {
+        "train": 38924,
+        "valid": 4866,
+        "test": 4866
+      }
+    }
+  }
+}

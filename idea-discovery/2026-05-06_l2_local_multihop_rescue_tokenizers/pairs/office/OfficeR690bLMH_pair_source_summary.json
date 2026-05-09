@@ -1,0 +1,17 @@
+{
+  "n_items": 3459,
+  "mid_view_name": "local_multihop",
+  "semantic_pair_count": 76986,
+  "weak_pair_count": 1459,
+  "weak_pair_item_coverage_rate": 0.48453310205261635,
+  "weak_threshold": 0.0028125385870225728,
+  "semantic_topk": 32,
+  "graph_topk": 32,
+  "graph_weak_quantile": 0.25,
+  "tag": "OfficeR690bLMH",
+  "semantic_sim_mean": 0.03241808317484228,
+  "mid_affinity_mean": 0.0015397395564583827,
+  "reliability_mean": 0.014652805449519983,
+  "output_csv": "/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/pairs/office/OfficeR690bLMH_all_mid_graph_weak_pairs.csv",
+  "output_top_csv": "/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/pairs/office/OfficeR690bLMH_top_mid_graph_weak_pairs.csv"
+}

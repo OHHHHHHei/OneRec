@@ -524,9 +524,10 @@ def build_multi_hop_transition_view(
     name: str,
     alpha: float,
     max_hop: int,
+    base_weight: float = 1.0,
 ) -> SparseGraphView:
     normalized = row_normalize(base_graph)
-    accum = normalized.copy().astype(np.float32)
+    accum = (float(base_weight) * normalized).tocsr().astype(np.float32)
     power = normalized.copy().astype(np.float32)
     for hop in range(2, max_hop + 1):
         power = (power @ normalized).tocsr().astype(np.float32)
@@ -541,6 +542,7 @@ def build_multi_hop_transition_view(
         metadata={
             "kind": "multi_hop_transition",
             "alpha": float(alpha),
+            "base_weight": float(base_weight),
             "max_hop": int(max_hop),
             "nnz": int(view.nnz),
             "density": sparse_density(view),
