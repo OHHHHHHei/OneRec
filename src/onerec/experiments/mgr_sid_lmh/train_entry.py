@@ -1,12 +1,13 @@
 #!/usr/bin/env python
-"""Canonical trainer entrypoint for the current LMH SID tokenizer line."""
+"""Compatibility entrypoint for LMH-HCSID tokenizer training."""
 
 from __future__ import annotations
 
 import argparse
 import json
 
-from .bridge import load_train_config, run_training
+from onerec.experiments.hcsid.config import load_train_config
+from onerec.experiments.hcsid.trainer import run_training
 
 
 def parse_args() -> argparse.Namespace:
@@ -32,4 +33,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -1,0 +1,9 @@
+{
+  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/toys_tokenizer_20260510/r690b_lmh_l1w030_l2w010_l3w020/May-10-2026_16-24-23/best_collision_model.pth",
+  "output_file": "/data/leejt/OneRec/output_weights/experiments/toys_tokenizer_20260510/generated_indices/Toys_and_Games.r690b_lmh_l1w030_l2w010_l3w020.index.json",
+  "num_items": 11252,
+  "unique_sid": 11233,
+  "collision_count": 19,
+  "collision_rounds": 20,
+  "max_conflict": 2
+}

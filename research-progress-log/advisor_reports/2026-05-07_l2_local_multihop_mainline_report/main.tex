@@ -230,6 +230,56 @@ $\Delta$ HR & $+0.003530$ & $+0.002427$ & $-0.000882$ & $-0.003971$ \\
   \item 因此当前结果的核心价值是：tokenizer-side（分词器侧）协同层级注入已经带来稳定的 NDCG 提升。
 \end{itemize}
 
+\subsection{SFT 多次重复运行稳定性分析}
+
+为了判断当前提升是否只是单次 SFT（监督微调）训练的随机波动，我们进一步对原版 Baseline 和当前主线 R690b-LMH 做了三次同配置 rerun（重复运行）对比。这里的 rerun 使用相同 seed（随机种子）和相同代码/配置；但由于多卡训练、DeepSpeed（分布式训练框架）和底层算子的非完全确定性，同 seed 不等于完全 deterministic（确定性）。
+
+实验对象如下：Baseline 使用原版 semantic SID（语义 SID）和原版较强 SFT 配方 \texttt{title\_history2sid\_off + desc\_align\_p05}；当前主线使用 R690b-LMH tokenizer（分词器）和它自身最优 SFT 配方 \texttt{title\_history2sid\_on + desc\_align\_p05}。
+
+\begin{center}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Run（运行） & NDCG@1 & NDCG@3 & NDCG@5 & NDCG@10 \\
+\midrule
+Baseline run 1 & 0.06706 & 0.08501 & 0.09315 & 0.10372 \\
+Baseline run 2 & 0.06486 & 0.08164 & 0.08892 & 0.10076 \\
+Baseline run 3 & 0.06530 & 0.08346 & 0.09060 & 0.10154 \\
+Baseline 均值$\pm$标准差 & 0.06574$\pm$0.00117 & 0.08337$\pm$0.00169 & 0.09089$\pm$0.00213 & 0.10201$\pm$0.00153 \\
+\midrule
+R690b-LMH run 1 & 0.07059 & 0.08813 & 0.09489 & 0.10438 \\
+R690b-LMH run 2 & 0.06861 & 0.08495 & 0.09282 & 0.10272 \\
+R690b-LMH run 3 & 0.07126 & 0.08463 & 0.09180 & 0.10163 \\
+R690b-LMH 均值$\pm$标准差 & 0.07015$\pm$0.00138 & 0.08590$\pm$0.00194 & 0.09317$\pm$0.00158 & 0.10291$\pm$0.00139 \\
+\midrule
+平均相对提升 & +6.71\% & +3.04\% & +2.51\% & +0.89\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Run（运行） & HR@1 & HR@3 & HR@5 & HR@10 \\
+\midrule
+Baseline run 1 & 0.06706 & 0.09839 & 0.11824 & 0.15089 \\
+Baseline run 2 & 0.06486 & 0.09398 & 0.11163 & 0.14803 \\
+Baseline run 3 & 0.06530 & 0.09729 & 0.11471 & 0.14913 \\
+Baseline 均值$\pm$标准差 & 0.06574$\pm$0.00117 & 0.09655$\pm$0.00230 & 0.11486$\pm$0.00331 & 0.14935$\pm$0.00145 \\
+\midrule
+R690b-LMH run 1 & 0.07059 & 0.10082 & 0.11736 & 0.14692 \\
+R690b-LMH run 2 & 0.06861 & 0.09685 & 0.11604 & 0.14670 \\
+R690b-LMH run 3 & 0.07126 & 0.09442 & 0.11185 & 0.14251 \\
+R690b-LMH 均值$\pm$标准差 & 0.07015$\pm$0.00138 & 0.09736$\pm$0.00323 & 0.11508$\pm$0.00288 & 0.14538$\pm$0.00249 \\
+\midrule
+平均相对提升 & +6.71\% & +0.84\% & +0.19\% & -2.66\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+重复运行结果说明：当前主线不是单次抽样偶然。三次平均后，R690b-LMH 在 NDCG@1/3/5/10 上均超过 Baseline，尤其 NDCG@1 提升 6.71\%，说明它主要改善 top-rank ranking quality（前排排序质量）。但 HR@10 低于 Baseline 2.66\%，说明它并没有同步提升 recall coverage（召回覆盖），甚至可能把概率质量更集中地压到前排，牺牲了一部分长尾命中。因此，当前结果应保守表述为：主线提高了 SFT 阶段的前排排序质量，而不是全面超过原版 MiniOneRec。
+
 \subsection{Industrial RL 结果：同 tokenizer 的后续强化学习验证}
 
 为了验证当前 SID tokenizer（语义标识分词器）是否能继续承接 RL（强化学习）阶段，我们将当前主线 SFT checkpoint（监督微调检查点）推进到 RL/evaluate（强化学习/评测）。这里比较时只采用 RL vs RL（强化学习对强化学习）的口径，不把 SFT（监督微调）和 RL（强化学习）混在一起作为最终胜负判断。

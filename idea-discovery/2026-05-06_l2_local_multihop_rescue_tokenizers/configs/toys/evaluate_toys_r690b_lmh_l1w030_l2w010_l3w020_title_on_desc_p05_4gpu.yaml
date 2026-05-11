@@ -1,0 +1,22 @@
+model:
+  base_model: /data/leejt/OneRec/output_weights/experiments/toys_sft_eval_20260510/r690b_lmh_l1w030_l2w010_l3w020_title_on_desc_p05_4gpu/sft/final_checkpoint
+data:
+  test_file: ./data_experiment/Amazon/toys_r690b_lmh_l1w030_l2w010_l3w020/test/Toys_and_Games_5_2016-10-2018-11.csv
+  info_file: ./data_experiment/Amazon/toys_r690b_lmh_l1w030_l2w010_l3w020/info/Toys_and_Games_5_2016-10-2018-11.txt
+  category: Toys_and_Games
+training:
+  seed: 42
+output:
+  output_dir: ./results/experiments/toys_sft_eval_20260510/final_result_sft_toys_r690b_lmh_l1w030_l2w010_l3w020_title_on_desc_p05_4gpu_Toys_and_Games.json
+batch_size: 8
+K: 0
+num_beams: 50
+max_new_tokens: 256
+length_penalty: 0.0
+temperature: 1.0
+guidance_scale: null
+runtime:
+  launcher: parallel
+  parallel: true
+  cuda_visible_devices: "2,3,4,5"
+  nproc_per_node: 4

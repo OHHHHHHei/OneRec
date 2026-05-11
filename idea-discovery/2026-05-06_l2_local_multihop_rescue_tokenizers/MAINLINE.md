@@ -1,15 +1,20 @@
 # Current Mainline（当前主线）
 
-Status（状态）: `navigation（导航）`
+Status（状态）: `mainline-detail（主线细节）`
 
-Last updated（更新日期）: `2026-05-09`
+Last updated（更新日期）: `2026-05-11`
 
 ## Role（角色）
 
-This file is the entry point for the active L2 local-multihop SID tokenizer line（第二层局部多跳语义标识分词器主线）.
+This file records the main evidence line（主要证据线） for the L2 local-multihop SID tokenizer branch（第二层局部多跳语义标识分词器分支）.
+
+The canonical current-state summary（权威当前状态总结） is:
+
+- [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
 
 The current mainline（当前主线） is:
 
+- method name（方法名）: `LMH-HCSID`（局部多跳层级协同语义标识）
 - tokenizer（分词器）: `r690b_lmh_l2_contrastive_pull_weight001`
 - dataset（数据集）: `Industrial_and_Scientific`
 - downstream recipe（下游配方）: `title_history2sid_on + desc_align_p05`
@@ -34,6 +39,7 @@ Tokenizer index（分词器索引）:
 
 Organized configs（整理后的配置入口）:
 
+- [Tokenizer config](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/configs/hcsid/sid_train_industrial_lmh_hcsid.yaml)
 - [SFT config](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/mainline/configs/sft_eval/sft_title_on_desc_p05_4gpu.yaml)
 - [SFT eval config](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/mainline/configs/sft_eval/evaluate_title_on_desc_p05_4gpu.yaml)
 - [RL config](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/mainline/configs/rl_eval/rl_title_on_desc_p05_4gpu.yaml)
@@ -41,6 +47,8 @@ Organized configs（整理后的配置入口）:
 
 Organized scripts（整理后的脚本入口）:
 
+- tokenizer trainer（分词器训练器）: [trainer.py](/home/leejt/OneRec/src/onerec/experiments/hcsid/trainer.py)
+- tokenizer CLI（分词器命令行入口）: [train_entry.py](/home/leejt/OneRec/src/onerec/experiments/hcsid/train_entry.py)
 - [SFT/eval chain](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/mainline/scripts/sft_eval/run_sft_eval_chain.sh)
 - [RL/eval chain](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/mainline/scripts/rl_eval/run_rl_eval_chain.sh)
 
@@ -72,16 +80,12 @@ Interpretation（解释）:
 - SFT does not improve all HR（命中率） positions, especially @5/@10.
 - RL improves over this tokenizer's SFT at @1 and @10, but is still below the strongest original RL baseline（原始最强强化学习基线）.
 
-## Active Candidates（活跃候选）
+## Archived Candidate Notes（已归档候选笔记）
 
-Near-term candidates（近期候选） are separated from the mainline:
+Non-mainline candidate notes（非主线候选笔记） were archived to keep this branch readable（保持分支可读）:
 
-- [L2 square（第二层平方图）](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/active_candidates/l2_square/README.md)
-- [L3 ranking（第三层排序损失）](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/active_candidates/l3_ranking/README.md)
-- [L1 sweep（第一层权重扫描）](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/active_candidates/l1_sweep/README.md)
-- [Office transfer（Office 数据集迁移）](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/active_candidates/office_transfer/README.md)
-- [Recipe ablation（训练配方消融）](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/active_candidates/recipe_ablation/README.md)
+- [moved_files.txt](/home/leejt/OneRec/research-progress-log/archive/2026-05-11_markdown_doc_cleanup/moved_files.txt)
 
 ## Notes（备注）
 
-This organization uses symlinks（软链接） for safety. Original paths（原始路径） are preserved so existing logs（日志）, tmux jobs（会话任务）, and registries（总账） remain reproducible（可复现）.
+This file is intentionally kept as the only active Markdown（活跃文档） inside this method branch（方法分支）.

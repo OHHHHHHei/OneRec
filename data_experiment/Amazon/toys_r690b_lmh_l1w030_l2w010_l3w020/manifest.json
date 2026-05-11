@@ -1,0 +1,12 @@
+{
+  "dataset": "Toys_and_Games",
+  "split_stem": "Toys_and_Games_5_2016-10-2018-11",
+  "source_root": "data/Amazon18/Toys_and_Games",
+  "index_json": "/data/leejt/OneRec/output_weights/experiments/toys_tokenizer_20260510/generated_indices/Toys_and_Games.r690b_lmh_l1w030_l2w010_l3w020.index.json",
+  "output_root": "data_experiment/Amazon/toys_r690b_lmh_l1w030_l2w010_l3w020",
+  "split_counts": {
+    "train": 112754,
+    "valid": 14094,
+    "test": 14095
+  }
+}

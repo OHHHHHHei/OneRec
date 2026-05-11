@@ -1,0 +1,4287 @@
+{
+  "data_stats": {
+    "train_rows": 36259,
+    "direct_edge_count": 100920,
+    "edge_events": 124597,
+    "cooc_count_percentiles": {
+      "p50": 1.0,
+      "p75": 1.0,
+      "p90": 2.0,
+      "p95": 2.0,
+      "p99": 4.0
+    },
+    "ppmi_percentiles": {
+      "p50": 3.658190732932432,
+      "p75": 4.642762972222992,
+      "p90": 5.443124237090087,
+      "p95": 5.91572864803588,
+      "p99": 6.871560214879551
+    }
+  },
+  "semantic_top_pair_count": 53294,
+  "semantic_top_pair_percentiles": {
+    "p50": 0.8975070118904114,
+    "p75": 0.9247228652238846,
+    "p90": 0.9518342018127441,
+    "p95": 0.9708844423294067,
+    "p99": 0.9980639696121216
+  },
+  "structure": {
+    "Main L2=0.010,L3=0.020 pull": {
+      "active_l1": 60,
+      "active_l2": 256,
+      "active_l3": 256,
+      "unique_l12": 2330,
+      "unique_sid": 3670,
+      "collision_count": 16,
+      "collision_rate": 0.004340748779164406,
+      "max_conflict": 2,
+      "max_l1_bucket": 167,
+      "top5_l1_cover": 707,
+      "top5_l1": [
+        [
+          "<a_202>",
+          167
+        ],
+        [
+          "<a_222>",
+          159
+        ],
+        [
+          "<a_182>",
+          134
+        ],
+        [
+          "<a_78>",
+          131
+        ],
+        [
+          "<a_51>",
+          116
+        ]
+      ],
+      "l1_entropy_norm": 0.9629727491840927,
+      "l1_gini": 0.30538976306746246,
+      "l12_mean_size": 1.5819742489270385,
+      "l12_median_size": 1.0,
+      "l12_p90_size": 3.0,
+      "l12_max_size": 24,
+      "l12_singletons": 1646,
+      "l12_ge5": 74,
+      "avg_l2_per_l1": 38.833333333333336,
+      "median_l2_per_l1": 38.0,
+      "avg_l3_per_l12": 1.5751072961373391,
+      "median_l3_per_l12": 1.0
+    },
+    "L3 InfoNCE=0.005": {
+      "active_l1": 94,
+      "active_l2": 256,
+      "active_l3": 256,
+      "unique_l12": 2609,
+      "unique_sid": 3675,
+      "collision_count": 11,
+      "collision_rate": 0.002984264785675529,
+      "max_conflict": 2,
+      "max_l1_bucket": 216,
+      "top5_l1_cover": 597,
+      "top5_l1": [
+        [
+          "<a_18>",
+          216
+        ],
+        [
+          "<a_248>",
+          126
+        ],
+        [
+          "<a_117>",
+          91
+        ],
+        [
+          "<a_186>",
+          83
+        ],
+        [
+          "<a_19>",
+          81
+        ]
+      ],
+      "l1_entropy_norm": 0.964077588317768,
+      "l1_gini": 0.2953787187864374,
+      "l12_mean_size": 1.4128018397853583,
+      "l12_median_size": 1.0,
+      "l12_p90_size": 2.0,
+      "l12_max_size": 25,
+      "l12_singletons": 2002,
+      "l12_ge5": 41,
+      "avg_l2_per_l1": 27.75531914893617,
+      "median_l2_per_l1": 27.5,
+      "avg_l3_per_l12": 1.4085856650057493,
+      "median_l3_per_l12": 1.0
+    },
+    "L3 InfoNCE=0.010": {
+      "active_l1": 67,
+      "active_l2": 256,
+      "active_l3": 255,
+      "unique_l12": 2170,
+      "unique_sid": 3673,
+      "collision_count": 13,
+      "collision_rate": 0.00352685838307108,
+      "max_conflict": 2,
+      "max_l1_bucket": 224,
+      "top5_l1_cover": 805,
+      "top5_l1": [
+        [
+          "<a_20>",
+          224
+        ],
+        [
+          "<a_112>",
+          191
+        ],
+        [
+          "<a_154>",
+          134
+        ],
+        [
+          "<a_195>",
+          128
+        ],
+        [
+          "<a_118>",
+          128
+        ]
+      ],
+      "l1_entropy_norm": 0.9493265052337075,
+      "l1_gini": 0.3502320195009758,
+      "l12_mean_size": 1.6986175115207374,
+      "l12_median_size": 1.0,
+      "l12_p90_size": 3.0,
+      "l12_max_size": 29,
+      "l12_singletons": 1464,
+      "l12_ge5": 99,
+      "avg_l2_per_l1": 32.38805970149254,
+      "median_l2_per_l1": 31.0,
+      "avg_l3_per_l12": 1.692626728110599,
+      "median_l3_per_l12": 1.0
+    },
+    "L3 InfoNCE=0.020": {
+      "active_l1": 79,
+      "active_l2": 256,
+      "active_l3": 256,
+      "unique_l12": 2478,
+      "unique_sid": 3675,
+      "collision_count": 11,
+      "collision_rate": 0.002984264785675529,
+      "max_conflict": 2,
+      "max_l1_bucket": 138,
+      "top5_l1_cover": 568,
+      "top5_l1": [
+        [
+          "<a_19>",
+          138
+        ],
+        [
+          "<a_26>",
+          126
+        ],
+        [
+          "<a_226>",
+          108
+        ],
+        [
+          "<a_20>",
+          103
+        ],
+        [
+          "<a_1>",
+          93
+        ]
+      ],
+      "l1_entropy_norm": 0.9636909480790998,
+      "l1_gini": 0.3020941365550114,
+      "l12_mean_size": 1.4874899112187248,
+      "l12_median_size": 1.0,
+      "l12_p90_size": 2.0,
+      "l12_max_size": 22,
+      "l12_singletons": 1818,
+      "l12_ge5": 58,
+      "avg_l2_per_l1": 31.367088607594937,
+      "median_l2_per_l1": 31.0,
+      "avg_l3_per_l12": 1.4830508474576272,
+      "median_l3_per_l12": 1.0
+    }
+  },
+  "learnability": {
+    "Main L2=0.010,L3=0.020 pull": {
+      "train_interaction_rows": 36259,
+      "train_prefix_event_count": 172955,
+      "train_seen_item_count": 3647,
+      "catalog_item_zero_train_pct": 1.0580575149213238,
+      "train_l1_entropy_norm": 0.9419169337878347,
+      "train_l12_entropy_norm": 0.8973806167293445,
+      "train_sid_entropy_norm": 0.9247992671958063,
+      "catalog_l1_zero_train_pct": 0.0,
+      "catalog_l1_p10_train_events": 1277.0,
+      "catalog_l1_median_train_events": 3331.0,
+      "catalog_l1_mean_train_events": 3915.2634291915356,
+      "catalog_l2_zero_train_pct": 0.5697232772653282,
+      "catalog_l2_p10_train_events": 15.0,
+      "catalog_l2_median_train_events": 61.0,
+      "catalog_l2_mean_train_events": 165.10227889310906,
+      "catalog_l3_zero_train_pct": 1.0580575149213238,
+      "catalog_l3_p10_train_events": 9.0,
+      "catalog_l3_median_train_events": 27.0,
+      "catalog_l3_mean_train_events": 48.44872490504612
+    },
+    "L3 InfoNCE=0.005": {
+      "train_interaction_rows": 36259,
+      "train_prefix_event_count": 172955,
+      "train_seen_item_count": 3647,
+      "catalog_item_zero_train_pct": 1.0580575149213238,
+      "train_l1_entropy_norm": 0.9325830121030728,
+      "train_l12_entropy_norm": 0.9033407285251691,
+      "train_sid_entropy_norm": 0.9247999285976313,
+      "catalog_l1_zero_train_pct": 0.0,
+      "catalog_l1_p10_train_events": 826.0,
+      "catalog_l1_median_train_events": 1969.0,
+      "catalog_l1_mean_train_events": 2901.265599565925,
+      "catalog_l2_zero_train_pct": 0.5425935973955507,
+      "catalog_l2_p10_train_events": 13.0,
+      "catalog_l2_median_train_events": 47.0,
+      "catalog_l2_mean_train_events": 138.5841020075963,
+      "catalog_l3_zero_train_pct": 1.0580575149213238,
+      "catalog_l3_p10_train_events": 9.0,
+      "catalog_l3_median_train_events": 27.0,
+      "catalog_l3_mean_train_events": 48.35594139989148
+    },
+    "L3 InfoNCE=0.010": {
+      "train_interaction_rows": 36259,
+      "train_prefix_event_count": 172955,
+      "train_seen_item_count": 3647,
+      "catalog_item_zero_train_pct": 1.0580575149213238,
+      "train_l1_entropy_norm": 0.934731607740997,
+      "train_l12_entropy_norm": 0.895453420777109,
+      "train_sid_entropy_norm": 0.92480998616612,
+      "catalog_l1_zero_train_pct": 0.0,
+      "catalog_l1_p10_train_events": 1202.0,
+      "catalog_l1_median_train_events": 2925.0,
+      "catalog_l1_mean_train_events": 3935.7078133478026,
+      "catalog_l2_zero_train_pct": 0.5968529571351058,
+      "catalog_l2_p10_train_events": 15.0,
+      "catalog_l2_median_train_events": 68.0,
+      "catalog_l2_mean_train_events": 183.69126424308192,
+      "catalog_l3_zero_train_pct": 1.0580575149213238,
+      "catalog_l3_p10_train_events": 9.0,
+      "catalog_l3_median_train_events": 27.0,
+      "catalog_l3_mean_train_events": 48.399348887683125
+    },
+    "L3 InfoNCE=0.020": {
+      "train_interaction_rows": 36259,
+      "train_prefix_event_count": 172955,
+      "train_seen_item_count": 3647,
+      "catalog_item_zero_train_pct": 1.0580575149213238,
+      "train_l1_entropy_norm": 0.9402730545541215,
+      "train_l12_entropy_norm": 0.9013016282586054,
+      "train_sid_entropy_norm": 0.9247999285976313,
+      "catalog_l1_zero_train_pct": 0.0,
+      "catalog_l1_p10_train_events": 1111.0,
+      "catalog_l1_median_train_events": 2192.0,
+      "catalog_l1_mean_train_events": 2967.6261530113943,
+      "catalog_l2_zero_train_pct": 0.7325013564839935,
+      "catalog_l2_p10_train_events": 14.0,
+      "catalog_l2_median_train_events": 52.0,
+      "catalog_l2_mean_train_events": 142.46771568095497,
+      "catalog_l3_zero_train_pct": 1.0580575149213238,
+      "catalog_l3_p10_train_events": 9.0,
+      "catalog_l3_median_train_events": 27.0,
+      "catalog_l3_mean_train_events": 48.35594139989148
+    }
+  },
+  "extra": {
+    "Main L2=0.010,L3=0.020 pull": {
+      "active_l1": 60,
+      "active_l2_token": 256,
+      "active_l3_token": 256,
+      "l3_top5_cover": 285,
+      "l3_entropy_norm": 0.9764292602125105,
+      "l3_gini": 0.264514378730331,
+      "l12_size_p95": 4.0,
+      "l12_size_p99": 7.0,
+      "top_l1": [
+        [
+          "<a_202>",
+          167
+        ],
+        [
+          "<a_222>",
+          159
+        ],
+        [
+          "<a_182>",
+          134
+        ],
+        [
+          "<a_78>",
+          131
+        ],
+        [
+          "<a_51>",
+          116
+        ],
+        [
+          "<a_186>",
+          113
+        ],
+        [
+          "<a_145>",
+          109
+        ],
+        [
+          "<a_41>",
+          103
+        ]
+      ],
+      "top_l12": [
+        [
+          [
+            "<a_222>",
+            "<b_157>"
+          ],
+          24
+        ],
+        [
+          [
+            "<a_222>",
+            "<b_109>"
+          ],
+          24
+        ],
+        [
+          [
+            "<a_222>",
+            "<b_68>"
+          ],
+          23
+        ],
+        [
+          [
+            "<a_186>",
+            "<b_178>"
+          ],
+          21
+        ],
+        [
+          [
+            "<a_165>",
+            "<b_106>"
+          ],
+          12
+        ],
+        [
+          [
+            "<a_202>",
+            "<b_210>"
+          ],
+          11
+        ],
+        [
+          [
+            "<a_222>",
+            "<b_24>"
+          ],
+          11
+        ],
+        [
+          [
+            "<a_85>",
+            "<b_149>"
+          ],
+          11
+        ]
+      ],
+      "top_l3": [
+        [
+          "<c_0>",
+          74
+        ],
+        [
+          "<c_2>",
+          64
+        ],
+        [
+          "<c_3>",
+          53
+        ],
+        [
+          "<c_1>",
+          51
+        ],
+        [
+          "<c_4>",
+          43
+        ],
+        [
+          "<c_5>",
+          40
+        ],
+        [
+          "<c_14>",
+          37
+        ],
+        [
+          "<c_9>",
+          35
+        ]
+      ]
+    },
+    "L3 InfoNCE=0.005": {
+      "active_l1": 94,
+      "active_l2_token": 256,
+      "active_l3_token": 256,
+      "l3_top5_cover": 290,
+      "l3_entropy_norm": 0.9593824150182735,
+      "l3_gini": 0.3676241182854043,
+      "l12_size_p95": 3.0,
+      "l12_size_p99": 5.0,
+      "top_l1": [
+        [
+          "<a_18>",
+          216
+        ],
+        [
+          "<a_248>",
+          126
+        ],
+        [
+          "<a_117>",
+          91
+        ],
+        [
+          "<a_186>",
+          83
+        ],
+        [
+          "<a_19>",
+          81
+        ],
+        [
+          "<a_130>",
+          74
+        ],
+        [
+          "<a_6>",
+          67
+        ],
+        [
+          "<a_223>",
+          61
+        ]
+      ],
+      "top_l12": [
+        [
+          [
+            "<a_18>",
+            "<b_45>"
+          ],
+          25
+        ],
+        [
+          [
+            "<a_18>",
+            "<b_248>"
+          ],
+          22
+        ],
+        [
+          [
+            "<a_18>",
+            "<b_210>"
+          ],
+          21
+        ],
+        [
+          [
+            "<a_130>",
+            "<b_139>"
+          ],
+          18
+        ],
+        [
+          [
+            "<a_18>",
+            "<b_231>"
+          ],
+          13
+        ],
+        [
+          [
+            "<a_18>",
+            "<b_223>"
+          ],
+          12
+        ],
+        [
+          [
+            "<a_18>",
+            "<b_246>"
+          ],
+          11
+        ],
+        [
+          [
+            "<a_248>",
+            "<b_100>"
+          ],
+          10
+        ]
+      ],
+      "top_l3": [
+        [
+          "<c_0>",
+          80
+        ],
+        [
+          "<c_252>",
+          59
+        ],
+        [
+          "<c_213>",
+          57
+        ],
+        [
+          "<c_4>",
+          51
+        ],
+        [
+          "<c_3>",
+          43
+        ],
+        [
+          "<c_249>",
+          42
+        ],
+        [
+          "<c_235>",
+          41
+        ],
+        [
+          "<c_212>",
+          37
+        ]
+      ]
+    },
+    "L3 InfoNCE=0.010": {
+      "active_l1": 67,
+      "active_l2_token": 256,
+      "active_l3_token": 255,
+      "l3_top5_cover": 298,
+      "l3_entropy_norm": 0.9622295204148729,
+      "l3_gini": 0.3490579085676593,
+      "l12_size_p95": 4.0,
+      "l12_size_p99": 8.0,
+      "top_l1": [
+        [
+          "<a_20>",
+          224
+        ],
+        [
+          "<a_112>",
+          191
+        ],
+        [
+          "<a_154>",
+          134
+        ],
+        [
+          "<a_195>",
+          128
+        ],
+        [
+          "<a_118>",
+          128
+        ],
+        [
+          "<a_146>",
+          111
+        ],
+        [
+          "<a_251>",
+          106
+        ],
+        [
+          "<a_106>",
+          96
+        ]
+      ],
+      "top_l12": [
+        [
+          [
+            "<a_20>",
+            "<b_217>"
+          ],
+          29
+        ],
+        [
+          [
+            "<a_112>",
+            "<b_203>"
+          ],
+          28
+        ],
+        [
+          [
+            "<a_20>",
+            "<b_143>"
+          ],
+          23
+        ],
+        [
+          [
+            "<a_20>",
+            "<b_82>"
+          ],
+          20
+        ],
+        [
+          [
+            "<a_20>",
+            "<b_27>"
+          ],
+          15
+        ],
+        [
+          [
+            "<a_195>",
+            "<b_20>"
+          ],
+          11
+        ],
+        [
+          [
+            "<a_67>",
+            "<b_107>"
+          ],
+          11
+        ],
+        [
+          [
+            "<a_251>",
+            "<b_47>"
+          ],
+          11
+        ]
+      ],
+      "top_l3": [
+        [
+          "<c_0>",
+          98
+        ],
+        [
+          "<c_3>",
+          61
+        ],
+        [
+          "<c_7>",
+          48
+        ],
+        [
+          "<c_129>",
+          47
+        ],
+        [
+          "<c_2>",
+          44
+        ],
+        [
+          "<c_60>",
+          44
+        ],
+        [
+          "<c_229>",
+          39
+        ],
+        [
+          "<c_59>",
+          36
+        ]
+      ]
+    },
+    "L3 InfoNCE=0.020": {
+      "active_l1": 79,
+      "active_l2_token": 256,
+      "active_l3_token": 256,
+      "l3_top5_cover": 264,
+      "l3_entropy_norm": 0.9770095336661292,
+      "l3_gini": 0.2609345326912642,
+      "l12_size_p95": 3.0,
+      "l12_size_p99": 6.0,
+      "top_l1": [
+        [
+          "<a_19>",
+          138
+        ],
+        [
+          "<a_26>",
+          126
+        ],
+        [
+          "<a_226>",
+          108
+        ],
+        [
+          "<a_20>",
+          103
+        ],
+        [
+          "<a_1>",
+          93
+        ],
+        [
+          "<a_251>",
+          81
+        ],
+        [
+          "<a_34>",
+          80
+        ],
+        [
+          "<a_111>",
+          78
+        ]
+      ],
+      "top_l12": [
+        [
+          [
+            "<a_19>",
+            "<b_61>"
+          ],
+          22
+        ],
+        [
+          [
+            "<a_248>",
+            "<b_61>"
+          ],
+          21
+        ],
+        [
+          [
+            "<a_19>",
+            "<b_89>"
+          ],
+          18
+        ],
+        [
+          [
+            "<a_223>",
+            "<b_157>"
+          ],
+          18
+        ],
+        [
+          [
+            "<a_19>",
+            "<b_111>"
+          ],
+          13
+        ],
+        [
+          [
+            "<a_226>",
+            "<b_105>"
+          ],
+          11
+        ],
+        [
+          [
+            "<a_26>",
+            "<b_42>"
+          ],
+          11
+        ],
+        [
+          [
+            "<a_248>",
+            "<b_49>"
+          ],
+          10
+        ]
+      ],
+      "top_l3": [
+        [
+          "<c_0>",
+          102
+        ],
+        [
+          "<c_4>",
+          48
+        ],
+        [
+          "<c_1>",
+          46
+        ],
+        [
+          "<c_8>",
+          34
+        ],
+        [
+          "<c_11>",
+          34
+        ],
+        [
+          "<c_2>",
+          33
+        ],
+        [
+          "<c_15>",
+          29
+        ],
+        [
+          "<c_131>",
+          28
+        ]
+      ]
+    }
+  },
+  "pair_metrics": {
+    "S-near C-far": {
+      "Main L2=0.010,L3=0.020 pull": {
+        "pair_count": 5677.0,
+        "same_l1_pct": 91.13968645411309,
+        "same_l12_pct": 29.716399506781748,
+        "same_sid_pct": 0.07045974986788797,
+        "same_l2_token_pct": 30.878985379601904,
+        "same_l3_token_pct": 0.9688215606834596,
+        "avg_token_overlap": 1.2298749339439845,
+        "avg_lcp": 1.2092654571076273,
+        "split_after_l1_pct": 61.423286947331334
+      },
+      "L3 InfoNCE=0.005": {
+        "pair_count": 5677.0,
+        "same_l1_pct": 93.87000176149375,
+        "same_l12_pct": 22.406200457988373,
+        "same_sid_pct": 0.017614937466971993,
+        "same_l2_token_pct": 22.511890082790206,
+        "same_l3_token_pct": 1.1273559978862076,
+        "avg_token_overlap": 1.1750924784217016,
+        "avg_lcp": 1.1629381715694909,
+        "split_after_l1_pct": 71.46380130350536
+      },
+      "L3 InfoNCE=0.010": {
+        "pair_count": 5677.0,
+        "same_l1_pct": 96.07186894486524,
+        "same_l12_pct": 33.48599612471376,
+        "same_sid_pct": 0.017614937466971993,
+        "same_l2_token_pct": 33.521225999647704,
+        "same_l3_token_pct": 0.7926721860137397,
+        "avg_token_overlap": 1.303857671305267,
+        "avg_lcp": 1.2957548000704597,
+        "split_after_l1_pct": 62.58587282015149
+      },
+      "L3 InfoNCE=0.020": {
+        "pair_count": 5677.0,
+        "same_l1_pct": 91.3862955786507,
+        "same_l12_pct": 24.484763079091067,
+        "same_sid_pct": 0.017614937466971993,
+        "same_l2_token_pct": 24.76660207856262,
+        "same_l3_token_pct": 0.9512066232164875,
+        "avg_token_overlap": 1.171041042804298,
+        "avg_lcp": 1.1588867359520874,
+        "split_after_l1_pct": 66.90153249955962
+      }
+    },
+    "S-near C-near": {
+      "Main L2=0.010,L3=0.020 pull": {
+        "pair_count": 3853.0,
+        "same_l1_pct": 89.46275629379704,
+        "same_l12_pct": 34.259018946275624,
+        "same_sid_pct": 0.28549182455229694,
+        "same_l2_token_pct": 35.32312483778874,
+        "same_l3_token_pct": 0.9602906825849987,
+        "avg_token_overlap": 1.2574617181417078,
+        "avg_lcp": 1.2400726706462497,
+        "split_after_l1_pct": 55.20373734752141
+      },
+      "L3 InfoNCE=0.005": {
+        "pair_count": 3853.0,
+        "same_l1_pct": 87.07500648845055,
+        "same_l12_pct": 28.107967817285235,
+        "same_sid_pct": 0.25953802232026996,
+        "same_l2_token_pct": 28.341552037373475,
+        "same_l3_token_pct": 1.0381520892810798,
+        "avg_token_overlap": 1.164547106151051,
+        "avg_lcp": 1.1544251232805607,
+        "split_after_l1_pct": 58.96703867116533
+      },
+      "L3 InfoNCE=0.010": {
+        "pair_count": 3853.0,
+        "same_l1_pct": 90.21541655852583,
+        "same_l12_pct": 33.58422008824293,
+        "same_sid_pct": 0.3114456267843239,
+        "same_l2_token_pct": 33.947573319491305,
+        "same_l3_token_pct": 1.4793667272255384,
+        "avg_token_overlap": 1.2564235660524268,
+        "avg_lcp": 1.2411108227355307,
+        "split_after_l1_pct": 56.631196470282894
+      },
+      "L3 InfoNCE=0.020": {
+        "pair_count": 3853.0,
+        "same_l1_pct": 89.12535686478068,
+        "same_l12_pct": 29.898780171295098,
+        "same_sid_pct": 0.25953802232026996,
+        "same_l2_token_pct": 30.21022579807942,
+        "same_l3_token_pct": 1.1938749026732416,
+        "avg_token_overlap": 1.2052945756553335,
+        "avg_lcp": 1.1928367505839605,
+        "split_after_l1_pct": 59.2265766934856
+      }
+    },
+    "S-far C-near": {
+      "Main L2=0.010,L3=0.020 pull": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 0.54,
+        "same_l12_pct": 0.0,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.35000000000000003,
+        "same_l3_token_pct": 0.7000000000000001,
+        "avg_token_overlap": 0.0159,
+        "avg_lcp": 0.0054,
+        "split_after_l1_pct": 0.54
+      },
+      "L3 InfoNCE=0.005": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 0.35000000000000003,
+        "same_l12_pct": 0.0,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.42,
+        "same_l3_token_pct": 0.72,
+        "avg_token_overlap": 0.0149,
+        "avg_lcp": 0.0035,
+        "split_after_l1_pct": 0.35000000000000003
+      },
+      "L3 InfoNCE=0.010": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 0.66,
+        "same_l12_pct": 0.0,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.31,
+        "same_l3_token_pct": 0.83,
+        "avg_token_overlap": 0.018,
+        "avg_lcp": 0.0066,
+        "split_after_l1_pct": 0.66
+      },
+      "L3 InfoNCE=0.020": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 0.38,
+        "same_l12_pct": 0.0,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.38,
+        "same_l3_token_pct": 0.66,
+        "avg_token_overlap": 0.0142,
+        "avg_lcp": 0.0038,
+        "split_after_l1_pct": 0.38
+      }
+    },
+    "S-far C-far": {
+      "Main L2=0.010,L3=0.020 pull": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 0.09,
+        "same_l12_pct": 0.0,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.29,
+        "same_l3_token_pct": 0.41000000000000003,
+        "avg_token_overlap": 0.0079,
+        "avg_lcp": 0.0009,
+        "split_after_l1_pct": 0.09
+      },
+      "L3 InfoNCE=0.005": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 0.04,
+        "same_l12_pct": 0.0,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.38999999999999996,
+        "same_l3_token_pct": 0.5700000000000001,
+        "avg_token_overlap": 0.01,
+        "avg_lcp": 0.0004,
+        "split_after_l1_pct": 0.04
+      },
+      "L3 InfoNCE=0.010": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 0.2,
+        "same_l12_pct": 0.0,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.38,
+        "same_l3_token_pct": 0.59,
+        "avg_token_overlap": 0.0117,
+        "avg_lcp": 0.002,
+        "split_after_l1_pct": 0.2
+      },
+      "L3 InfoNCE=0.020": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 0.13999999999999999,
+        "same_l12_pct": 0.0,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.36,
+        "same_l3_token_pct": 0.47000000000000003,
+        "avg_token_overlap": 0.0097,
+        "avg_lcp": 0.0014,
+        "split_after_l1_pct": 0.13999999999999999
+      }
+    },
+    "S-mid C-far": {
+      "Main L2=0.010,L3=0.020 pull": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 57.269999999999996,
+        "same_l12_pct": 0.41000000000000003,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.98,
+        "same_l3_token_pct": 0.95,
+        "avg_token_overlap": 0.592,
+        "avg_lcp": 0.5768,
+        "split_after_l1_pct": 56.86
+      },
+      "L3 InfoNCE=0.005": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 47.349999999999994,
+        "same_l12_pct": 0.47000000000000003,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.8099999999999999,
+        "same_l3_token_pct": 0.97,
+        "avg_token_overlap": 0.4913,
+        "avg_lcp": 0.4782,
+        "split_after_l1_pct": 46.88
+      },
+      "L3 InfoNCE=0.010": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 52.769999999999996,
+        "same_l12_pct": 1.01,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 1.4500000000000002,
+        "same_l3_token_pct": 1.02,
+        "avg_token_overlap": 0.5524,
+        "avg_lcp": 0.5378,
+        "split_after_l1_pct": 51.76
+      },
+      "L3 InfoNCE=0.020": {
+        "pair_count": 10000.0,
+        "same_l1_pct": 52.480000000000004,
+        "same_l12_pct": 0.41000000000000003,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 1.03,
+        "same_l3_token_pct": 0.77,
+        "avg_token_overlap": 0.5428,
+        "avg_lcp": 0.5289,
+        "split_after_l1_pct": 52.07000000000001
+      }
+    },
+    "S-mid C-near": {
+      "Main L2=0.010,L3=0.020 pull": {
+        "pair_count": 1806.0,
+        "same_l1_pct": 55.370985603543744,
+        "same_l12_pct": 0.3875968992248062,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 1.2181616832779625,
+        "same_l3_token_pct": 0.5537098560354374,
+        "avg_token_overlap": 0.5714285714285714,
+        "avg_lcp": 0.5575858250276855,
+        "split_after_l1_pct": 54.98338870431893
+      },
+      "L3 InfoNCE=0.005": {
+        "pair_count": 1806.0,
+        "same_l1_pct": 46.733111849390916,
+        "same_l12_pct": 0.3875968992248062,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.8305647840531563,
+        "same_l3_token_pct": 1.3289036544850499,
+        "avg_token_overlap": 0.48892580287929127,
+        "avg_lcp": 0.47120708748615725,
+        "split_after_l1_pct": 46.34551495016611
+      },
+      "L3 InfoNCE=0.010": {
+        "pair_count": 1806.0,
+        "same_l1_pct": 48.117386489479514,
+        "same_l12_pct": 0.8859357696566998,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.9966777408637874,
+        "same_l3_token_pct": 0.9966777408637874,
+        "avg_token_overlap": 0.5011074197120708,
+        "avg_lcp": 0.4900332225913621,
+        "split_after_l1_pct": 47.23145071982282
+      },
+      "L3 InfoNCE=0.020": {
+        "pair_count": 1806.0,
+        "same_l1_pct": 48.837209302325576,
+        "same_l12_pct": 0.4983388704318937,
+        "same_sid_pct": 0.0,
+        "same_l2_token_pct": 0.9966777408637874,
+        "same_l3_token_pct": 1.052048726467331,
+        "avg_token_overlap": 0.508859357696567,
+        "avg_lcp": 0.49335548172757476,
+        "split_after_l1_pct": 48.33887043189369
+      }
+    }
+  },
+  "edge_stats": {
+    "Main L2=0.010,L3=0.020 pull": {
+      "edge_pairs": 100920,
+      "cooc_weighted_same_l1_pct": 15.413693748645635,
+      "cooc_weighted_same_l12_pct": 4.993699687793446,
+      "cooc_weighted_same_l3_token_pct": 0.9960111399150863,
+      "cooc_weighted_avg_overlap": 0.2190742955287848,
+      "unweighted_same_l1_pct": 9.689853349187477,
+      "unweighted_same_l12_pct": 1.3535473642489102,
+      "unweighted_same_l3_token_pct": 0.6371383273880301,
+      "unweighted_avg_overlap": 0.12200753071739992
+    },
+    "L3 InfoNCE=0.005": {
+      "edge_pairs": 100920,
+      "cooc_weighted_same_l1_pct": 14.492323250158512,
+      "cooc_weighted_same_l12_pct": 4.05226450075042,
+      "cooc_weighted_same_l3_token_pct": 1.0409560422803117,
+      "cooc_weighted_avg_overlap": 0.19994060852187454,
+      "unweighted_same_l1_pct": 8.890210067380103,
+      "unweighted_same_l12_pct": 1.0899722552516846,
+      "unweighted_same_l3_token_pct": 0.6906460562822037,
+      "unweighted_avg_overlap": 0.11115735235830361
+    },
+    "L3 InfoNCE=0.010": {
+      "edge_pairs": 100920,
+      "cooc_weighted_same_l1_pct": 15.680152812668041,
+      "cooc_weighted_same_l12_pct": 4.816327840959253,
+      "cooc_weighted_same_l3_token_pct": 1.1396743099753606,
+      "cooc_weighted_avg_overlap": 0.22091222100050564,
+      "unweighted_same_l1_pct": 10.085216012683313,
+      "unweighted_same_l12_pct": 1.3545382481173207,
+      "unweighted_same_l3_token_pct": 0.7629805786761792,
+      "unweighted_avg_overlap": 0.1264070550931431
+    },
+    "L3 InfoNCE=0.020": {
+      "edge_pairs": 100920,
+      "cooc_weighted_same_l1_pct": 14.039663876337311,
+      "cooc_weighted_same_l12_pct": 4.525791150669759,
+      "cooc_weighted_same_l3_token_pct": 1.004839602879684,
+      "cooc_weighted_avg_overlap": 0.2031349069399745,
+      "unweighted_same_l1_pct": 8.641498216409037,
+      "unweighted_same_l12_pct": 1.1533888228299645,
+      "unweighted_same_l3_token_pct": 0.6420927467300832,
+      "unweighted_avg_overlap": 0.11072136345620294
+    }
+  },
+  "change_vs_main": [
+    {
+      "tokenizer": "Main L2=0.010,L3=0.020 pull",
+      "same_l1_vs_main_pct": 100.0,
+      "same_l12_vs_main_pct": 100.0,
+      "same_sid_vs_main_pct": 100.0,
+      "same_l2_token_vs_main_pct": 100.0,
+      "same_l3_token_vs_main_pct": 100.0
+    },
+    {
+      "tokenizer": "L3 InfoNCE=0.005",
+      "same_l1_vs_main_pct": 0.24416711882799783,
+      "same_l12_vs_main_pct": 0.0,
+      "same_sid_vs_main_pct": 0.0,
+      "same_l2_token_vs_main_pct": 0.2170374389582203,
+      "same_l3_token_vs_main_pct": 1.1394465545306565
+    },
+    {
+      "tokenizer": "L3 InfoNCE=0.010",
+      "same_l1_vs_main_pct": 0.0,
+      "same_l12_vs_main_pct": 0.0,
+      "same_sid_vs_main_pct": 0.0,
+      "same_l2_token_vs_main_pct": 0.48833423765599565,
+      "same_l3_token_vs_main_pct": 1.2479652740097666
+    },
+    {
+      "tokenizer": "L3 InfoNCE=0.020",
+      "same_l1_vs_main_pct": 0.4612045577862181,
+      "same_l12_vs_main_pct": 0.0,
+      "same_sid_vs_main_pct": 0.0,
+      "same_l2_token_vs_main_pct": 0.5425935973955507,
+      "same_l3_token_vs_main_pct": 1.2479652740097666
+    }
+  ],
+  "bucket_samples": {
+    "Main L2=0.010,L3=0.020 pull": {
+      "top_l1": [
+        {
+          "token": "<a_202>",
+          "count": 167,
+          "items": [
+            {
+              "id": 27,
+              "title": "Uxcell a11060700ux0191 RG6 F-Type Coax Coaxial Cable RF Connector Male (Pack of 5)"
+            },
+            {
+              "id": 58,
+              "title": "American Terminal E-FFR250N-100 22/18-Gauge Economy Nylon Fully-Insulated Female Quick Dis"
+            },
+            {
+              "id": 106,
+              "title": "Wago Wire Connector 600 V Clear 4 Conductor 100 / Box"
+            },
+            {
+              "id": 109,
+              "title": "Arlington LPCG50-1 Low-Profile Strain Relief Cord Connector, 1/2 Inch"
+            },
+            {
+              "id": 134,
+              "title": "HOODDEAL 50pcs Waterproof Solder Seal Heat Shrink Butt Connectors with Soldering Sleeve"
+            },
+            {
+              "id": 157,
+              "title": "Yueton 100pcs Female Fully Insulated Wire Crimp Terminal Nylon Quick Connectors Wiring Spa"
+            },
+            {
+              "id": 170,
+              "title": "URBEST 328 Pcs Assorted Heat Shrink Tube 5 Colors 8 Sizes Tubing Wrap Sleeve Set Combo (32"
+            },
+            {
+              "id": 214,
+              "title": "520 Piece Electrical Terminal Assortment with Storage Box"
+            },
+            {
+              "id": 247,
+              "title": "Vktech 280Pcs 2:1 Heat Shrink Tubing Tube Sleeving Wrap Cable Wire 5 Color 8 Size (5 Color"
+            },
+            {
+              "id": 369,
+              "title": "Loos Cableware ST2-4 Copper Crimping Stop Sleeve Set for 1/8\" Diameter Wire Rope (50 Piece"
+            }
+          ]
+        },
+        {
+          "token": "<a_222>",
+          "count": 159,
+          "items": [
+            {
+              "id": 50,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 52,
+              "title": "HATCHBOX Glow in the Dark PLA 3D Printer Filament, Dimension Accuracy +/-0.03 mm, 1 kg Spo"
+            },
+            {
+              "id": 162,
+              "title": "USAFilament 9800429 ABS 3D Printing Filament, 2.2 lb, 1.75 mm, White Spool"
+            },
+            {
+              "id": 164,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 249,
+              "title": "UP! ABS Plastic Filament, 1.75 mm Diameter, 1.54 lbs Spool, Black"
+            },
+            {
+              "id": 275,
+              "title": "Verbatim 3D Printer Filament - PLA High-Grade 1.75mm 1kg Reel - Widely Compatible with 3D "
+            },
+            {
+              "id": 297,
+              "title": "XYZprinting ABS Plastic Filament Cartridge, 1.75 mm Diameter, 600g, Black"
+            },
+            {
+              "id": 300,
+              "title": "XYZprinting RFPLCXUS00B da Vinci Jr. & mini Series Filament, PLA (NFC), 600 g, Nature"
+            },
+            {
+              "id": 444,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, W"
+            },
+            {
+              "id": 562,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            }
+          ]
+        },
+        {
+          "token": "<a_182>",
+          "count": 134,
+          "items": [
+            {
+              "id": 37,
+              "title": "The Hillman Group 591521 Small Flat and Lock Washer Assortment, 270-Pack"
+            },
+            {
+              "id": 79,
+              "title": "Brass Wood Screw, Plain Finish, Flat Head, Slotted Drive, 3/8\" Length, #6 Threads (Pack of"
+            },
+            {
+              "id": 111,
+              "title": "Hillman 830504 Stainless Steel 5/16-Inch Flat Washers, 100-Pack, 1 Pack"
+            },
+            {
+              "id": 129,
+              "title": "Hilitchi 260pcs M3/4/5/6/8 Allen Head Socket Hex Grub Screw Set Assortment Kit with Plasti"
+            },
+            {
+              "id": 137,
+              "title": "Swordfish 31930 Stainless Steel Screw Assortment, 420 Piece"
+            },
+            {
+              "id": 158,
+              "title": "Stainless Steel Phillips Flat Machine Screw Kit #K18MPF"
+            },
+            {
+              "id": 166,
+              "title": "ARROW 160455 Drywall Drill Bit, Screw and Anchor Kit"
+            },
+            {
+              "id": 173,
+              "title": "Storehouse 67543 220 Piece Wall Anchor Assortment"
+            },
+            {
+              "id": 188,
+              "title": "Woodstock D4158 4-84 Screw Pitch-Gauge"
+            },
+            {
+              "id": 189,
+              "title": "316 Stainless Steel Machine Screw, Plain Finish, Flat Head, Phillips Drive, 1/2\" Length, #"
+            }
+          ]
+        },
+        {
+          "token": "<a_78>",
+          "count": 131,
+          "items": [
+            {
+              "id": 9,
+              "title": "Anderson Metals Brass Tube Fitting, Half-Union, 3/8\" Flare x 1/8\" Male Pipe"
+            },
+            {
+              "id": 36,
+              "title": "Neiko 50463A SAE Hydraulic Grease Fitting Kit, 110 Piece | Straight and Angled | 1/4\", 1/8"
+            },
+            {
+              "id": 97,
+              "title": "18-8 Stainless Steel Flat Washer, Plain Finish, #10 Hole Size, 13/64\" ID, 7/16\" OD, 0.03\" "
+            },
+            {
+              "id": 100,
+              "title": "Dixon BCN100 Brass Fitting, Hex Nipple, 1\" NPT Male"
+            },
+            {
+              "id": 101,
+              "title": "Stainless Steel 304/304L Pipe Fitting, Nipple, Schedule 40 Welded, 4\" X 6\" NPT Male by Mer"
+            },
+            {
+              "id": 196,
+              "title": "Spears 1407 Series PVC Tube Fitting, 90 Degree Elbow, Schedule 40, Gray, 1-1/4\" Barbed x N"
+            },
+            {
+              "id": 201,
+              "title": "ColorConnex Coupler & Plug Kit (7 Piece), Industrial Type D, 1/4 in. NPT, Red - A73457D"
+            },
+            {
+              "id": 210,
+              "title": "Hydro Flow 747058 Premium Barbed Ball Valve, 1/2-Inch"
+            },
+            {
+              "id": 225,
+              "title": "Anderson Metals Brass Hose Fitting, Connector, 5/16\" Barb x 3/8\" Male Pipe"
+            },
+            {
+              "id": 226,
+              "title": "Anderson Metals Brass Hose Fitting, Connector, 3/4\" Barb x 3/4\" Male Pipe"
+            }
+          ]
+        },
+        {
+          "token": "<a_51>",
+          "count": 116,
+          "items": [
+            {
+              "id": 71,
+              "title": "Metronic 12 inch Impulse Bag Sealer Poly Bag Sealing Machine Heat Seal Closer with Repair "
+            },
+            {
+              "id": 102,
+              "title": "Stainless Steel Tumbling Media Pins - 0.047\" Diameter, 0.255\" Length (5 lb Pack)"
+            },
+            {
+              "id": 107,
+              "title": "Polycarbonate (PC) Sheet, Transparent Clear, Standard Tolerance, ASTM D3935, 0.093\" Thickn"
+            },
+            {
+              "id": 108,
+              "title": "Polycarbonate (PC) Sheet, Transparent Clear, Standard Tolerance, ASTM D3935, 0.08\" Thickne"
+            },
+            {
+              "id": 131,
+              "title": "110 Copper Round Rod, Unpolished (Mill) Finish, H04 Temper, ASTM B187, 0.25\" Diameter, 24\""
+            },
+            {
+              "id": 139,
+              "title": "DuPont Teflon Non-Stick"
+            },
+            {
+              "id": 142,
+              "title": "High Temperature Heat Resistant Tape Sublimation Tape Koptan Tape 2 Rolls 10mm X 33m 100ft"
+            },
+            {
+              "id": 145,
+              "title": "Marrywindix 6pcs ESD Precision Anti-Static Tweezers, Tweezers Stainless Steel Tweezers wit"
+            },
+            {
+              "id": 149,
+              "title": "Syrtenty TENS Unit Electrodes Pads 2x2 20 Pcs Replacement Pads Electrode Patches For Elect"
+            },
+            {
+              "id": 174,
+              "title": "Heat Shrink Tape Black 180 foot"
+            }
+          ]
+        }
+      ],
+      "top_l12": [
+        {
+          "prefix": [
+            "<a_222>",
+            "<b_157>"
+          ],
+          "count": 24,
+          "items": [
+            {
+              "id": 50,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 562,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 1107,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 1573,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, O"
+            },
+            {
+              "id": 1574,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, P"
+            },
+            {
+              "id": 1850,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, R"
+            },
+            {
+              "id": 2058,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2152,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2283,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            },
+            {
+              "id": 2470,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 3.00 mm, B"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_222>",
+            "<b_109>"
+          ],
+          "count": 24,
+          "items": [
+            {
+              "id": 444,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, W"
+            },
+            {
+              "id": 1851,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Y"
+            },
+            {
+              "id": 2419,
+              "title": "HATCHBOX 3D ABS-1KG1.75-BLU ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 k"
+            },
+            {
+              "id": 2420,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, S"
+            },
+            {
+              "id": 2472,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 2476,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            },
+            {
+              "id": 2582,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, O"
+            },
+            {
+              "id": 2583,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.05 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2604,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            },
+            {
+              "id": 2701,
+              "title": "HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Trans"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_222>",
+            "<b_68>"
+          ],
+          "count": 23,
+          "items": [
+            {
+              "id": 1552,
+              "title": "3D Solutech Teal Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0."
+            },
+            {
+              "id": 1888,
+              "title": "3D Solutech Hot Pink 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.0"
+            },
+            {
+              "id": 2161,
+              "title": "3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy +/- 0.03 mm"
+            },
+            {
+              "id": 2659,
+              "title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- "
+            },
+            {
+              "id": 2660,
+              "title": "3D Solutech Real Grey 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0."
+            },
+            {
+              "id": 2697,
+              "title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 2909,
+              "title": "3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/-"
+            },
+            {
+              "id": 2993,
+              "title": "3D Solutech Blue 3D Printer Ultra PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 3112,
+              "title": "3D Solutech Real Black 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 3435,
+              "title": "3D Solutech Real Black 1.75mm Flexible 3D Printer Filament 2.2 LBS (1.0KG)"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_186>",
+            "<b_178>"
+          ],
+          "count": 21,
+          "items": [
+            {
+              "id": 1553,
+              "title": "Inland 1.75mm Red PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 1554,
+              "title": "Inland 1.75mm Peak Green PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2284,
+              "title": "HICTOP 1.75mm Black PLA 3D Printer Filament - 1kg Spool (2.2 lbs) - Dimensional Accuracy +"
+            },
+            {
+              "id": 2485,
+              "title": "Inland 1.75mm Gold PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2718,
+              "title": "Inland 1.75mm Pink PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2719,
+              "title": "MeltInk3D Silver PLA 3D Printer Filament &Oslash; 1.75mm, 1Kg (2.2 Lb), MADE in U.S.A, Dim"
+            },
+            {
+              "id": 2734,
+              "title": "Inland 1.75mm White PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2912,
+              "title": "Inland 1.75mm Black PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2932,
+              "title": "Inland 1.75mm Blue PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2934,
+              "title": "Inland 1.75mm Yellow PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_165>",
+            "<b_106>"
+          ],
+          "count": 12,
+          "items": [
+            {
+              "id": 67,
+              "title": "W1 Tool Steel Round Rod, Polished Finish, Precision Ground, Annealed, 0.0625\" Diameter, 36"
+            },
+            {
+              "id": 443,
+              "title": "1018 Carbon Steel Round Rod, Unpolished (Mill) Finish, Cold Finished Temper, ASTM A108, 1."
+            },
+            {
+              "id": 1041,
+              "title": "Buna-N O-Ring Kit, 70A Durometer, 382 Pieces, 30 Sizes"
+            },
+            {
+              "id": 1124,
+              "title": "360 Brass Round Rod, Unpolished (Mill) Finish, H02 Temper, ASTM B16, 0.25\" Diameter, 36\" L"
+            },
+            {
+              "id": 1125,
+              "title": "304 Stainless Steel Round Rod, Unpolished (Mill) Finish, Annealed, AMS 5639/ASTM A276/AMS "
+            },
+            {
+              "id": 1126,
+              "title": "360 Brass Round Rod, Unpolished (Mill) Finish, H02 Temper, ASTM B16, 0.1875\" Diameter, 72\""
+            },
+            {
+              "id": 1127,
+              "title": "304 Stainless Steel Round Rod, Unpolished (Mill) Finish, Annealed, AMS 5639/ASTM A276/AMS "
+            },
+            {
+              "id": 1148,
+              "title": "1018 Carbon Steel Rectangular Bar, Unpolished (Mill) Finish, Cold Finished Temper, ASTM A1"
+            },
+            {
+              "id": 1149,
+              "title": "1018 Carbon Steel Rectangular Bar, Unpolished (Mill) Finish, Cold Finished, ASTM A108, 1/4"
+            },
+            {
+              "id": 1445,
+              "title": "Hot Rolled Steel Square Tubing, ASTM A-36, 2-1/2\" x 2-1/2\", 0.12\" Wall, 60\" Length"
+            }
+          ]
+        }
+      ],
+      "collisions": [
+        {
+          "sid": [
+            "<a_104>",
+            "<b_1>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 2956,
+              "title": "DBPOWER 2 MP 15M Tube USB Waterproof Hd 6-led Borescope Endoscope Inspection Camera(Silver"
+            },
+            {
+              "id": 2957,
+              "title": "DBPOWER 2 MP 15M Tube USB Waterproof Hd 6-led Borescope Endoscope Inspection Camera(Silver"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_150>",
+            "<b_195>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 1382,
+              "title": "Shoe GOO&reg; Adhesive, 3.7 fl oz"
+            },
+            {
+              "id": 1788,
+              "title": "Shoe GOO&reg; Adhesive, 3.7 fl oz"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_161>",
+            "<b_187>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 7,
+              "title": "UltraSource 192033 Hamburger Patty Paper, 5.5\" x 5.5\" (Pack of 1000)"
+            },
+            {
+              "id": 8,
+              "title": "UltraSource 192033 Hamburger Patty Paper, 5.5\" x 5.5\" (Pack of 1000)"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_178>",
+            "<b_163>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 1955,
+              "title": "SEOH 5 Pack Glass Borosilicate Graduated Beakers 50 100 250 600 and 1000ml"
+            },
+            {
+              "id": 3038,
+              "title": "SEOH 5 Pack Glass Borosilicate Graduated Beakers 50 100 250 600 and 1000ml"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_186>",
+            "<b_178>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 2979,
+              "title": "Inland 1.75mm Gray PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 3443,
+              "title": "Inland 1.75mm Translucent Magenta PETG 3D Printer Filament - 1kg Spool (2.2 Lbs)"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_186>",
+            "<b_178>",
+            "<c_1>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 2284,
+              "title": "HICTOP 1.75mm Black PLA 3D Printer Filament - 1kg Spool (2.2 lbs) - Dimensional Accuracy +"
+            },
+            {
+              "id": 2485,
+              "title": "Inland 1.75mm Gold PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_186>",
+            "<b_249>",
+            "<c_4>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 2332,
+              "title": "Metal J-head V6 Hotend 1.75mm Filament 0.4mm Bowden Extruder Reprap 3D Printer with 1 Mete"
+            },
+            {
+              "id": 3444,
+              "title": "RepRap Champion Metal J-Head V6 Hot End for RepRap 3D Printer 1.75mm Filament Direct Feed "
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_202>",
+            "<b_176>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 3209,
+              "title": "Ancor Heat Shrink Ring Terminals"
+            },
+            {
+              "id": 3210,
+              "title": "Ancor Heat Shrink Ring Terminals"
+            }
+          ]
+        }
+      ]
+    },
+    "L3 InfoNCE=0.005": {
+      "top_l1": [
+        {
+          "token": "<a_18>",
+          "count": 216,
+          "items": [
+            {
+              "id": 50,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 51,
+              "title": "HATCHBOX 1 Spool 3D Printer Filament Tabletop Wall Mount Rack"
+            },
+            {
+              "id": 52,
+              "title": "HATCHBOX Glow in the Dark PLA 3D Printer Filament, Dimension Accuracy +/-0.03 mm, 1 kg Spo"
+            },
+            {
+              "id": 162,
+              "title": "USAFilament 9800429 ABS 3D Printing Filament, 2.2 lb, 1.75 mm, White Spool"
+            },
+            {
+              "id": 164,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 249,
+              "title": "UP! ABS Plastic Filament, 1.75 mm Diameter, 1.54 lbs Spool, Black"
+            },
+            {
+              "id": 275,
+              "title": "Verbatim 3D Printer Filament - PLA High-Grade 1.75mm 1kg Reel - Widely Compatible with 3D "
+            },
+            {
+              "id": 297,
+              "title": "XYZprinting ABS Plastic Filament Cartridge, 1.75 mm Diameter, 600g, Black"
+            },
+            {
+              "id": 298,
+              "title": "XYZprinting PLA Filament Cartridge, 1.75 mm Diameter, 600g, Nature"
+            },
+            {
+              "id": 444,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, W"
+            }
+          ]
+        },
+        {
+          "token": "<a_248>",
+          "count": 126,
+          "items": [
+            {
+              "id": 10,
+              "title": "Scotch Foil Tape, 2-Inch by 50-Yard"
+            },
+            {
+              "id": 23,
+              "title": "Gardner Bender 07315001126 LTB-400 Liquid Electrical Tape, Easy-on, Waterproof, Indoor/Out"
+            },
+            {
+              "id": 77,
+              "title": "Scotch Heavy Duty Shipping Packaging Tape, 3\" Core, 1.88\" x 54.6 Yards, 6-Rolls (3850-6)"
+            },
+            {
+              "id": 116,
+              "title": "Rescue Tape RT1000201202USCO"
+            },
+            {
+              "id": 125,
+              "title": "Gorilla 6100101 Tape Handy Roll, 1-Pack, Black"
+            },
+            {
+              "id": 127,
+              "title": "Morris 60202 Black Commercial Grade Vinyl Electrical Tape, 8.5 mil, 66' Length, 2\" Width"
+            },
+            {
+              "id": 130,
+              "title": "Gorilla Tape, Black Duct Tape, 1.88\" x 35 yd, Black, (Pack of 1)"
+            },
+            {
+              "id": 133,
+              "title": "3M High Temperature Flue Tape, 15-Foot Roll"
+            },
+            {
+              "id": 154,
+              "title": "3M Multi-Use Duct Tape, 2930-C, 1.88 Inches by 30 Yards"
+            },
+            {
+              "id": 155,
+              "title": "JVCC EL7566-AW Synthetic Rubber Electrical Tape, 3 in. x 66 ft. (72mm x 20m), Black"
+            }
+          ]
+        },
+        {
+          "token": "<a_117>",
+          "count": 91,
+          "items": [
+            {
+              "id": 9,
+              "title": "Anderson Metals Brass Tube Fitting, Half-Union, 3/8\" Flare x 1/8\" Male Pipe"
+            },
+            {
+              "id": 36,
+              "title": "Neiko 50463A SAE Hydraulic Grease Fitting Kit, 110 Piece | Straight and Angled | 1/4\", 1/8"
+            },
+            {
+              "id": 100,
+              "title": "Dixon BCN100 Brass Fitting, Hex Nipple, 1\" NPT Male"
+            },
+            {
+              "id": 101,
+              "title": "Stainless Steel 304/304L Pipe Fitting, Nipple, Schedule 40 Welded, 4\" X 6\" NPT Male by Mer"
+            },
+            {
+              "id": 196,
+              "title": "Spears 1407 Series PVC Tube Fitting, 90 Degree Elbow, Schedule 40, Gray, 1-1/4\" Barbed x N"
+            },
+            {
+              "id": 201,
+              "title": "ColorConnex Coupler & Plug Kit (7 Piece), Industrial Type D, 1/4 in. NPT, Red - A73457D"
+            },
+            {
+              "id": 225,
+              "title": "Anderson Metals Brass Hose Fitting, Connector, 5/16\" Barb x 3/8\" Male Pipe"
+            },
+            {
+              "id": 226,
+              "title": "Anderson Metals Brass Hose Fitting, Connector, 3/4\" Barb x 3/4\" Male Pipe"
+            },
+            {
+              "id": 233,
+              "title": "Thogus Polyethylene Tube Fitting, 90 Degree Elbow, Black, 3/8\" Barbed (Pack of 10)"
+            },
+            {
+              "id": 234,
+              "title": "Thogus Polyethylene Tube Fitting, Coupler, Black, 3/16\" Barbed (Pack of 10)"
+            }
+          ]
+        },
+        {
+          "token": "<a_186>",
+          "count": 83,
+          "items": [
+            {
+              "id": 79,
+              "title": "Brass Wood Screw, Plain Finish, Flat Head, Slotted Drive, 3/8\" Length, #6 Threads (Pack of"
+            },
+            {
+              "id": 129,
+              "title": "Hilitchi 260pcs M3/4/5/6/8 Allen Head Socket Hex Grub Screw Set Assortment Kit with Plasti"
+            },
+            {
+              "id": 137,
+              "title": "Swordfish 31930 Stainless Steel Screw Assortment, 420 Piece"
+            },
+            {
+              "id": 158,
+              "title": "Stainless Steel Phillips Flat Machine Screw Kit #K18MPF"
+            },
+            {
+              "id": 189,
+              "title": "316 Stainless Steel Machine Screw, Plain Finish, Flat Head, Phillips Drive, 1/2\" Length, #"
+            },
+            {
+              "id": 286,
+              "title": "Neiko 50484A Internal Hex/Allen Socket-Head Set Screw Assortment, (200 Piece), 5/32\" x 3/1"
+            },
+            {
+              "id": 336,
+              "title": "M14 x 1.0 Metric Left hand Thread Die"
+            },
+            {
+              "id": 400,
+              "title": "Neiko 50432A Nylon Lock Nut Assortment Kit with Carrying Case, 150 Pieces | SAE"
+            },
+            {
+              "id": 401,
+              "title": "Crown Bolt 30092 3/4 Inch Zinc-Plated SAE Flat Washers, 25-Count"
+            },
+            {
+              "id": 405,
+              "title": "The Hillman Group 180147 Nylon Insert Lock Nut, 1/4-Inch by 20-Inch, 100-Pack"
+            }
+          ]
+        },
+        {
+          "token": "<a_19>",
+          "count": 81,
+          "items": [
+            {
+              "id": 109,
+              "title": "Arlington LPCG50-1 Low-Profile Strain Relief Cord Connector, 1/2 Inch"
+            },
+            {
+              "id": 157,
+              "title": "Yueton 100pcs Female Fully Insulated Wire Crimp Terminal Nylon Quick Connectors Wiring Spa"
+            },
+            {
+              "id": 369,
+              "title": "Loos Cableware ST2-4 Copper Crimping Stop Sleeve Set for 1/8\" Diameter Wire Rope (50 Piece"
+            },
+            {
+              "id": 370,
+              "title": "Koch 015021 Cable, 7 by 7 Construction, Trade Size 1/16 by 125 Feet, Stainless Steel"
+            },
+            {
+              "id": 371,
+              "title": "Loos Cableware SL2-3P 50 Piece Zinc Plated Copper Crimping Sleeve Set for 3/32\" Diameter W"
+            },
+            {
+              "id": 521,
+              "title": "Gardner Bender 19-001 WireGard Screw-On Wire Connectors, 22-16 AWG, Electrical Wire Nut, 1"
+            },
+            {
+              "id": 593,
+              "title": "Gardner Bender 10-106 50PK Ring Terminal, Yellow"
+            },
+            {
+              "id": 594,
+              "title": "Install Bay Vinyl Terminal Ring Connector 10/12 Gauge 3/8 Inch 100 Pack Yellow - YVRT38"
+            },
+            {
+              "id": 596,
+              "title": "Install Bay Copper Ring Terminal 4 Gauge #516 25 Pack - CUR4516"
+            },
+            {
+              "id": 597,
+              "title": "Ginsco 110pcs Female Yellow 12-10 Gauge Nylon Fully-Insulated Quick Disconnects Wiring Spa"
+            }
+          ]
+        }
+      ],
+      "top_l12": [
+        {
+          "prefix": [
+            "<a_18>",
+            "<b_45>"
+          ],
+          "count": 25,
+          "items": [
+            {
+              "id": 50,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 562,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 1107,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 1573,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, O"
+            },
+            {
+              "id": 1574,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, P"
+            },
+            {
+              "id": 1850,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, R"
+            },
+            {
+              "id": 1851,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Y"
+            },
+            {
+              "id": 2058,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2152,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2283,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_18>",
+            "<b_248>"
+          ],
+          "count": 22,
+          "items": [
+            {
+              "id": 1552,
+              "title": "3D Solutech Teal Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0."
+            },
+            {
+              "id": 1888,
+              "title": "3D Solutech Hot Pink 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.0"
+            },
+            {
+              "id": 2161,
+              "title": "3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy +/- 0.03 mm"
+            },
+            {
+              "id": 2659,
+              "title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- "
+            },
+            {
+              "id": 2660,
+              "title": "3D Solutech Real Grey 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0."
+            },
+            {
+              "id": 2697,
+              "title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 2909,
+              "title": "3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/-"
+            },
+            {
+              "id": 2993,
+              "title": "3D Solutech Blue 3D Printer Ultra PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 3112,
+              "title": "3D Solutech Real Black 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 3442,
+              "title": "3D Solutech Real Purple 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- "
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_18>",
+            "<b_210>"
+          ],
+          "count": 21,
+          "items": [
+            {
+              "id": 444,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, W"
+            },
+            {
+              "id": 2419,
+              "title": "HATCHBOX 3D ABS-1KG1.75-BLU ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 k"
+            },
+            {
+              "id": 2420,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, S"
+            },
+            {
+              "id": 2472,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 2476,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            },
+            {
+              "id": 2582,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, O"
+            },
+            {
+              "id": 2583,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.05 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2604,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            },
+            {
+              "id": 2715,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03mm, 1 kg Spool, 1.75 mm, Tr"
+            },
+            {
+              "id": 2723,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_130>",
+            "<b_139>"
+          ],
+          "count": 18,
+          "items": [
+            {
+              "id": 1553,
+              "title": "Inland 1.75mm Red PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 1554,
+              "title": "Inland 1.75mm Peak Green PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2485,
+              "title": "Inland 1.75mm Gold PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2718,
+              "title": "Inland 1.75mm Pink PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2734,
+              "title": "Inland 1.75mm White PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2912,
+              "title": "Inland 1.75mm Black PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2932,
+              "title": "Inland 1.75mm Blue PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2934,
+              "title": "Inland 1.75mm Yellow PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2967,
+              "title": "Inland 1.75mm Green PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2979,
+              "title": "Inland 1.75mm Gray PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_18>",
+            "<b_231>"
+          ],
+          "count": 13,
+          "items": [
+            {
+              "id": 1795,
+              "title": "eSUN 1.75mm Black PLA 3D Printer filament 1kg Spool (2.2lbs), Black"
+            },
+            {
+              "id": 2281,
+              "title": "eSUN 1.75mm Glass Watermelon Red PLA 3D Printer filament 1kg Spool (2.2lbs), Glass Red"
+            },
+            {
+              "id": 2514,
+              "title": "eSUN 1.75mm Black PLA 3D Printer filament 1kg Spool (2.2lbs), Black"
+            },
+            {
+              "id": 2677,
+              "title": "eSUN 1.75mm Black ABS 3D Printer filament 1kg Spool (2.2lbs), Black"
+            },
+            {
+              "id": 2678,
+              "title": "eSUN 1.75mm White ABS 3D Printer filament 1kg Spool (2.2lbs), White"
+            },
+            {
+              "id": 2679,
+              "title": "eSUN 1.75mm Yellow ABS 3D Printer filament 1kg Spool (2.2lbs), Yellow"
+            },
+            {
+              "id": 2965,
+              "title": "eSUN 1.75mm Natural PLA 3D Printer filament 1kg Spool (2.2lbs), Natural"
+            },
+            {
+              "id": 3115,
+              "title": "eSUN 1.75mm Gray PLA PRO (PLA+) 3D Printer Filament 1KG Spool (2.2lbs), Gray"
+            },
+            {
+              "id": 3450,
+              "title": "eSUN 1.75mm White PLA 3D Printer filament 1kg Spool (2.2lbs), White"
+            },
+            {
+              "id": 3465,
+              "title": "eSUN 1.75mm Cool White PLA PRO (PLA+) 3D Printer Filament 1KG Spool (2.2lbs), Cool White"
+            }
+          ]
+        }
+      ],
+      "collisions": [
+        {
+          "sid": [
+            "<a_118>",
+            "<b_240>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 3209,
+              "title": "Ancor Heat Shrink Ring Terminals"
+            },
+            {
+              "id": 3210,
+              "title": "Ancor Heat Shrink Ring Terminals"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_166>",
+            "<b_198>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 181,
+              "title": "AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and Humidity Ga"
+            },
+            {
+              "id": 182,
+              "title": "AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and Humidity Ga"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_18>",
+            "<b_108>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 3302,
+              "title": "PLA Glow in the Dark Cosmic Blue 3D Printing Filament, 1.75 mm"
+            },
+            {
+              "id": 3459,
+              "title": "PLA Glow in the Dark Cosmic Blue 3D Printing Filament, 1.75 mm"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_1>",
+            "<b_136>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 2956,
+              "title": "DBPOWER 2 MP 15M Tube USB Waterproof Hd 6-led Borescope Endoscope Inspection Camera(Silver"
+            },
+            {
+              "id": 2957,
+              "title": "DBPOWER 2 MP 15M Tube USB Waterproof Hd 6-led Borescope Endoscope Inspection Camera(Silver"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_210>",
+            "<b_116>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 1955,
+              "title": "SEOH 5 Pack Glass Borosilicate Graduated Beakers 50 100 250 600 and 1000ml"
+            },
+            {
+              "id": 3038,
+              "title": "SEOH 5 Pack Glass Borosilicate Graduated Beakers 50 100 250 600 and 1000ml"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_26>",
+            "<b_206>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 7,
+              "title": "UltraSource 192033 Hamburger Patty Paper, 5.5\" x 5.5\" (Pack of 1000)"
+            },
+            {
+              "id": 8,
+              "title": "UltraSource 192033 Hamburger Patty Paper, 5.5\" x 5.5\" (Pack of 1000)"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_48>",
+            "<b_10>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 1249,
+              "title": "T-fal C51402 Excite Nonstick Thermo-Spot Dishwasher Safe Oven Safe PFOA Free Fry Pan Cookw"
+            },
+            {
+              "id": 1250,
+              "title": "T-fal C51402 Excite Nonstick Thermo-Spot Dishwasher Safe Oven Safe PFOA Free Fry Pan Cookw"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_58>",
+            "<b_235>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 139,
+              "title": "DuPont Teflon Non-Stick"
+            },
+            {
+              "id": 774,
+              "title": "DuPont Teflon Non-Stick"
+            }
+          ]
+        }
+      ]
+    },
+    "L3 InfoNCE=0.010": {
+      "top_l1": [
+        {
+          "token": "<a_20>",
+          "count": 224,
+          "items": [
+            {
+              "id": 50,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 52,
+              "title": "HATCHBOX Glow in the Dark PLA 3D Printer Filament, Dimension Accuracy +/-0.03 mm, 1 kg Spo"
+            },
+            {
+              "id": 162,
+              "title": "USAFilament 9800429 ABS 3D Printing Filament, 2.2 lb, 1.75 mm, White Spool"
+            },
+            {
+              "id": 164,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 249,
+              "title": "UP! ABS Plastic Filament, 1.75 mm Diameter, 1.54 lbs Spool, Black"
+            },
+            {
+              "id": 275,
+              "title": "Verbatim 3D Printer Filament - PLA High-Grade 1.75mm 1kg Reel - Widely Compatible with 3D "
+            },
+            {
+              "id": 297,
+              "title": "XYZprinting ABS Plastic Filament Cartridge, 1.75 mm Diameter, 600g, Black"
+            },
+            {
+              "id": 298,
+              "title": "XYZprinting PLA Filament Cartridge, 1.75 mm Diameter, 600g, Nature"
+            },
+            {
+              "id": 300,
+              "title": "XYZprinting RFPLCXUS00B da Vinci Jr. & mini Series Filament, PLA (NFC), 600 g, Nature"
+            },
+            {
+              "id": 444,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, W"
+            }
+          ]
+        },
+        {
+          "token": "<a_112>",
+          "count": 191,
+          "items": [
+            {
+              "id": 22,
+              "title": "Eye-Vac EVPRO Tuxedo Black Touchless Stationary Vacuum &ndash; 1400 Watts Professional Vac"
+            },
+            {
+              "id": 34,
+              "title": "Racor LDL-1B Ladder Lift"
+            },
+            {
+              "id": 72,
+              "title": "Eagle 1654 Yellow Blow-Molded HDPE Salvage Drum with Metal Ring Lever-Lock Lid, 20 gallon "
+            },
+            {
+              "id": 80,
+              "title": "RapidFix Dual Adhesive System, 25 mL,Boss Products USA,RFX7121100,RFX7121101\" />"
+            },
+            {
+              "id": 87,
+              "title": "Wixey WR510 Digital Planer Readout with Fractions"
+            },
+            {
+              "id": 89,
+              "title": "Gorilla Gripper 44010 Panel Carrier"
+            },
+            {
+              "id": 113,
+              "title": "Bercom BER-2520-CT INC 6PK Handy 2520-CT Paint Pail Liners, 6-Count, Clear"
+            },
+            {
+              "id": 139,
+              "title": "DuPont Teflon Non-Stick"
+            },
+            {
+              "id": 205,
+              "title": "Gorilla Glue Adhesive, 2-Ounces #50001"
+            },
+            {
+              "id": 211,
+              "title": "Spears 497 Series PVC Pipe Fitting, Union with EPDM O-Ring, Schedule 40, 1\" Socket"
+            }
+          ]
+        },
+        {
+          "token": "<a_154>",
+          "count": 134,
+          "items": [
+            {
+              "id": 48,
+              "title": "New 12V 5A 12V 19mm Red LED Momentary Push Button Metal Switch Car Boat Speakers Bells Hor"
+            },
+            {
+              "id": 67,
+              "title": "W1 Tool Steel Round Rod, Polished Finish, Precision Ground, Annealed, 0.0625\" Diameter, 36"
+            },
+            {
+              "id": 71,
+              "title": "Metronic 12 inch Impulse Bag Sealer Poly Bag Sealing Machine Heat Seal Closer with Repair "
+            },
+            {
+              "id": 83,
+              "title": "Wixey WR300 Type 2 Digital Angle Gauge with Backlight&hellip;"
+            },
+            {
+              "id": 102,
+              "title": "Stainless Steel Tumbling Media Pins - 0.047\" Diameter, 0.255\" Length (5 lb Pack)"
+            },
+            {
+              "id": 107,
+              "title": "Polycarbonate (PC) Sheet, Transparent Clear, Standard Tolerance, ASTM D3935, 0.093\" Thickn"
+            },
+            {
+              "id": 108,
+              "title": "Polycarbonate (PC) Sheet, Transparent Clear, Standard Tolerance, ASTM D3935, 0.08\" Thickne"
+            },
+            {
+              "id": 131,
+              "title": "110 Copper Round Rod, Unpolished (Mill) Finish, H04 Temper, ASTM B187, 0.25\" Diameter, 24\""
+            },
+            {
+              "id": 142,
+              "title": "High Temperature Heat Resistant Tape Sublimation Tape Koptan Tape 2 Rolls 10mm X 33m 100ft"
+            },
+            {
+              "id": 145,
+              "title": "Marrywindix 6pcs ESD Precision Anti-Static Tweezers, Tweezers Stainless Steel Tweezers wit"
+            }
+          ]
+        },
+        {
+          "token": "<a_195>",
+          "count": 128,
+          "items": [
+            {
+              "id": 3,
+              "title": "Kreg SML-C125-500 1-1/4-Inch #8 Coarse Pocket Hole Screws with Washer-Head, 500-Pack"
+            },
+            {
+              "id": 15,
+              "title": "Kreg SML-C2-250 Pocket Screws 2-Inch, 8 Coarse, Washer Head, 250 Count"
+            },
+            {
+              "id": 21,
+              "title": "Swordfish 32051 Brass Plated Wood Screw Assortment, 500 Piece"
+            },
+            {
+              "id": 37,
+              "title": "The Hillman Group 591521 Small Flat and Lock Washer Assortment, 270-Pack"
+            },
+            {
+              "id": 79,
+              "title": "Brass Wood Screw, Plain Finish, Flat Head, Slotted Drive, 3/8\" Length, #6 Threads (Pack of"
+            },
+            {
+              "id": 97,
+              "title": "18-8 Stainless Steel Flat Washer, Plain Finish, #10 Hole Size, 13/64\" ID, 7/16\" OD, 0.03\" "
+            },
+            {
+              "id": 111,
+              "title": "Hillman 830504 Stainless Steel 5/16-Inch Flat Washers, 100-Pack, 1 Pack"
+            },
+            {
+              "id": 129,
+              "title": "Hilitchi 260pcs M3/4/5/6/8 Allen Head Socket Hex Grub Screw Set Assortment Kit with Plasti"
+            },
+            {
+              "id": 137,
+              "title": "Swordfish 31930 Stainless Steel Screw Assortment, 420 Piece"
+            },
+            {
+              "id": 158,
+              "title": "Stainless Steel Phillips Flat Machine Screw Kit #K18MPF"
+            }
+          ]
+        },
+        {
+          "token": "<a_118>",
+          "count": 128,
+          "items": [
+            {
+              "id": 10,
+              "title": "Scotch Foil Tape, 2-Inch by 50-Yard"
+            },
+            {
+              "id": 23,
+              "title": "Gardner Bender 07315001126 LTB-400 Liquid Electrical Tape, Easy-on, Waterproof, Indoor/Out"
+            },
+            {
+              "id": 77,
+              "title": "Scotch Heavy Duty Shipping Packaging Tape, 3\" Core, 1.88\" x 54.6 Yards, 6-Rolls (3850-6)"
+            },
+            {
+              "id": 116,
+              "title": "Rescue Tape RT1000201202USCO"
+            },
+            {
+              "id": 127,
+              "title": "Morris 60202 Black Commercial Grade Vinyl Electrical Tape, 8.5 mil, 66' Length, 2\" Width"
+            },
+            {
+              "id": 130,
+              "title": "Gorilla Tape, Black Duct Tape, 1.88\" x 35 yd, Black, (Pack of 1)"
+            },
+            {
+              "id": 133,
+              "title": "3M High Temperature Flue Tape, 15-Foot Roll"
+            },
+            {
+              "id": 154,
+              "title": "3M Multi-Use Duct Tape, 2930-C, 1.88 Inches by 30 Yards"
+            },
+            {
+              "id": 155,
+              "title": "JVCC EL7566-AW Synthetic Rubber Electrical Tape, 3 in. x 66 ft. (72mm x 20m), Black"
+            },
+            {
+              "id": 156,
+              "title": "3M Contractor Grade Pro Strength Duct Tape 3979 Silver, 1.88 in x 60 yd 8.0 mil, Individua"
+            }
+          ]
+        }
+      ],
+      "top_l12": [
+        {
+          "prefix": [
+            "<a_20>",
+            "<b_217>"
+          ],
+          "count": 29,
+          "items": [
+            {
+              "id": 50,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 52,
+              "title": "HATCHBOX Glow in the Dark PLA 3D Printer Filament, Dimension Accuracy +/-0.03 mm, 1 kg Spo"
+            },
+            {
+              "id": 275,
+              "title": "Verbatim 3D Printer Filament - PLA High-Grade 1.75mm 1kg Reel - Widely Compatible with 3D "
+            },
+            {
+              "id": 562,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 1107,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 1573,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, O"
+            },
+            {
+              "id": 1574,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, P"
+            },
+            {
+              "id": 1850,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, R"
+            },
+            {
+              "id": 2058,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2152,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_112>",
+            "<b_203>"
+          ],
+          "count": 28,
+          "items": [
+            {
+              "id": 1206,
+              "title": "eSUN 1.75mm Black PLA PRO (PLA+) 3D Printer Filament 1KG Spool (2.2lbs), Black"
+            },
+            {
+              "id": 1553,
+              "title": "Inland 1.75mm Red PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 1554,
+              "title": "Inland 1.75mm Peak Green PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2284,
+              "title": "HICTOP 1.75mm Black PLA 3D Printer Filament - 1kg Spool (2.2 lbs) - Dimensional Accuracy +"
+            },
+            {
+              "id": 2485,
+              "title": "Inland 1.75mm Gold PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2718,
+              "title": "Inland 1.75mm Pink PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2719,
+              "title": "MeltInk3D Silver PLA 3D Printer Filament &Oslash; 1.75mm, 1Kg (2.2 Lb), MADE in U.S.A, Dim"
+            },
+            {
+              "id": 2734,
+              "title": "Inland 1.75mm White PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2739,
+              "title": "1.75mm Black PLA 3D Printer Filament - 1kg Spool (2.2 lbs) - Dimensional Accuracy +/- 0.03"
+            },
+            {
+              "id": 2740,
+              "title": "1.75mm White PLA 3D Printer Filament - 1kg Spool (2.2 lbs) - Dimensional Accuracy +/- 0.03"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_20>",
+            "<b_143>"
+          ],
+          "count": 23,
+          "items": [
+            {
+              "id": 444,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, W"
+            },
+            {
+              "id": 1851,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Y"
+            },
+            {
+              "id": 2419,
+              "title": "HATCHBOX 3D ABS-1KG1.75-BLU ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 k"
+            },
+            {
+              "id": 2420,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, S"
+            },
+            {
+              "id": 2472,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 2476,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            },
+            {
+              "id": 2582,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, O"
+            },
+            {
+              "id": 2583,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.05 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2604,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            },
+            {
+              "id": 2701,
+              "title": "HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Trans"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_20>",
+            "<b_82>"
+          ],
+          "count": 20,
+          "items": [
+            {
+              "id": 1552,
+              "title": "3D Solutech Teal Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0."
+            },
+            {
+              "id": 1888,
+              "title": "3D Solutech Hot Pink 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.0"
+            },
+            {
+              "id": 2161,
+              "title": "3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy +/- 0.03 mm"
+            },
+            {
+              "id": 2659,
+              "title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- "
+            },
+            {
+              "id": 2660,
+              "title": "3D Solutech Real Grey 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0."
+            },
+            {
+              "id": 2697,
+              "title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 2993,
+              "title": "3D Solutech Blue 3D Printer Ultra PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 3049,
+              "title": "Stronghero3d 1.75mm PLA 3D Printer Filament Metal GREY- 1kg Spool (2.2 lbs) - Dimensional "
+            },
+            {
+              "id": 3442,
+              "title": "3D Solutech Real Purple 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- "
+            },
+            {
+              "id": 3453,
+              "title": "3D Solutech Real Gold 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0."
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_20>",
+            "<b_27>"
+          ],
+          "count": 15,
+          "items": [
+            {
+              "id": 1790,
+              "title": "Gizmo Dorks 1.75mm PLA Filament 1kg / 2.2lb for 3D Printers, Black"
+            },
+            {
+              "id": 1791,
+              "title": "Gizmo Dorks 1.75mm PLA Filament 1kg / 2.2lb for 3D Printers, Translucent Green"
+            },
+            {
+              "id": 1792,
+              "title": "Gizmo Dorks 1.75mm PLA Filament 1kg / 2.2lb for 3D Printers, White"
+            },
+            {
+              "id": 2059,
+              "title": "MG Chemicals Wood 3D Printer Filament, 1.75mm, 0.5 Kg (1.1 lbs.) - Wood"
+            },
+            {
+              "id": 2475,
+              "title": "Gizmo Dorks 3D Print Removal Tool, 5-inch Blade"
+            },
+            {
+              "id": 2477,
+              "title": "BAMtack! 1.75mm Black PLA 3D Printer Filament - 1kg (2.2 lbs) - Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 2752,
+              "title": "Gizmo Dorks 3mm (2.85mm) ABS Filament 1kg / 2.2lb for 3D Printers, Gray"
+            },
+            {
+              "id": 2894,
+              "title": "Gizmo Dorks 1.75mm HIPS Filament 1kg / 2.2lb for 3D Printers, White"
+            },
+            {
+              "id": 3401,
+              "title": "SainSmart Wood-LightBrown-1KG1.75 3D Printer Wood Filament 1 kg (1.75 mm Light Brown)"
+            },
+            {
+              "id": 3461,
+              "title": "Gizmo Dorks 3mm (2.85mm) ABS Filament 1kg / 2.2lb for 3D Printers, Black"
+            }
+          ]
+        }
+      ],
+      "collisions": [
+        {
+          "sid": [
+            "<a_106>",
+            "<b_15>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 1955,
+              "title": "SEOH 5 Pack Glass Borosilicate Graduated Beakers 50 100 250 600 and 1000ml"
+            },
+            {
+              "id": 3038,
+              "title": "SEOH 5 Pack Glass Borosilicate Graduated Beakers 50 100 250 600 and 1000ml"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_112>",
+            "<b_74>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 139,
+              "title": "DuPont Teflon Non-Stick"
+            },
+            {
+              "id": 774,
+              "title": "DuPont Teflon Non-Stick"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_130>",
+            "<b_189>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 375,
+              "title": "BYKES 50 Neodymium Super Strong Extremely Powerful Rare Earth Refrigerator Magnets 1/8 x 1"
+            },
+            {
+              "id": 2849,
+              "title": "BYKES 100 Neodymium Strong Powerful Rare Earth Magnets 1/8\" x 1/16\" Disc N48"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_130>",
+            "<b_189>",
+            "<c_1>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 2083,
+              "title": "Applied Magnets Strong N52 Neodymium Magnet 1 inch Cube"
+            },
+            {
+              "id": 3421,
+              "title": "Applied Magnets 2\" x 1\" Super Strong Neodymium Disc Magnet"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_141>",
+            "<b_3>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 1249,
+              "title": "T-fal C51402 Excite Nonstick Thermo-Spot Dishwasher Safe Oven Safe PFOA Free Fry Pan Cookw"
+            },
+            {
+              "id": 1250,
+              "title": "T-fal C51402 Excite Nonstick Thermo-Spot Dishwasher Safe Oven Safe PFOA Free Fry Pan Cookw"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_154>",
+            "<b_91>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 216,
+              "title": "Ancor Tinned Copper Lugs 8 AWG - 4/0 AWG"
+            },
+            {
+              "id": 217,
+              "title": "Ancor Tinned Copper Lugs 8 AWG - 4/0 AWG"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_20>",
+            "<b_157>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 3302,
+              "title": "PLA Glow in the Dark Cosmic Blue 3D Printing Filament, 1.75 mm"
+            },
+            {
+              "id": 3459,
+              "title": "PLA Glow in the Dark Cosmic Blue 3D Printing Filament, 1.75 mm"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_217>",
+            "<b_98>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 1382,
+              "title": "Shoe GOO&reg; Adhesive, 3.7 fl oz"
+            },
+            {
+              "id": 1788,
+              "title": "Shoe GOO&reg; Adhesive, 3.7 fl oz"
+            }
+          ]
+        }
+      ]
+    },
+    "L3 InfoNCE=0.020": {
+      "top_l1": [
+        {
+          "token": "<a_19>",
+          "count": 138,
+          "items": [
+            {
+              "id": 50,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 52,
+              "title": "HATCHBOX Glow in the Dark PLA 3D Printer Filament, Dimension Accuracy +/-0.03 mm, 1 kg Spo"
+            },
+            {
+              "id": 162,
+              "title": "USAFilament 9800429 ABS 3D Printing Filament, 2.2 lb, 1.75 mm, White Spool"
+            },
+            {
+              "id": 164,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 249,
+              "title": "UP! ABS Plastic Filament, 1.75 mm Diameter, 1.54 lbs Spool, Black"
+            },
+            {
+              "id": 275,
+              "title": "Verbatim 3D Printer Filament - PLA High-Grade 1.75mm 1kg Reel - Widely Compatible with 3D "
+            },
+            {
+              "id": 298,
+              "title": "XYZprinting PLA Filament Cartridge, 1.75 mm Diameter, 600g, Nature"
+            },
+            {
+              "id": 300,
+              "title": "XYZprinting RFPLCXUS00B da Vinci Jr. & mini Series Filament, PLA (NFC), 600 g, Nature"
+            },
+            {
+              "id": 562,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 891,
+              "title": "Filament Outlet Green PLA 1.75mm 3D Printer Filament 1kg (2.2lbs) spool USA"
+            }
+          ]
+        },
+        {
+          "token": "<a_26>",
+          "count": 126,
+          "items": [
+            {
+              "id": 106,
+              "title": "Wago Wire Connector 600 V Clear 4 Conductor 100 / Box"
+            },
+            {
+              "id": 109,
+              "title": "Arlington LPCG50-1 Low-Profile Strain Relief Cord Connector, 1/2 Inch"
+            },
+            {
+              "id": 134,
+              "title": "HOODDEAL 50pcs Waterproof Solder Seal Heat Shrink Butt Connectors with Soldering Sleeve"
+            },
+            {
+              "id": 157,
+              "title": "Yueton 100pcs Female Fully Insulated Wire Crimp Terminal Nylon Quick Connectors Wiring Spa"
+            },
+            {
+              "id": 170,
+              "title": "URBEST 328 Pcs Assorted Heat Shrink Tube 5 Colors 8 Sizes Tubing Wrap Sleeve Set Combo (32"
+            },
+            {
+              "id": 247,
+              "title": "Vktech 280Pcs 2:1 Heat Shrink Tubing Tube Sleeving Wrap Cable Wire 5 Color 8 Size (5 Color"
+            },
+            {
+              "id": 392,
+              "title": "SummitLink Pack of 328 Pcs Assorted Heat Shrink Tube 5 Colors 8 Sizes Tubing Wrap Sleeve S"
+            },
+            {
+              "id": 398,
+              "title": "NTE Heat Shrink 2:1 Assorted Colors and Sizes 160 PCS"
+            },
+            {
+              "id": 399,
+              "title": "Anytime Tools 48 pc HEAT SHRINK TUBING WRAP SLEEVES ASSORTED SIZES"
+            },
+            {
+              "id": 407,
+              "title": "Lucksender 100 Feet /30 Meter 1/4inch / 6mm I.D Polyolefin 2:1 Heat Shrink Tubing"
+            }
+          ]
+        },
+        {
+          "token": "<a_226>",
+          "count": 108,
+          "items": [
+            {
+              "id": 10,
+              "title": "Scotch Foil Tape, 2-Inch by 50-Yard"
+            },
+            {
+              "id": 77,
+              "title": "Scotch Heavy Duty Shipping Packaging Tape, 3\" Core, 1.88\" x 54.6 Yards, 6-Rolls (3850-6)"
+            },
+            {
+              "id": 116,
+              "title": "Rescue Tape RT1000201202USCO"
+            },
+            {
+              "id": 125,
+              "title": "Gorilla 6100101 Tape Handy Roll, 1-Pack, Black"
+            },
+            {
+              "id": 130,
+              "title": "Gorilla Tape, Black Duct Tape, 1.88\" x 35 yd, Black, (Pack of 1)"
+            },
+            {
+              "id": 133,
+              "title": "3M High Temperature Flue Tape, 15-Foot Roll"
+            },
+            {
+              "id": 154,
+              "title": "3M Multi-Use Duct Tape, 2930-C, 1.88 Inches by 30 Yards"
+            },
+            {
+              "id": 156,
+              "title": "3M Contractor Grade Pro Strength Duct Tape 3979 Silver, 1.88 in x 60 yd 8.0 mil, Individua"
+            },
+            {
+              "id": 175,
+              "title": "Gorilla Crystal Clear Duct Tape, 1.88&rdquo; x 9 yd, Clear, (Pack of 1)"
+            },
+            {
+              "id": 179,
+              "title": "Nashua Stretch & Seal Self-Fusing Silicone Tape"
+            }
+          ]
+        },
+        {
+          "token": "<a_20>",
+          "count": 103,
+          "items": [
+            {
+              "id": 161,
+              "title": "SA180 Adhesive Standoffs, 24 Pack, 0.180\" Height, Offset 0.6x0.6\" Base, Fits 0.125\" PCB Ho"
+            },
+            {
+              "id": 389,
+              "title": "uxcell Metal Nut LED Mounting Holder Panel w 3mm 50 Pieces Black"
+            },
+            {
+              "id": 632,
+              "title": "TEKTRUM EXTERNALLY POWERED SOLDERLESS 1660 TIE-POINTS EXPERIMENT PLUG-IN BREADBOARD WITH A"
+            },
+            {
+              "id": 633,
+              "title": "100 x 2N2222 NPN TO-92 Plastic-Encapsulate Power Transistors 75V 600mA"
+            },
+            {
+              "id": 636,
+              "title": "SUNKEE 20pcs Photo Light Sensitive Resistor Photoresistor Optoresistor 5mm GM5539 5539"
+            },
+            {
+              "id": 734,
+              "title": "microtivity IL188 5mm Assorted Clear LED w/Resistors (8 Colors, Pack of 80)"
+            },
+            {
+              "id": 735,
+              "title": "E-Projects EPC-102 43 Value Resistor Kit, 1 Ohm - 10M Ohm (Pack of 1075)"
+            },
+            {
+              "id": 956,
+              "title": "Uxcell a13081500ux0353 20 Piece 50-100K Ohm Photoresistor Photo Resistors Light-Dependent "
+            },
+            {
+              "id": 1239,
+              "title": "Uxcell A13122300UX0934 LED Light Mounting Holders Panel (Pack of 50)"
+            },
+            {
+              "id": 1545,
+              "title": "Top-cofrLD 1/4w Resistors Pack 164 values x 10pcs = 1640pcs 0-22M Metal Film Full range re"
+            }
+          ]
+        },
+        {
+          "token": "<a_1>",
+          "count": 93,
+          "items": [
+            {
+              "id": 1,
+              "title": "Stanley TRA708T Sharpshooter 1/2-Inch Leg Length Staples, Steel (1000 Count)"
+            },
+            {
+              "id": 2,
+              "title": "Stanley TRA708SST 1/2-Inch HD Stainless Steel Narrow Crown Staple"
+            },
+            {
+              "id": 3,
+              "title": "Kreg SML-C125-500 1-1/4-Inch #8 Coarse Pocket Hole Screws with Washer-Head, 500-Pack"
+            },
+            {
+              "id": 15,
+              "title": "Kreg SML-C2-250 Pocket Screws 2-Inch, 8 Coarse, Washer Head, 250 Count"
+            },
+            {
+              "id": 17,
+              "title": "BOSTITCH BT1335B-1M 1-3/8-Inch 18-Gauge Brads, 1000 per Box"
+            },
+            {
+              "id": 19,
+              "title": "BOSTITCH BT1309B-1M 1-Inch 18-Gauge Brads, 1000 per Box"
+            },
+            {
+              "id": 20,
+              "title": "PORTER-CABLE (PBN18075-1) 18 Gauge Brad Nails, 3/4-Inch, 1000-Pack"
+            },
+            {
+              "id": 21,
+              "title": "Swordfish 32051 Brass Plated Wood Screw Assortment, 500 Piece"
+            },
+            {
+              "id": 91,
+              "title": "BOSTITCH BT1309B 1-Inch 18-Gauge Brads, 3000 per Box"
+            },
+            {
+              "id": 166,
+              "title": "ARROW 160455 Drywall Drill Bit, Screw and Anchor Kit"
+            }
+          ]
+        }
+      ],
+      "top_l12": [
+        {
+          "prefix": [
+            "<a_19>",
+            "<b_61>"
+          ],
+          "count": 22,
+          "items": [
+            {
+              "id": 50,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 562,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 1107,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 1573,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, O"
+            },
+            {
+              "id": 1574,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, P"
+            },
+            {
+              "id": 1850,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, R"
+            },
+            {
+              "id": 2058,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2152,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2283,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            },
+            {
+              "id": 2470,
+              "title": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 3.00 mm, B"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_248>",
+            "<b_61>"
+          ],
+          "count": 21,
+          "items": [
+            {
+              "id": 444,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, W"
+            },
+            {
+              "id": 2419,
+              "title": "HATCHBOX 3D ABS-1KG1.75-BLU ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 k"
+            },
+            {
+              "id": 2420,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, S"
+            },
+            {
+              "id": 2472,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            },
+            {
+              "id": 2476,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            },
+            {
+              "id": 2582,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, O"
+            },
+            {
+              "id": 2583,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.05 mm, 1 kg Spool, 1.75 mm, G"
+            },
+            {
+              "id": 2604,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, T"
+            },
+            {
+              "id": 2715,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03mm, 1 kg Spool, 1.75 mm, Tr"
+            },
+            {
+              "id": 2723,
+              "title": "HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, B"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_19>",
+            "<b_89>"
+          ],
+          "count": 18,
+          "items": [
+            {
+              "id": 1552,
+              "title": "3D Solutech Teal Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0."
+            },
+            {
+              "id": 1888,
+              "title": "3D Solutech Hot Pink 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.0"
+            },
+            {
+              "id": 2161,
+              "title": "3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy +/- 0.03 mm"
+            },
+            {
+              "id": 2659,
+              "title": "3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- "
+            },
+            {
+              "id": 2697,
+              "title": "3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 2993,
+              "title": "3D Solutech Blue 3D Printer Ultra PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0"
+            },
+            {
+              "id": 3435,
+              "title": "3D Solutech Real Black 1.75mm Flexible 3D Printer Filament 2.2 LBS (1.0KG)"
+            },
+            {
+              "id": 3442,
+              "title": "3D Solutech Real Purple 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- "
+            },
+            {
+              "id": 3453,
+              "title": "3D Solutech Real Gold 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0."
+            },
+            {
+              "id": 3466,
+              "title": "3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Dimensional Accuracy +/- 0.03 mm, 2.2"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_223>",
+            "<b_157>"
+          ],
+          "count": 18,
+          "items": [
+            {
+              "id": 1553,
+              "title": "Inland 1.75mm Red PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 1554,
+              "title": "Inland 1.75mm Peak Green PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2485,
+              "title": "Inland 1.75mm Gold PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2718,
+              "title": "Inland 1.75mm Pink PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2734,
+              "title": "Inland 1.75mm White PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2912,
+              "title": "Inland 1.75mm Black PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2932,
+              "title": "Inland 1.75mm Blue PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2934,
+              "title": "Inland 1.75mm Yellow PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2967,
+              "title": "Inland 1.75mm Green PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            },
+            {
+              "id": 2979,
+              "title": "Inland 1.75mm Gray PLA 3D Printer Filament - 1kg Spool (2.2 lbs)"
+            }
+          ]
+        },
+        {
+          "prefix": [
+            "<a_19>",
+            "<b_111>"
+          ],
+          "count": 13,
+          "items": [
+            {
+              "id": 1795,
+              "title": "eSUN 1.75mm Black PLA 3D Printer filament 1kg Spool (2.2lbs), Black"
+            },
+            {
+              "id": 2281,
+              "title": "eSUN 1.75mm Glass Watermelon Red PLA 3D Printer filament 1kg Spool (2.2lbs), Glass Red"
+            },
+            {
+              "id": 2514,
+              "title": "eSUN 1.75mm Black PLA 3D Printer filament 1kg Spool (2.2lbs), Black"
+            },
+            {
+              "id": 2707,
+              "title": "eSUN 1.75mm Orange PLA PRO (PLA+) 3D Printer Filament 1KG Spool (2.2lbs), Orange"
+            },
+            {
+              "id": 2708,
+              "title": "eSUN 1.75mm Peak Green PLA PRO (PLA+) 3D Printer Filament 1KG Spool (2.2lbs), Peak Green/L"
+            },
+            {
+              "id": 2965,
+              "title": "eSUN 1.75mm Natural PLA 3D Printer filament 1kg Spool (2.2lbs), Natural"
+            },
+            {
+              "id": 3115,
+              "title": "eSUN 1.75mm Gray PLA PRO (PLA+) 3D Printer Filament 1KG Spool (2.2lbs), Gray"
+            },
+            {
+              "id": 3450,
+              "title": "eSUN 1.75mm White PLA 3D Printer filament 1kg Spool (2.2lbs), White"
+            },
+            {
+              "id": 3455,
+              "title": "eSUN 1.75mm Warm White PLA PRO (PLA+) 3D Printer Filament 1KG Spool (2.2lbs), Warm White"
+            },
+            {
+              "id": 3465,
+              "title": "eSUN 1.75mm Cool White PLA PRO (PLA+) 3D Printer Filament 1KG Spool (2.2lbs), Cool White"
+            }
+          ]
+        }
+      ],
+      "collisions": [
+        {
+          "sid": [
+            "<a_117>",
+            "<b_99>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 7,
+              "title": "UltraSource 192033 Hamburger Patty Paper, 5.5\" x 5.5\" (Pack of 1000)"
+            },
+            {
+              "id": 8,
+              "title": "UltraSource 192033 Hamburger Patty Paper, 5.5\" x 5.5\" (Pack of 1000)"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_180>",
+            "<b_195>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 216,
+              "title": "Ancor Tinned Copper Lugs 8 AWG - 4/0 AWG"
+            },
+            {
+              "id": 217,
+              "title": "Ancor Tinned Copper Lugs 8 AWG - 4/0 AWG"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_193>",
+            "<b_134>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 139,
+              "title": "DuPont Teflon Non-Stick"
+            },
+            {
+              "id": 774,
+              "title": "DuPont Teflon Non-Stick"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_202>",
+            "<b_121>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 2956,
+              "title": "DBPOWER 2 MP 15M Tube USB Waterproof Hd 6-led Borescope Endoscope Inspection Camera(Silver"
+            },
+            {
+              "id": 2957,
+              "title": "DBPOWER 2 MP 15M Tube USB Waterproof Hd 6-led Borescope Endoscope Inspection Camera(Silver"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_205>",
+            "<b_223>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 181,
+              "title": "AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and Humidity Ga"
+            },
+            {
+              "id": 182,
+              "title": "AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and Humidity Ga"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_26>",
+            "<b_218>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 3209,
+              "title": "Ancor Heat Shrink Ring Terminals"
+            },
+            {
+              "id": 3210,
+              "title": "Ancor Heat Shrink Ring Terminals"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_2>",
+            "<b_25>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 431,
+              "title": "Industrial & Scientific\" />"
+            },
+            {
+              "id": 1006,
+              "title": "Industrial & Scientific\" />"
+            }
+          ]
+        },
+        {
+          "sid": [
+            "<a_34>",
+            "<b_109>",
+            "<c_0>"
+          ],
+          "count": 2,
+          "items": [
+            {
+              "id": 1382,
+              "title": "Shoe GOO&reg; Adhesive, 3.7 fl oz"
+            },
+            {
+              "id": 1788,
+              "title": "Shoe GOO&reg; Adhesive, 3.7 fl oz"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "examples": {
+    "S-near C-far": [
+      {
+        "pair": "2233-3345",
+        "item_a": 2233,
+        "item_b": 3345,
+        "semantic_sim": 0.9997650384902954,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "Red Brass Pipe Fitting, Nipple, Schedule 40 Seamless, 1/4\" NPT Male X 4\" Length",
+        "title_b": "Red Brass Pipe Fitting, Nipple, Schedule 40 Seamless, 1/4\" NPT Male X 3\" Length",
+        "Main L2=0.010,L3=0.020 pull": "('<a_78>', '<b_250>', '<c_177>') / ('<a_78>', '<b_250>', '<c_93>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_117>', '<b_211>', '<c_99>') / ('<a_117>', '<b_127>', '<c_31>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_146>', '<b_127>', '<c_115>') / ('<a_146>', '<b_127>', '<c_219>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_251>', '<b_7>', '<c_228>') / ('<a_251>', '<b_7>', '<c_15>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "2330-3529",
+        "item_a": 2330,
+        "item_b": 3529,
+        "semantic_sim": 0.9994251728057861,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "SIENOC 3D PLA 1KG 1.75mm PLA 3D Printer Filament, Dimensional Accuracy+/- 0.05mm 1 kg(2.2 ",
+        "title_b": "SIENOC 3D PLA 1KG 1.75mm PLA 3D Printer Filament, Dimensional Accuracy+/- 0.05mm 1 kg(2.2 ",
+        "Main L2=0.010,L3=0.020 pull": "('<a_85>', '<b_157>', '<c_74>') / ('<a_85>', '<b_157>', '<c_228>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_18>', '<b_90>', '<c_235>') / ('<a_18>', '<b_213>', '<c_237>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_20>', '<b_181>', '<c_102>') / ('<a_20>', '<b_181>', '<c_223>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_19>', '<b_231>', '<c_241>') / ('<a_19>', '<b_231>', '<c_239>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "102-2655",
+        "item_a": 102,
+        "item_b": 2655,
+        "semantic_sim": 0.9994072914123535,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "Stainless Steel Tumbling Media Pins - 0.047\" Diameter, 0.255\" Length (5 lb Pack)",
+        "title_b": "Stainless Steel Tumbling Media Pins - 0.047\" Diameter, 0.255\" Length (2.5 lb Pack)",
+        "Main L2=0.010,L3=0.020 pull": "('<a_51>', '<b_183>', '<c_196>') / ('<a_51>', '<b_183>', '<c_32>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_61>', '<b_0>', '<c_24>') / ('<a_61>', '<b_97>', '<c_26>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_154>', '<b_104>', '<c_169>') / ('<a_154>', '<b_104>', '<c_227>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_180>', '<b_43>', '<c_128>') / ('<a_180>', '<b_43>', '<c_122>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "2701-3096",
+        "item_a": 2701,
+        "item_b": 3096,
+        "semantic_sim": 0.999286413192749,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Trans",
+        "title_b": "HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Bronz",
+        "Main L2=0.010,L3=0.020 pull": "('<a_222>', '<b_109>', '<c_19>') / ('<a_222>', '<b_109>', '<c_13>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_18>', '<b_45>', '<c_111>') / ('<a_18>', '<b_45>', '<c_172>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.010": "('<a_20>', '<b_143>', '<c_211>') / ('<a_20>', '<b_217>', '<c_236>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_19>', '<b_167>', '<c_20>') / ('<a_19>', '<b_167>', '<c_98>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "2764-3539",
+        "item_a": 2764,
+        "item_b": 3539,
+        "semantic_sim": 0.9988892078399658,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "Starbond EM-2000 Thick, PREMIUM CA - Super Glue with Extra Microtips, 1 oz. (For Woodturni",
+        "title_b": "Starbond EM-2000 Thick, PREMIUM CA - Super Glue plus Extra Cap and Microtips, 2 oz. (For W",
+        "Main L2=0.010,L3=0.020 pull": "('<a_89>', '<b_10>', '<c_70>') / ('<a_89>', '<b_10>', '<c_100>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_227>', '<b_173>', '<c_9>') / ('<a_227>', '<b_173>', '<c_73>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.010": "('<a_217>', '<b_241>', '<c_155>') / ('<a_196>', '<b_180>', '<c_225>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_34>', '<b_3>', '<c_8>') / ('<a_34>', '<b_3>', '<c_3>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "2014-2233",
+        "item_a": 2014,
+        "item_b": 2233,
+        "semantic_sim": 0.9986297488212585,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "Red Brass Pipe Fitting, Nipple, Schedule 40 Seamless, 1/4\" NPT Male X 1-1/2\" Length",
+        "title_b": "Red Brass Pipe Fitting, Nipple, Schedule 40 Seamless, 1/4\" NPT Male X 4\" Length",
+        "Main L2=0.010,L3=0.020 pull": "('<a_78>', '<b_250>', '<c_71>') / ('<a_78>', '<b_250>', '<c_177>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_117>', '<b_127>', '<c_223>') / ('<a_117>', '<b_211>', '<c_99>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_146>', '<b_175>', '<c_201>') / ('<a_146>', '<b_127>', '<c_115>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_251>', '<b_7>', '<c_122>') / ('<a_251>', '<b_7>', '<c_228>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "2327-3452",
+        "item_a": 2327,
+        "item_b": 3452,
+        "semantic_sim": 0.9984487891197205,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "MakerBot PLA Filament, 1.75 mm Diameter, Small Spool, Army Green",
+        "title_b": "MakerBot PLA Filament, 1.75 mm Diameter, Large Spool, White",
+        "Main L2=0.010,L3=0.020 pull": "('<a_222>', '<b_113>', '<c_35>') / ('<a_222>', '<b_113>', '<c_185>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_18>', '<b_97>', '<c_74>') / ('<a_18>', '<b_97>', '<c_99>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.010": "('<a_20>', '<b_99>', '<c_127>') / ('<a_20>', '<b_216>', '<c_163>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_19>', '<b_74>', '<c_128>') / ('<a_19>', '<b_74>', '<c_15>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "1161-1666",
+        "item_a": 1161,
+        "item_b": 1666,
+        "semantic_sim": 0.9981685280799866,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "ATP Vinyl-Flex PVC Food Grade Plastic Tubing, Clear, 1/4\" ID x 3/8\" OD, 100 feet Length",
+        "title_b": "ATP Vinyl-Flex PVC Food Grade Plastic Tubing, Clear, 1/2\" ID x 5/8\" OD, 100 feet Length",
+        "Main L2=0.010,L3=0.020 pull": "('<a_225>', '<b_179>', '<c_115>') / ('<a_225>', '<b_179>', '<c_17>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_44>', '<b_100>', '<c_255>') / ('<a_44>', '<b_136>', '<c_252>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_96>', '<b_145>', '<c_175>') / ('<a_96>', '<b_145>', '<c_76>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_251>', '<b_138>', '<c_57>') / ('<a_251>', '<b_138>', '<c_77>') | LCP=2, overlap=2"
+      }
+    ],
+    "S-mid C-far": [
+      {
+        "pair": "1550-3306",
+        "item_a": 1550,
+        "item_b": 3306,
+        "semantic_sim": 0.8999994397163391,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "Nubee Dual Laser Optical Focus Temperature Gun Non Contact Infrared IR Thermometer Range -",
+        "title_b": "Fieldpiece ST4 Dual Temperature Meter, -58 to 2000F(-50 to 1300C)",
+        "Main L2=0.010,L3=0.020 pull": "('<a_31>', '<b_123>', '<c_197>') / ('<a_31>', '<b_144>', '<c_242>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_166>', '<b_165>', '<c_76>') / ('<a_166>', '<b_179>', '<c_252>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_57>', '<b_255>', '<c_201>') / ('<a_57>', '<b_48>', '<c_52>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_37>', '<b_43>', '<c_0>') / ('<a_245>', '<b_91>', '<c_205>') | LCP=0, overlap=0"
+      },
+      {
+        "pair": "2899-3390",
+        "item_a": 2899,
+        "item_b": 3390,
+        "semantic_sim": 0.8999989628791809,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "Dynatex 49582 Industrial Copper Anti-Seize and Lubricating Compound Paste, 8 oz Brush Top ",
+        "title_b": "CRC 03084 11oz Dry Moly Lubricant Aerosol Spray",
+        "Main L2=0.010,L3=0.020 pull": "('<a_6>', '<b_142>', '<c_132>') / ('<a_6>', '<b_213>', '<c_57>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_89>', '<b_50>', '<c_225>') / ('<a_89>', '<b_23>', '<c_44>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_246>', '<b_143>', '<c_41>') / ('<a_143>', '<b_3>', '<c_112>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_112>', '<b_40>', '<c_118>') / ('<a_112>', '<b_70>', '<c_3>') | LCP=1, overlap=1"
+      },
+      {
+        "pair": "58-1998",
+        "item_a": 58,
+        "item_b": 1998,
+        "semantic_sim": 0.8999972939491272,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "American Terminal E-FFR250N-100 22/18-Gauge Economy Nylon Fully-Insulated Female Quick Dis",
+        "title_b": "Hilitchi 180pcs Nylon Fully Insulated Male / Female Spade Wire Crimp Quick Disconnects Wir",
+        "Main L2=0.010,L3=0.020 pull": "('<a_202>', '<b_97>', '<c_4>') / ('<a_202>', '<b_175>', '<c_211>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_50>', '<b_132>', '<c_0>') / ('<a_19>', '<b_51>', '<c_0>') | LCP=0, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_129>', '<b_75>', '<c_31>') / ('<a_251>', '<b_178>', '<c_163>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_151>', '<b_161>', '<c_16>') / ('<a_26>', '<b_53>', '<c_250>') | LCP=0, overlap=0"
+      },
+      {
+        "pair": "878-3039",
+        "item_a": 878,
+        "item_b": 3039,
+        "semantic_sim": 0.899995744228363,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "Mitutoyo 293-340 Digimatic Outside Micrometer, 0-1\" Range, 0.00005\"/0.001mm Resolution, IP",
+        "title_b": "SMC KQ2S04-M5A Brass Push-to-Connect Tube Fitting, Hex Socket Head Adapter, 4 mm Tube OD x",
+        "Main L2=0.010,L3=0.020 pull": "('<a_165>', '<b_71>', '<c_52>') / ('<a_165>', '<b_40>', '<c_118>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_184>', '<b_69>', '<c_194>') / ('<a_184>', '<b_195>', '<c_159>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_112>', '<b_248>', '<c_7>') / ('<a_154>', '<b_30>', '<c_88>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_178>', '<b_156>', '<c_171>') / ('<a_178>', '<b_86>', '<c_43>') | LCP=1, overlap=1"
+      },
+      {
+        "pair": "1754-3454",
+        "item_a": 1754,
+        "item_b": 3454,
+        "semantic_sim": 0.8999938368797302,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "XCSOURCE 3D Printer MK8 Extruder Aluminum Frame Block DIY Kit Reprap i3 All Metal BI090",
+        "title_b": "Wangdd22 3D Printer J-head Hotend with Fan for 1.75mm 12v V6 Direct Filament Wade Extruder",
+        "Main L2=0.010,L3=0.020 pull": "('<a_48>', '<b_201>', '<c_168>') / ('<a_48>', '<b_232>', '<c_39>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_253>', '<b_215>', '<c_1>') / ('<a_129>', '<b_231>', '<c_254>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_43>', '<b_44>', '<c_19>') / ('<a_43>', '<b_112>', '<c_18>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_252>', '<b_184>', '<c_255>') / ('<a_252>', '<b_150>', '<c_147>') | LCP=1, overlap=1"
+      },
+      {
+        "pair": "530-3290",
+        "item_a": 530,
+        "item_b": 3290,
+        "semantic_sim": 0.8999924659729004,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "Dap 00688 All-Purpose Adhesive Sealant, 100% Silicone, 2.8-Ounce Tube",
+        "title_b": "Rectorseal 31631 1/4 Pint Brush Top Tru-Blu&nbsp;Pipe Thread Sealant",
+        "Main L2=0.010,L3=0.020 pull": "('<a_210>', '<b_129>', '<c_250>') / ('<a_89>', '<b_22>', '<c_10>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_15>', '<b_248>', '<c_10>') / ('<a_162>', '<b_134>', '<c_25>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_69>', '<b_149>', '<c_119>') / ('<a_69>', '<b_50>', '<c_246>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_172>', '<b_49>', '<c_137>') / ('<a_175>', '<b_146>', '<c_66>') | LCP=0, overlap=0"
+      },
+      {
+        "pair": "1755-3357",
+        "item_a": 1755,
+        "item_b": 3357,
+        "semantic_sim": 0.8999924659729004,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "BIQU GT2 20Teeth 5mm Bore Aluminum Timing Belt Idler Pulley for 3D Printer 6mm Width Timin",
+        "title_b": "JISTL 75 Type Plastic Crown Gear Single Double Reduction Gear Worm Gear",
+        "Main L2=0.010,L3=0.020 pull": "('<a_173>', '<b_175>', '<c_132>') / ('<a_173>', '<b_140>', '<c_182>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_2>', '<b_199>', '<c_28>') / ('<a_2>', '<b_170>', '<c_111>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_107>', '<b_219>', '<c_242>') / ('<a_107>', '<b_219>', '<c_125>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_118>', '<b_150>', '<c_29>') / ('<a_118>', '<b_44>', '<c_11>') | LCP=1, overlap=1"
+      },
+      {
+        "pair": "2824-3212",
+        "item_a": 2824,
+        "item_b": 3212,
+        "semantic_sim": 0.8999905586242676,
+        "cooc_count": 0,
+        "ppmi": 0.0,
+        "title_a": "Oreck Commercial Upright Vacuum with 40ft Power Cord, U2000R1",
+        "title_b": "Hoover CH30000 PortaPower Lightweight Commercial Canister Vacuum",
+        "Main L2=0.010,L3=0.020 pull": "('<a_83>', '<b_134>', '<c_238>') / ('<a_83>', '<b_151>', '<c_121>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_48>', '<b_43>', '<c_118>') / ('<a_254>', '<b_113>', '<c_120>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_105>', '<b_226>', '<c_56>') / ('<a_105>', '<b_185>', '<c_44>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_198>', '<b_33>', '<c_104>') / ('<a_198>', '<b_194>', '<c_28>') | LCP=1, overlap=1"
+      }
+    ],
+    "S-near C-near": [
+      {
+        "pair": "418-1452",
+        "item_a": 418,
+        "item_b": 1452,
+        "semantic_sim": 0.9879467487335205,
+        "cooc_count": 111,
+        "ppmi": 3.3004981655190466,
+        "title_a": "American Terminal E-FMB250N-100 16/14-Gauge Economy Nylon Fully-Insulated Male Quick Disco",
+        "title_b": "American Terminal E-FMR250N-100 22/18-Gauge Economy Nylon Fully-Insulated Male Quick Disco",
+        "Main L2=0.010,L3=0.020 pull": "('<a_202>', '<b_97>', '<c_0>') / ('<a_202>', '<b_97>', '<c_2>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_50>', '<b_201>', '<c_6>') / ('<a_50>', '<b_132>', '<c_14>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_129>', '<b_75>', '<c_229>') / ('<a_129>', '<b_75>', '<c_87>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_151>', '<b_161>', '<c_108>') / ('<a_151>', '<b_161>', '<c_21>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "417-1452",
+        "item_a": 417,
+        "item_b": 1452,
+        "semantic_sim": 0.9836374521255493,
+        "cooc_count": 75,
+        "ppmi": 2.62726753460179,
+        "title_a": "American Terminal E-FFB250N-100 16/14-Gauge Economy Nylon Fully-Insulated Female Quick Dis",
+        "title_b": "American Terminal E-FMR250N-100 22/18-Gauge Economy Nylon Fully-Insulated Male Quick Disco",
+        "Main L2=0.010,L3=0.020 pull": "('<a_202>', '<b_97>', '<c_123>') / ('<a_202>', '<b_97>', '<c_2>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_50>', '<b_201>', '<c_3>') / ('<a_50>', '<b_132>', '<c_14>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_129>', '<b_75>', '<c_16>') / ('<a_129>', '<b_75>', '<c_87>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_151>', '<b_161>', '<c_1>') / ('<a_151>', '<b_161>', '<c_21>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "58-417",
+        "item_a": 58,
+        "item_b": 417,
+        "semantic_sim": 0.9901919364929199,
+        "cooc_count": 72,
+        "ppmi": 2.9431204840202674,
+        "title_a": "American Terminal E-FFR250N-100 22/18-Gauge Economy Nylon Fully-Insulated Female Quick Dis",
+        "title_b": "American Terminal E-FFB250N-100 16/14-Gauge Economy Nylon Fully-Insulated Female Quick Dis",
+        "Main L2=0.010,L3=0.020 pull": "('<a_202>', '<b_97>', '<c_4>') / ('<a_202>', '<b_97>', '<c_123>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_50>', '<b_132>', '<c_0>') / ('<a_50>', '<b_201>', '<c_3>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_129>', '<b_75>', '<c_31>') / ('<a_129>', '<b_75>', '<c_16>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_151>', '<b_161>', '<c_16>') / ('<a_151>', '<b_161>', '<c_1>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "417-1377",
+        "item_a": 417,
+        "item_b": 1377,
+        "semantic_sim": 0.9913405179977417,
+        "cooc_count": 68,
+        "ppmi": 2.9531013730179474,
+        "title_a": "American Terminal E-FFB250N-100 16/14-Gauge Economy Nylon Fully-Insulated Female Quick Dis",
+        "title_b": "American Terminal E-FFY250N-100 12/10-Gauge Economy Nylon Fully-Insulated Female Quick Dis",
+        "Main L2=0.010,L3=0.020 pull": "('<a_202>', '<b_97>', '<c_123>') / ('<a_202>', '<b_97>', '<c_9>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_50>', '<b_201>', '<c_3>') / ('<a_50>', '<b_132>', '<c_113>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_129>', '<b_75>', '<c_16>') / ('<a_129>', '<b_75>', '<c_22>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_151>', '<b_161>', '<c_1>') / ('<a_151>', '<b_161>', '<c_0>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "93-94",
+        "item_a": 93,
+        "item_b": 94,
+        "semantic_sim": 0.9939590692520142,
+        "cooc_count": 62,
+        "ppmi": 4.666372837862126,
+        "title_a": "White SiliconeTubing, 1/2\"ID, 3/4\"OD, 1/8\"Wall, 25' Length",
+        "title_b": "White SiliconeTubing, 3/16\"ID, 1/4\"OD, 1/32\" Wall, 10' Length",
+        "Main L2=0.010,L3=0.020 pull": "('<a_225>', '<b_5>', '<c_3>') / ('<a_225>', '<b_5>', '<c_1>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_44>', '<b_211>', '<c_138>') / ('<a_44>', '<b_127>', '<c_26>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_96>', '<b_221>', '<c_7>') / ('<a_96>', '<b_221>', '<c_3>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_130>', '<b_122>', '<c_38>') / ('<a_130>', '<b_122>', '<c_36>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "58-418",
+        "item_a": 58,
+        "item_b": 418,
+        "semantic_sim": 0.985537588596344,
+        "cooc_count": 60,
+        "ppmi": 3.0419874703675456,
+        "title_a": "American Terminal E-FFR250N-100 22/18-Gauge Economy Nylon Fully-Insulated Female Quick Dis",
+        "title_b": "American Terminal E-FMB250N-100 16/14-Gauge Economy Nylon Fully-Insulated Male Quick Disco",
+        "Main L2=0.010,L3=0.020 pull": "('<a_202>', '<b_97>', '<c_4>') / ('<a_202>', '<b_97>', '<c_0>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_50>', '<b_132>', '<c_0>') / ('<a_50>', '<b_201>', '<c_6>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_129>', '<b_75>', '<c_31>') / ('<a_129>', '<b_75>', '<c_229>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_151>', '<b_161>', '<c_16>') / ('<a_151>', '<b_161>', '<c_108>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "418-1377",
+        "item_a": 418,
+        "item_b": 1377,
+        "semantic_sim": 0.9870290756225586,
+        "cooc_count": 53,
+        "ppmi": 2.985074124535195,
+        "title_a": "American Terminal E-FMB250N-100 16/14-Gauge Economy Nylon Fully-Insulated Male Quick Disco",
+        "title_b": "American Terminal E-FFY250N-100 12/10-Gauge Economy Nylon Fully-Insulated Female Quick Dis",
+        "Main L2=0.010,L3=0.020 pull": "('<a_202>', '<b_97>', '<c_0>') / ('<a_202>', '<b_97>', '<c_9>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_50>', '<b_201>', '<c_6>') / ('<a_50>', '<b_132>', '<c_113>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_129>', '<b_75>', '<c_229>') / ('<a_129>', '<b_75>', '<c_22>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_151>', '<b_161>', '<c_108>') / ('<a_151>', '<b_161>', '<c_0>') | LCP=2, overlap=2"
+      },
+      {
+        "pair": "418-1697",
+        "item_a": 418,
+        "item_b": 1697,
+        "semantic_sim": 0.9896447062492371,
+        "cooc_count": 45,
+        "ppmi": 3.146867101188021,
+        "title_a": "American Terminal E-FMB250N-100 16/14-Gauge Economy Nylon Fully-Insulated Male Quick Disco",
+        "title_b": "American Terminal E-FMY250N-100 12/10-Gauge Economy Nylon Fully-Insulated Male Quick Disco",
+        "Main L2=0.010,L3=0.020 pull": "('<a_202>', '<b_97>', '<c_0>') / ('<a_202>', '<b_97>', '<c_60>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.005": "('<a_50>', '<b_201>', '<c_6>') / ('<a_50>', '<b_132>', '<c_93>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_129>', '<b_75>', '<c_229>') / ('<a_129>', '<b_75>', '<c_146>') | LCP=2, overlap=2",
+        "L3 InfoNCE=0.020": "('<a_151>', '<b_161>', '<c_108>') / ('<a_151>', '<b_161>', '<c_12>') | LCP=2, overlap=2"
+      }
+    ],
+    "S-mid C-near": [
+      {
+        "pair": "2785-2827",
+        "item_a": 2785,
+        "item_b": 2827,
+        "semantic_sim": 0.8724123239517212,
+        "cooc_count": 13,
+        "ppmi": 4.962579811438569,
+        "title_a": "Pac-Kit by First Aid Only 13-125 First Aid/Burn Cream, 0.9 gm Packet (Box of 25)",
+        "title_b": "Pac-Kit by First Aid Only 21-770 Disposable Thermometer (Box of 10)",
+        "Main L2=0.010,L3=0.020 pull": "('<a_74>', '<b_247>', '<c_168>') / ('<a_98>', '<b_35>', '<c_139>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_9>', '<b_172>', '<c_3>') / ('<a_183>', '<b_199>', '<c_156>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_37>', '<b_157>', '<c_190>') / ('<a_37>', '<b_222>', '<c_232>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_185>', '<b_243>', '<c_113>') / ('<a_21>', '<b_70>', '<c_250>') | LCP=0, overlap=0"
+      },
+      {
+        "pair": "824-1953",
+        "item_a": 824,
+        "item_b": 1953,
+        "semantic_sim": 0.8776452541351318,
+        "cooc_count": 12,
+        "ppmi": 3.2111898958659055,
+        "title_a": "213C2 Karter Scientific Glass Graduated Cylinder 3 Piece Set 10, 50 & 100ml",
+        "title_b": "Funnel, Regular stem, glass, 50 OD x 50mm stem",
+        "Main L2=0.010,L3=0.020 pull": "('<a_178>', '<b_52>', '<c_42>') / ('<a_172>', '<b_19>', '<c_73>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_210>', '<b_53>', '<c_118>') / ('<a_210>', '<b_245>', '<c_119>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_106>', '<b_93>', '<c_213>') / ('<a_101>', '<b_69>', '<c_59>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_96>', '<b_101>', '<c_192>') / ('<a_96>', '<b_72>', '<c_65>') | LCP=1, overlap=1"
+      },
+      {
+        "pair": "809-1521",
+        "item_a": 809,
+        "item_b": 1521,
+        "semantic_sim": 0.8904291987419128,
+        "cooc_count": 9,
+        "ppmi": 3.819034347713617,
+        "title_a": "Loos Cableware AN100-C4 Stainless Steel Thimble for 3/32\" and 1/8\" Diameter Wire Rope (10 ",
+        "title_b": "Aluminum Crimping Loop Sleeve for 1/8\" Diameter Wire Rope and Cable, (Pack of 100)",
+        "Main L2=0.010,L3=0.020 pull": "('<a_173>', '<b_18>', '<c_163>') / ('<a_202>', '<b_98>', '<c_7>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_2>', '<b_93>', '<c_82>') / ('<a_19>', '<b_210>', '<c_91>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_14>', '<b_25>', '<c_169>') / ('<a_251>', '<b_228>', '<c_19>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_227>', '<b_144>', '<c_246>') / ('<a_227>', '<b_63>', '<c_33>') | LCP=1, overlap=1"
+      },
+      {
+        "pair": "2446-2561",
+        "item_a": 2446,
+        "item_b": 2561,
+        "semantic_sim": 0.84929358959198,
+        "cooc_count": 7,
+        "ppmi": 4.022186484497882,
+        "title_a": "100x 1N4007 Diode 1A 1000V Rectifier Diodes Arduino Motor Snubber Flyback",
+        "title_b": "Uxcell a11102000ux0355 2N3906 General Purpose 3 Terminals PNP Transistors, 100 Piece",
+        "Main L2=0.010,L3=0.020 pull": "('<a_145>', '<b_175>', '<c_74>') / ('<a_145>', '<b_54>', '<c_7>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_244>', '<b_148>', '<c_166>') / ('<a_244>', '<b_68>', '<c_60>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_204>', '<b_14>', '<c_95>') / ('<a_204>', '<b_165>', '<c_52>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_196>', '<b_81>', '<c_50>') / ('<a_20>', '<b_212>', '<c_119>') | LCP=0, overlap=0"
+      },
+      {
+        "pair": "120-1420",
+        "item_a": 120,
+        "item_b": 1420,
+        "semantic_sim": 0.838599681854248,
+        "cooc_count": 6,
+        "ppmi": 4.945370694891449,
+        "title_a": "Vintage Shop PW-COIA-QACH Hydrometer 12\" Test Jar with Removable Base",
+        "title_b": "HYDROMETER - ALCOHOL, 0-200 PROOF and Tralle by Bellwether",
+        "Main L2=0.010,L3=0.020 pull": "('<a_178>', '<b_183>', '<c_161>') / ('<a_178>', '<b_114>', '<c_200>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_93>', '<b_191>', '<c_66>') / ('<a_238>', '<b_129>', '<c_233>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_101>', '<b_34>', '<c_253>') / ('<a_156>', '<b_204>', '<c_136>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_187>', '<b_228>', '<c_104>') / ('<a_187>', '<b_149>', '<c_148>') | LCP=1, overlap=1"
+      },
+      {
+        "pair": "96-120",
+        "item_a": 96,
+        "item_b": 120,
+        "semantic_sim": 0.8528099060058594,
+        "cooc_count": 6,
+        "ppmi": 3.7069964638481805,
+        "title_a": "1 X Hydrometer - Triple Scale",
+        "title_b": "Vintage Shop PW-COIA-QACH Hydrometer 12\" Test Jar with Removable Base",
+        "Main L2=0.010,L3=0.020 pull": "('<a_178>', '<b_145>', '<c_182>') / ('<a_178>', '<b_183>', '<c_161>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_238>', '<b_216>', '<c_216>') / ('<a_93>', '<b_191>', '<c_66>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_156>', '<b_85>', '<c_69>') / ('<a_101>', '<b_34>', '<c_253>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_187>', '<b_101>', '<c_165>') / ('<a_187>', '<b_228>', '<c_104>') | LCP=1, overlap=1"
+      },
+      {
+        "pair": "1953-2323",
+        "item_a": 1953,
+        "item_b": 2323,
+        "semantic_sim": 0.8763817548751831,
+        "cooc_count": 6,
+        "ppmi": 3.2652571171361813,
+        "title_a": "Funnel, Regular stem, glass, 50 OD x 50mm stem",
+        "title_b": "10 Pack - 20x150mm Pyrex Glass Test Tubes with Rubber Stoppers New",
+        "Main L2=0.010,L3=0.020 pull": "('<a_172>', '<b_19>', '<c_73>') / ('<a_36>', '<b_195>', '<c_21>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_210>', '<b_245>', '<c_119>') / ('<a_106>', '<b_51>', '<c_237>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_101>', '<b_69>', '<c_59>') / ('<a_126>', '<b_3>', '<c_85>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_96>', '<b_72>', '<c_65>') / ('<a_96>', '<b_113>', '<c_28>') | LCP=1, overlap=1"
+      },
+      {
+        "pair": "51-1851",
+        "item_a": 51,
+        "item_b": 1851,
+        "semantic_sim": 0.8905369639396667,
+        "cooc_count": 6,
+        "ppmi": 2.3633896443708844,
+        "title_a": "HATCHBOX 1 Spool 3D Printer Filament Tabletop Wall Mount Rack",
+        "title_b": "HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Y",
+        "Main L2=0.010,L3=0.020 pull": "('<a_85>', '<b_213>', '<c_188>') / ('<a_222>', '<b_109>', '<c_168>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_18>', '<b_242>', '<c_56>') / ('<a_18>', '<b_45>', '<c_209>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_43>', '<b_250>', '<c_16>') / ('<a_20>', '<b_143>', '<c_95>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_169>', '<b_102>', '<c_8>') / ('<a_19>', '<b_2>', '<c_139>') | LCP=0, overlap=0"
+      }
+    ],
+    "S-far C-near": [
+      {
+        "pair": "218-1834",
+        "item_a": 218,
+        "item_b": 1834,
+        "semantic_sim": 0.713162899017334,
+        "cooc_count": 9,
+        "ppmi": 4.385110646222907,
+        "title_a": "Phresh Duct Silencer 8 in x 24 in",
+        "title_b": "General Hydroponics Ph 7.0 Calibration Solution - 8 Ounces, 1 bottle",
+        "Main L2=0.010,L3=0.020 pull": "('<a_223>', '<b_82>', '<c_200>') / ('<a_62>', '<b_248>', '<c_21>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_26>', '<b_145>', '<c_221>') / ('<a_238>', '<b_245>', '<c_192>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_5>', '<b_180>', '<c_64>') / ('<a_156>', '<b_3>', '<c_64>') | LCP=0, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_192>', '<b_220>', '<c_35>') / ('<a_187>', '<b_185>', '<c_187>') | LCP=0, overlap=0"
+      },
+      {
+        "pair": "283-513",
+        "item_a": 283,
+        "item_b": 513,
+        "semantic_sim": 0.7578470706939697,
+        "cooc_count": 9,
+        "ppmi": 1.419939394440028,
+        "title_a": "Nitrile Exam Glove (non-latex) PF Medium Blue 100/BX",
+        "title_b": "Kimberly-Clark Professional Kimtech Science KimWipes Delicate Task Wipers, 4.4 x 8.4 in. 1",
+        "Main L2=0.010,L3=0.020 pull": "('<a_254>', '<b_254>', '<c_116>') / ('<a_254>', '<b_197>', '<c_7>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.005": "('<a_29>', '<b_23>', '<c_244>') / ('<a_198>', '<b_82>', '<c_131>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_143>', '<b_182>', '<c_3>') / ('<a_35>', '<b_96>', '<c_68>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_69>', '<b_75>', '<c_190>') / ('<a_69>', '<b_249>', '<c_221>') | LCP=1, overlap=1"
+      },
+      {
+        "pair": "96-1714",
+        "item_a": 96,
+        "item_b": 1714,
+        "semantic_sim": 0.7398685216903687,
+        "cooc_count": 6,
+        "ppmi": 3.722148268868783,
+        "title_a": "1 X Hydrometer - Triple Scale",
+        "title_b": "Red Star Premier Cuvee Wine Yeast, 5g - 10-Pack",
+        "Main L2=0.010,L3=0.020 pull": "('<a_178>', '<b_145>', '<c_182>') / ('<a_142>', '<b_71>', '<c_189>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_238>', '<b_216>', '<c_216>') / ('<a_135>', '<b_124>', '<c_93>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_156>', '<b_85>', '<c_69>') / ('<a_156>', '<b_72>', '<c_47>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_187>', '<b_101>', '<c_165>') / ('<a_78>', '<b_35>', '<c_0>') | LCP=0, overlap=0"
+      },
+      {
+        "pair": "94-178",
+        "item_a": 94,
+        "item_b": 178,
+        "semantic_sim": 0.7570974826812744,
+        "cooc_count": 6,
+        "ppmi": 2.2522687571848765,
+        "title_a": "White SiliconeTubing, 3/16\"ID, 1/4\"OD, 1/32\" Wall, 10' Length",
+        "title_b": "Neiko 10194A Titanium Step Drill Bit, High Speed Steel | 1/4\" to 1-3/8\" | Total 10 Step Si",
+        "Main L2=0.010,L3=0.020 pull": "('<a_225>', '<b_5>', '<c_1>') / ('<a_191>', '<b_138>', '<c_0>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_44>', '<b_127>', '<c_26>') / ('<a_247>', '<b_187>', '<c_26>') | LCP=0, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_96>', '<b_221>', '<c_3>') / ('<a_24>', '<b_168>', '<c_42>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_130>', '<b_122>', '<c_36>') / ('<a_3>', '<b_139>', '<c_118>') | LCP=0, overlap=0"
+      },
+      {
+        "pair": "24-96",
+        "item_a": 24,
+        "item_b": 96,
+        "semantic_sim": 0.7419406771659851,
+        "cooc_count": 4,
+        "ppmi": 3.606913005291198,
+        "title_a": "Wine Yeast Red Star Premier Classique Formerly Montrachet For Wine Making x10",
+        "title_b": "1 X Hydrometer - Triple Scale",
+        "Main L2=0.010,L3=0.020 pull": "('<a_142>', '<b_71>', '<c_40>') / ('<a_178>', '<b_145>', '<c_182>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_135>', '<b_124>', '<c_166>') / ('<a_238>', '<b_216>', '<c_216>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_156>', '<b_72>', '<c_0>') / ('<a_156>', '<b_85>', '<c_69>') | LCP=1, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_78>', '<b_106>', '<c_24>') / ('<a_187>', '<b_101>', '<c_165>') | LCP=0, overlap=0"
+      },
+      {
+        "pair": "100-181",
+        "item_a": 100,
+        "item_b": 181,
+        "semantic_sim": 0.6941171288490295,
+        "cooc_count": 4,
+        "ppmi": 1.4445151151507591,
+        "title_a": "Dixon BCN100 Brass Fitting, Hex Nipple, 1\" NPT Male",
+        "title_b": "AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and Humidity Ga",
+        "Main L2=0.010,L3=0.020 pull": "('<a_78>', '<b_4>', '<c_106>') / ('<a_31>', '<b_221>', '<c_0>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_117>', '<b_114>', '<c_0>') / ('<a_166>', '<b_198>', '<c_0>') | LCP=0, overlap=1",
+        "L3 InfoNCE=0.010": "('<a_146>', '<b_187>', '<c_70>') / ('<a_57>', '<b_82>', '<c_0>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_251>', '<b_32>', '<c_128>') / ('<a_205>', '<b_223>', '<c_0>') | LCP=0, overlap=0"
+      },
+      {
+        "pair": "182-559",
+        "item_a": 182,
+        "item_b": 559,
+        "semantic_sim": 0.7508276700973511,
+        "cooc_count": 4,
+        "ppmi": 1.2613857180101435,
+        "title_a": "AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and Humidity Ga",
+        "title_b": "Racers Edge 3000 1/2-Ounce Bottle W Needle Tip",
+        "Main L2=0.010,L3=0.020 pull": "('<a_31>', '<b_221>', '<c_0>') / ('<a_24>', '<b_122>', '<c_14>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_166>', '<b_198>', '<c_0>') / ('<a_96>', '<b_200>', '<c_33>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_57>', '<b_82>', '<c_0>') / ('<a_101>', '<b_29>', '<c_146>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.020": "('<a_205>', '<b_223>', '<c_0>') / ('<a_112>', '<b_250>', '<c_0>') | LCP=0, overlap=1"
+      },
+      {
+        "pair": "182-826",
+        "item_a": 182,
+        "item_b": 826,
+        "semantic_sim": 0.7064188718795776,
+        "cooc_count": 4,
+        "ppmi": 1.0935048453709832,
+        "title_a": "AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and Humidity Ga",
+        "title_b": "M-D Building Products 2311 High Density Foam Tape, 1/2-by-3/4-Inch by 10 feet, Gray",
+        "Main L2=0.010,L3=0.020 pull": "('<a_31>', '<b_221>', '<c_0>') / ('<a_235>', '<b_206>', '<c_6>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.005": "('<a_166>', '<b_198>', '<c_0>') / ('<a_248>', '<b_11>', '<c_142>') | LCP=0, overlap=0",
+        "L3 InfoNCE=0.010": "('<a_57>', '<b_82>', '<c_0>') / ('<a_118>', '<b_79>', '<c_0>') | LCP=0, overlap=1",
+        "L3 InfoNCE=0.020": "('<a_205>', '<b_223>', '<c_0>') / ('<a_226>', '<b_100>', '<c_199>') | LCP=0, overlap=0"
+      }
+    ]
+  }
+}

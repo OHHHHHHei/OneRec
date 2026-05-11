@@ -1,11 +1,9 @@
-"""Current MGR-SID local-multihop tokenizer mainline.
+"""Backward-compatible import path for the LMH-HCSID tokenizer mainline.
 
-This package is the canonical entrypoint for the active SID tokenizer research
-line. It intentionally wraps the historically validated trainer while giving
-new experiments a clean import path.
+New code should import :mod:`onerec.experiments.hcsid` directly. This module
+remains only so existing launch scripts keep working.
 """
 
-from .bridge import load_train_config, run_training
+from onerec.experiments.hcsid import load_train_config, run_training
 
 __all__ = ["load_train_config", "run_training"]
-

@@ -1,0 +1,593 @@
+# L3 InfoNCE=0.020 Item-Level Collaborative Deep Dive（物品级协同分析）
+
+协同信息只来自 train interaction（训练购买记录）：每一行把 history_item_id（历史物品）到 item_id（目标物品）记作共现边。
+
+## L1 `<a_19>` size=138
+
+### Items（前 12 个物品）
+- `50` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Blue
+- `52` HATCHBOX Glow in the Dark PLA 3D Printer Filament, Dimension Accuracy +/-0.03 mm, 1 kg Spool, 1.75 m
+- `162` USAFilament 9800429 ABS 3D Printing Filament, 2.2 lb, 1.75 mm, White Spool
+- `164` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Green
+- `249` UP! ABS Plastic Filament, 1.75 mm Diameter, 1.54 lbs Spool, Black
+- `275` Verbatim 3D Printer Filament - PLA High-Grade 1.75mm 1kg Reel - Widely Compatible with 3D Printers -
+- `298` XYZprinting PLA Filament Cartridge, 1.75 mm Diameter, 600g, Nature
+- `300` XYZprinting RFPLCXUS00B da Vinci Jr. & mini Series Filament, PLA (NFC), 600 g, Nature
+- `562` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Black
+- `891` Filament Outlet Green PLA 1.75mm 3D Printer Filament 1kg (2.2lbs) spool USA
+- `892` Filament Outlet Black PLA 1.75mm 3D Printer Filament 1kg (2.2lbs) spool USA
+- `1107` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Glow in the
+
+- internal train cooc edges（桶内训练共现边）: 1390; top edge count sum=373
+- boundary train cooc edges（跨桶训练共现边）: 6053
+### Top internal cooc（桶内强共现）
+- cooc=39: `50` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1   <->  `1850` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 
+  - example row=4198: history_tail=[1850, 164] -> target=50
+- cooc=27: `1850` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1   <->  `1851` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 
+  - example row=5298: history_tail=[1851] -> target=1850
+- cooc=27: `50` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1   <->  `1851` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 
+  - example row=5299: history_tail=[1851, 1850] -> target=50
+- cooc=25: `1847` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1   <->  `1850` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 
+  - example row=8103: history_tail=[1850, 50] -> target=1847
+- cooc=24: `50` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1   <->  `1847` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 
+  - example row=5725: history_tail=[2667, 562, 1851, 50] -> target=1847
+- cooc=23: `1847` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1   <->  `1851` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 
+  - example row=5343: history_tail=[3013, 2506, 3498, 1573, 2714, 1851] -> target=1847
+- cooc=21: `50` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1   <->  `1573` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 
+  - example row=5524: history_tail=[2283, 3042, 2717, 2506, 1573, 1851] -> target=50
+- cooc=19: `1573` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1   <->  `1851` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 
+  - example row=5342: history_tail=[3013, 2506, 3498, 1573, 2714] -> target=1851
+
+### Top L12 under this L1（该 L1 下最大的前两层桶）
+- L12 `['<a_19>', '<b_61>']` size=22, internal cooc edges=143
+  - `50` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 
+  - `562` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 
+  - `1107` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 
+  - `1573` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 
+  - `1574` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 
+  - `1850` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 
+  - cooc=39: `50` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy  <-> `1850` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy 
+  - cooc=21: `50` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy  <-> `1573` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy 
+  - cooc=16: `1573` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy  <-> `1850` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy 
+- L12 `['<a_19>', '<b_89>']` size=18, internal cooc edges=53
+  - `1552` 3D Solutech Teal Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accur
+  - `1888` 3D Solutech Hot Pink 3D Printer PLA Filament 1.75MM Filament, Dimensional Accura
+  - `2161` 3D Solutech Natural Clear 1.75mm 3D Printer PLA Filament, Dimensional Accuracy +
+  - `2659` 3D Solutech Apple Green 3D Printer PLA Filament 1.75MM Filament, Dimensional Acc
+  - `2697` 3D Solutech Real White 3D Printer PLA Filament 1.75MM Filament, Dimensional Accu
+  - `2993` 3D Solutech Blue 3D Printer Ultra PLA Filament 1.75MM Filament, Dimensional Accu
+  - cooc=3: `3466` 3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Di <-> `3599` 3D Solutech Aqua Blue 3D Printer PLA Filament 1.75MM Fi
+  - cooc=3: `3466` 3D Solutech Real Red 3D Printer PLA Filament 1.75MM, Di <-> `3557` 3D Solutech Chocolate Brown 3D Printer PLA Filament 1.7
+  - cooc=3: `2161` 3D Solutech Natural Clear 1.75mm 3D Printer PLA Filamen <-> `3557` 3D Solutech Chocolate Brown 3D Printer PLA Filament 1.7
+- L12 `['<a_19>', '<b_111>']` size=13, internal cooc edges=6
+  - `1795` eSUN 1.75mm Black PLA 3D Printer filament 1kg Spool (2.2lbs), Black
+  - `2281` eSUN 1.75mm Glass Watermelon Red PLA 3D Printer filament 1kg Spool (2.2lbs), Gla
+  - `2514` eSUN 1.75mm Black PLA 3D Printer filament 1kg Spool (2.2lbs), Black
+  - `2707` eSUN 1.75mm Orange PLA PRO (PLA+) 3D Printer Filament 1KG Spool (2.2lbs), Orange
+  - `2708` eSUN 1.75mm Peak Green PLA PRO (PLA+) 3D Printer Filament 1KG Spool (2.2lbs), Pe
+  - `2965` eSUN 1.75mm Natural PLA 3D Printer filament 1kg Spool (2.2lbs), Natural
+  - cooc=6: `1795` eSUN 1.75mm Black PLA 3D Printer filament 1kg Spool (2. <-> `3450` eSUN 1.75mm White PLA 3D Printer filament 1kg Spool (2.
+  - cooc=4: `1795` eSUN 1.75mm Black PLA 3D Printer filament 1kg Spool (2. <-> `2965` eSUN 1.75mm Natural PLA 3D Printer filament 1kg Spool (
+  - cooc=3: `2965` eSUN 1.75mm Natural PLA 3D Printer filament 1kg Spool ( <-> `3450` eSUN 1.75mm White PLA 3D Printer filament 1kg Spool (2.
+- L12 `['<a_19>', '<b_231>']` size=7, internal cooc edges=7
+  - `2330` SIENOC 3D PLA 1KG 1.75mm PLA 3D Printer Filament, Dimensional Accuracy+/- 0.05mm
+  - `2758` Smartbuy 1.75mm Orange PLA 3D Printer Filament - 1kg Spool/Roll (2.2 lbs) - Dime
+  - `2994` Smartbuy 1.75mm Black PLA 3D Printer Filament - 1kg Spool/Roll (2.2 lbs) - Dimen
+  - `3529` SIENOC 3D PLA 1KG 1.75mm PLA 3D Printer Filament, Dimensional Accuracy+/- 0.05mm
+  - `3537` Smartbuy 1.75mm Yellow PLA 3D Printer Filament - 1kg Spool/Roll (2.2 lbs) - Dime
+  - `3601` Smartbuy 1.75mm Green PLA 3D Printer Filament - 1kg Spool/Roll (2.2 lbs) - Dimen
+  - cooc=5: `2758` Smartbuy 1.75mm Orange PLA 3D Printer Filament - 1kg Sp <-> `3537` Smartbuy 1.75mm Yellow PLA 3D Printer Filament - 1kg Sp
+  - cooc=4: `2758` Smartbuy 1.75mm Orange PLA 3D Printer Filament - 1kg Sp <-> `2994` Smartbuy 1.75mm Black PLA 3D Printer Filament - 1kg Spo
+  - cooc=3: `2994` Smartbuy 1.75mm Black PLA 3D Printer Filament - 1kg Spo <-> `3537` Smartbuy 1.75mm Yellow PLA 3D Printer Filament - 1kg Sp
+- L12 `['<a_19>', '<b_16>']` size=6, internal cooc edges=5
+  - `164` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 
+  - `1695` HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 
+  - `1847` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 
+  - `1849` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 
+  - `3412` Filamex - PLA Filament (1kg\2.2lbs) 1.75mm for 3D printer, White
+  - `3472` ROBO 3D PLA 3D Printer Filament, 1 kg Spool, 1.75mm, 0.05mm, Green
+  - cooc=12: `1847` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy  <-> `1849` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy 
+  - cooc=4: `1695` HATCHBOX ABS 3D Printer Filament, Dimensional Accuracy  <-> `1847` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy 
+  - cooc=1: `1847` HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy  <-> `3472` ROBO 3D PLA 3D Printer Filament, 1 kg Spool, 1.75mm, 0.
+- L12 `['<a_19>', '<b_180>']` size=6, internal cooc edges=10
+  - `2660` 3D Solutech Real Grey 3D Printer PLA Filament 1.75MM Filament, Dimensional Accur
+  - `2909` 3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM Filament, Dimensional Ac
+  - `3112` 3D Solutech Real Black 3D Printer PLA Filament 1.75MM Filament, Dimensional Accu
+  - `3493` 3D Solutech Printer Filament, Real Blue PLA, 1.75MM Filament, Dimensional Accura
+  - `3494` 3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM Filament, Dimensional Acc
+  - `3522` 3D Solutech Real Blue 3D Printer PLA Filament 1.75MM Filament, Dimensional Accur
+  - cooc=7: `2909` 3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM <-> `3112` 3D Solutech Real Black 3D Printer PLA Filament 1.75MM F
+  - cooc=3: `3112` 3D Solutech Real Black 3D Printer PLA Filament 1.75MM F <-> `3494` 3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM 
+  - cooc=3: `2909` 3D Solutech Silver Metal 3D Printer PLA Filament 1.75MM <-> `3494` 3D Solutech Real Yellow 3D Printer PLA Filament 1.75MM 
+- L12 `['<a_19>', '<b_62>']` size=6, internal cooc edges=8
+  - `2677` eSUN 1.75mm Black ABS 3D Printer filament 1kg Spool (2.2lbs), Black
+  - `2678` eSUN 1.75mm White ABS 3D Printer filament 1kg Spool (2.2lbs), White
+  - `2679` eSUN 1.75mm Yellow ABS 3D Printer filament 1kg Spool (2.2lbs), Yellow
+  - `3414` eSUN 1.75mm White ABS+ 3D Printer filament 1kg Spool (2.2lbs), White
+  - `3636` eSUN 1.75mm Silver ABS 3D Printer filament 1kg Spool (2.2lbs), Silver
+  - `3639` eSUN 1.75mm Gray ABS 3D Printer filament 1kg Spool (2.2lbs), Gray
+  - cooc=2: `2677` eSUN 1.75mm Black ABS 3D Printer filament 1kg Spool (2. <-> `3636` eSUN 1.75mm Silver ABS 3D Printer filament 1kg Spool (2
+  - cooc=2: `2677` eSUN 1.75mm Black ABS 3D Printer filament 1kg Spool (2. <-> `2679` eSUN 1.75mm Yellow ABS 3D Printer filament 1kg Spool (2
+  - cooc=1: `3636` eSUN 1.75mm Silver ABS 3D Printer filament 1kg Spool (2 <-> `3639` eSUN 1.75mm Gray ABS 3D Printer filament 1kg Spool (2.2
+- L12 `['<a_19>', '<b_148>']` size=5, internal cooc edges=1
+  - `2285` HICTOP 1.75mm White PLA 3D Printer Filament - 1kg Spool (2.2 lbs) - Dimensional 
+  - `3331` 3DDPLUS 1.75mm PLA 3D Printer Filament Black- 1kg Spool (2.2 lbs) - Dimensional 
+  - `3446` Anycubic 1.75mm Skin Color PLA 3D Printer Filament - 1kg Spool (2.2 lbs) - Dimen
+  - `3521` Cutequeen 3D-PLA-1.75mm-1KG 3D Printer Filament,1.75 mm Diameter,Dimensional Acc
+  - `3638` Cutequeen PLA Plastic Filament Cartridge,1.75 mm Diameter,Dimensional Accuracy +
+  - cooc=3: `3521` Cutequeen 3D-PLA-1.75mm-1KG 3D Printer Filament,1.75 mm <-> `3638` Cutequeen PLA Plastic Filament Cartridge,1.75 mm Diamet
+
+## L1 `<a_26>` size=126
+
+### Items（前 12 个物品）
+- `106` Wago Wire Connector 600 V Clear 4 Conductor 100 / Box
+- `109` Arlington LPCG50-1 Low-Profile Strain Relief Cord Connector, 1/2 Inch
+- `134` HOODDEAL 50pcs Waterproof Solder Seal Heat Shrink Butt Connectors with Soldering Sleeve
+- `157` Yueton 100pcs Female Fully Insulated Wire Crimp Terminal Nylon Quick Connectors Wiring Spade
+- `170` URBEST 328 Pcs Assorted Heat Shrink Tube 5 Colors 8 Sizes Tubing Wrap Sleeve Set Combo (328PCS)
+- `247` Vktech 280Pcs 2:1 Heat Shrink Tubing Tube Sleeving Wrap Cable Wire 5 Color 8 Size (5 Color)
+- `392` SummitLink Pack of 328 Pcs Assorted Heat Shrink Tube 5 Colors 8 Sizes Tubing Wrap Sleeve Set Combo
+- `398` NTE Heat Shrink 2:1 Assorted Colors and Sizes 160 PCS
+- `399` Anytime Tools 48 pc HEAT SHRINK TUBING WRAP SLEEVES ASSORTED SIZES
+- `407` Lucksender 100 Feet /30 Meter 1/4inch / 6mm I.D Polyolefin 2:1 Heat Shrink Tubing
+- `408` Lucksender 100 Feet/30 Meter 1/8inch / 3mm I.D Polyolefin 2:1 Heat Shrink Tubing
+- `521` Gardner Bender 19-001 WireGard Screw-On Wire Connectors, 22-16 AWG, Electrical Wire Nut, 14 pk, Grey
+
+- internal train cooc edges（桶内训练共现边）: 597; top edge count sum=159
+- boundary train cooc edges（跨桶训练共现边）: 6757
+### Top internal cooc（桶内强共现）
+- cooc=21: `751` Install Bay CC2218 Crimp Cap Nylon Connector 22/18 Gauge (100-Pack)  <->  `1481` Install Bay CCL1614 Crimp Cap Nylon Connector 16/14 Gauge Long Neck -1
+  - example row=2500: history_tail=[1230, 1481, 3163] -> target=751
+- cooc=17: `951` Install Bay RVBC 22/18-Gauge Vinyl Connector, Red (100-Bag)  <->  `1219` Install Bay BVBC Vinyl Connector, Blue 16/14 Gauge (100-Bag)
+  - example row=5774: history_tail=[1219, 1266] -> target=951
+- cooc=13: `593` Gardner Bender 10-106 50PK Ring Terminal, Yellow  <->  `1265` Gardner Bender 10-104 100PK Ring Terminal, 100 Pack, Blue
+  - example row=4046: history_tail=[1265] -> target=593
+- cooc=10: `1481` Install Bay CCL1614 Crimp Cap Nylon Connector 16/14 Gauge Long Neck -1  <->  `1561` Install Bay CC1210 Crimp Cap Nylon Connector 12/10 Gauge (100-Pack)
+  - example row=3021: history_tail=[1309, 1481] -> target=1561
+- cooc=9: `1219` Install Bay BVBC Vinyl Connector, Blue 16/14 Gauge (100-Bag)  <->  `1266` Install Bay YVBC Vinyl Connector Yellow 12/10 Gauge (100-Bag)
+  - example row=5773: history_tail=[1219] -> target=1266
+- cooc=9: `953` Remington Industries 22UL1007STRBLA UL1007 22 AWG Gauge Stranded Hook-  <->  `954` Remington Industries 22UL1007STRRED UL1007 22 AWG Gauge Stranded Hook-
+  - example row=14292: history_tail=[44, 953] -> target=954
+- cooc=9: `951` Install Bay RVBC 22/18-Gauge Vinyl Connector, Red (100-Bag)  <->  `1266` Install Bay YVBC Vinyl Connector Yellow 12/10 Gauge (100-Bag)
+  - example row=5774: history_tail=[1219, 1266] -> target=951
+- cooc=8: `1265` Gardner Bender 10-104 100PK Ring Terminal, 100 Pack, Blue  <->  `1692` Gardner Bender 10-107 Terminal Ring, 12-10 AWG, Stud Sz 12-1/4, Yellow
+  - example row=11577: history_tail=[418, 1452, 417, 418, 1452, 392, 1454, 1692] -> target=1265
+
+### Top L12 under this L1（该 L1 下最大的前两层桶）
+- L12 `['<a_26>', '<b_42>']` size=11, internal cooc edges=19
+  - `953` Remington Industries 22UL1007STRBLA UL1007 22 AWG Gauge Stranded Hook-Up Wire, 3
+  - `954` Remington Industries 22UL1007STRRED UL1007 22 AWG Gauge Stranded Hook-Up Wire, 3
+  - `955` Remington Industries 22UL1007STRWHI UL1007 22 AWG Gauge Stranded Hook-Up Wire, 3
+  - `957` Remington Industries 22UL1007STRYEL UL1007 22 AWG Gauge Stranded Hook-Up Wire, 3
+  - `1099` Remington Industries 28UL1007STRKIT UL1007 28 AWG Gauge Stranded Hook-Up Wire Ki
+  - `1277` Remington Industries 16UL1007STRKIT UL1007 16 AWG Gauge Stranded Hook-Up Wire Ki
+  - cooc=9: `953` Remington Industries 22UL1007STRBLA UL1007 22 AWG Gauge <-> `954` Remington Industries 22UL1007STRRED UL1007 22 AWG Gauge
+  - cooc=4: `954` Remington Industries 22UL1007STRRED UL1007 22 AWG Gauge <-> `955` Remington Industries 22UL1007STRWHI UL1007 22 AWG Gauge
+  - cooc=4: `953` Remington Industries 22UL1007STRBLA UL1007 22 AWG Gauge <-> `955` Remington Industries 22UL1007STRWHI UL1007 22 AWG Gauge
+- L12 `['<a_26>', '<b_24>']` size=9, internal cooc edges=19
+  - `157` Yueton 100pcs Female Fully Insulated Wire Crimp Terminal Nylon Quick Connectors 
+  - `597` Ginsco 110pcs Female Yellow 12-10 Gauge Nylon Fully-Insulated Quick Disconnects 
+  - `1033` SOLOOP 50pcs Female & Male Fully Insulated Wire Terminals Connector Nylon Spade 
+  - `2430` Yueton 100pcs Red 22/18- Gauge Nylon Male Fully-Insulated Quick Disconnects Wiri
+  - `2431` Ginsco 110pcs Male Red 22-18 Gauge Nylon Fully-Insulated Quick Disconnects Wirin
+  - `2617` Yueton&reg; 100pcs Yellow 12/10-Gauge Economy Nylon Male Fully-Insulated Quick D
+  - cooc=6: `157` Yueton 100pcs Female Fully Insulated Wire Crimp Termina <-> `2430` Yueton 100pcs Red 22/18- Gauge Nylon Male Fully-Insulat
+  - cooc=4: `2430` Yueton 100pcs Red 22/18- Gauge Nylon Male Fully-Insulat <-> `2617` Yueton&reg; 100pcs Yellow 12/10-Gauge Economy Nylon Mal
+  - cooc=4: `157` Yueton 100pcs Female Fully Insulated Wire Crimp Termina <-> `1033` SOLOOP 50pcs Female & Male Fully Insulated Wire Termina
+- L12 `['<a_26>', '<b_9>']` size=8, internal cooc edges=7
+  - `170` URBEST 328 Pcs Assorted Heat Shrink Tube 5 Colors 8 Sizes Tubing Wrap Sleeve Set
+  - `247` Vktech 280Pcs 2:1 Heat Shrink Tubing Tube Sleeving Wrap Cable Wire 5 Color 8 Siz
+  - `392` SummitLink Pack of 328 Pcs Assorted Heat Shrink Tube 5 Colors 8 Sizes Tubing Wra
+  - `547` SummitLink 410 Pcs Assorted Heat Shrink Tubing Wrap Sleeve Set Combo Tube 5 Colo
+  - `1146` SummitLink 218 Pcs Black Assorted Heat Shrink Tube 8 Sizes Tubing Wrap Sleeve Se
+  - `1290` SummitLink 306 Pcs Red Black Assorted Heat Shrink Tube 8 Sizes Tubing Wrap Sleev
+  - cooc=5: `170` URBEST 328 Pcs Assorted Heat Shrink Tube 5 Colors 8 Siz <-> `392` SummitLink Pack of 328 Pcs Assorted Heat Shrink Tube 5 
+  - cooc=1: `1290` SummitLink 306 Pcs Red Black Assorted Heat Shrink Tube  <-> `2097` SummitLink 428 Pcs Red Black Assorted Heat Shrink Tube 
+  - cooc=1: `392` SummitLink Pack of 328 Pcs Assorted Heat Shrink Tube 5  <-> `1146` SummitLink 218 Pcs Black Assorted Heat Shrink Tube 8 Si
+- L12 `['<a_26>', '<b_109>']` size=7, internal cooc edges=19
+  - `1293` Install Bay Heat Shrink 1/8 Inch x 4 Feet
+  - `1294` Install Bay 3M Heat Shrink Tubing 1/4 Inch 10G - 4 Feet
+  - `2872` Install Bay Heat Shrink Tubing 3M 1/2 Inch 8G - 4 Feet
+  - `2929` Install Bay 3MHST34 3M Heat Shrink Tubing 3/4" Diameter 4G 4-Ft
+  - `2989` Install Bay Heat Shrink 3/16 Inch x 4 Feet
+  - `3019` Install Bay Heat Shrink 3/8 Inch x 4 Feet
+  - cooc=5: `2872` Install Bay Heat Shrink Tubing 3M 1/2 Inch 8G - 4 Feet <-> `2929` Install Bay 3MHST34 3M Heat Shrink Tubing 3/4" Diameter
+  - cooc=4: `1293` Install Bay Heat Shrink 1/8 Inch x 4 Feet <-> `1294` Install Bay 3M Heat Shrink Tubing 1/4 Inch 10G - 4 Feet
+  - cooc=3: `2929` Install Bay 3MHST34 3M Heat Shrink Tubing 3/4" Diameter <-> `3397` Install Bay 3MHST1 Heat Shrink 1 Inch (diameter) x 4 Fo
+- L12 `['<a_26>', '<b_14>']` size=6, internal cooc edges=8
+  - `596` Install Bay Copper Ring Terminal 4 Gauge #516 25 Pack - CUR4516
+  - `811` Install Bay Copper Ring Terminal 2 Gauge 5/16 Inch 10 Pack - CUR2516
+  - `1025` Install Bay Copper Ring Terminal Connector 8 Gauge 5/16 Inch 25 Pack - CUR8516
+  - `1287` Install Bay Copper Ring Terminal 2 Gauge 3/8 Inch 10 Pack - CUR238
+  - `1289` Install Bay Copper Ring Terminal Connector 8 Gauge 1/4 Inch 25 Pack - CUR814
+  - `1518` Install Bay Copper Ring Terminal 8 Gauge 3/8 Inch 25 Pack - CUR838
+  - cooc=2: `1289` Install Bay Copper Ring Terminal Connector 8 Gauge 1/4  <-> `1518` Install Bay Copper Ring Terminal 8 Gauge 3/8 Inch 25 Pa
+  - cooc=1: `1287` Install Bay Copper Ring Terminal 2 Gauge 3/8 Inch 10 Pa <-> `1289` Install Bay Copper Ring Terminal Connector 8 Gauge 1/4 
+  - cooc=1: `1025` Install Bay Copper Ring Terminal Connector 8 Gauge 5/16 <-> `1518` Install Bay Copper Ring Terminal 8 Gauge 3/8 Inch 25 Pa
+- L12 `['<a_26>', '<b_53>']` size=6, internal cooc edges=2
+  - `1328` SOLOOP 280Pcs Assorted F/M Crimp Connectors Spade Terminal Insulated Electrical 
+  - `1998` Hilitchi 180pcs Nylon Fully Insulated Male / Female Spade Wire Crimp Quick Disco
+  - `1999` Ginsco 120 Pcs/60 Pairs Quick Splice Wire Terminals T-Tap Self-stripping with Ny
+  - `2047` Ginsco 160pcs Nylon Fully Insulated Male / Female Spade Wire Crimp Quick Disconn
+  - `3152` 60pcs Splice Wire Connectors, Sopoby Quick Disconnects Wire Terminals, Fully Ins
+  - `3203` 100x European Male & Female Insulated Spade Quick Wire Crimp Connectors 22-16AWG
+  - cooc=3: `2047` Ginsco 160pcs Nylon Fully Insulated Male / Female Spade <-> `3152` 60pcs Splice Wire Connectors, Sopoby Quick Disconnects 
+  - cooc=1: `1998` Hilitchi 180pcs Nylon Fully Insulated Male / Female Spa <-> `1999` Ginsco 120 Pcs/60 Pairs Quick Splice Wire Terminals T-T
+- L12 `['<a_26>', '<b_75>']` size=6, internal cooc edges=4
+  - `1910` Uxcell s14100400am3045 1 Meter 50mm Dia Ratio 2:1 Heat Shrinkable Shrinking Tube
+  - `1911` uxcell 1 Meter 65 Flat width 40mm Dia Ratio 2:1 Heat Shrinkable Shrinking Tube B
+  - `1912` uxcell 35mm Dia 1 Meters Black Polyolefin Heat Shrinking Shrinkable Tubing Tubes
+  - `2033` uxcell Wire Wrap Sleeve 2mm Dia 30mm Long Heat Shrink Tubing 280pcs Black
+  - `2461` Uxcell a12080700ux0467 Ratio 2:1 50mm Dia Clear Polyolefin Heat Shrinkable Tube 
+  - `2578` 5mm Black Polyolefin Insulation Heat Shrink Tubing 6M 19.7ft
+  - cooc=3: `1910` Uxcell s14100400am3045 1 Meter 50mm Dia Ratio 2:1 Heat  <-> `1911` uxcell 1 Meter 65 Flat width 40mm Dia Ratio 2:1 Heat Sh
+  - cooc=1: `1911` uxcell 1 Meter 65 Flat width 40mm Dia Ratio 2:1 Heat Sh <-> `1912` uxcell 35mm Dia 1 Meters Black Polyolefin Heat Shrinkin
+  - cooc=1: `1910` Uxcell s14100400am3045 1 Meter 50mm Dia Ratio 2:1 Heat  <-> `2461` Uxcell a12080700ux0467 Ratio 2:1 50mm Dia Clear Polyole
+- L12 `['<a_26>', '<b_190>']` size=4, internal cooc edges=3
+  - `407` Lucksender 100 Feet /30 Meter 1/4inch / 6mm I.D Polyolefin 2:1 Heat Shrink Tubin
+  - `408` Lucksender 100 Feet/30 Meter 1/8inch / 3mm I.D Polyolefin 2:1 Heat Shrink Tubing
+  - `619` Vktech 150pcs 2:1 Heat Shrink Tubing Tube Sleeving Wire Cable 8 Sizes 2-13mm Bla
+  - `2657` Lucksender 100 Feet/30 Meter 1/2inch / 12mm I.D Polyolefin 2:1 Heat Shrink Tubin
+  - cooc=3: `407` Lucksender 100 Feet /30 Meter 1/4inch / 6mm I.D Polyole <-> `2657` Lucksender 100 Feet/30 Meter 1/2inch / 12mm I.D Polyole
+  - cooc=2: `407` Lucksender 100 Feet /30 Meter 1/4inch / 6mm I.D Polyole <-> `408` Lucksender 100 Feet/30 Meter 1/8inch / 3mm I.D Polyolef
+  - cooc=1: `408` Lucksender 100 Feet/30 Meter 1/8inch / 3mm I.D Polyolef <-> `2657` Lucksender 100 Feet/30 Meter 1/2inch / 12mm I.D Polyole
+
+## L1 `<a_226>` size=108
+
+### Items（前 12 个物品）
+- `10` Scotch Foil Tape, 2-Inch by 50-Yard
+- `77` Scotch Heavy Duty Shipping Packaging Tape, 3" Core, 1.88" x 54.6 Yards, 6-Rolls (3850-6)
+- `116` Rescue Tape RT1000201202USCO
+- `125` Gorilla 6100101 Tape Handy Roll, 1-Pack, Black
+- `130` Gorilla Tape, Black Duct Tape, 1.88" x 35 yd, Black, (Pack of 1)
+- `133` 3M High Temperature Flue Tape, 15-Foot Roll
+- `154` 3M Multi-Use Duct Tape, 2930-C, 1.88 Inches by 30 Yards
+- `156` 3M Contractor Grade Pro Strength Duct Tape 3979 Silver, 1.88 in x 60 yd 8.0 mil, Individually Wrappe
+- `175` Gorilla Crystal Clear Duct Tape, 1.88&rdquo; x 9 yd, Clear, (Pack of 1)
+- `179` Nashua Stretch & Seal Self-Fusing Silicone Tape
+- `209` Duck Brand 442055 Wrap-Fix Repair Tape, 1-Inch by 10 Feet, Single Roll, Black
+- `222` 3M Heavy Duty Duct Tape 3939 Silver, 48 mm x 54.8 m 9.0 mil, Conveniently Packaged (Pack of 3)
+
+- internal train cooc edges（桶内训练共现边）: 369; top edge count sum=162
+- boundary train cooc edges（跨桶训练共现边）: 7015
+### Top internal cooc（桶内强共现）
+- cooc=13: `130` Gorilla Tape, Black Duct Tape, 1.88" x 35 yd, Black, (Pack of 1)  <->  `175` Gorilla Crystal Clear Duct Tape, 1.88&rdquo; x 9 yd, Clear, (Pack of 1
+  - example row=3374: history_tail=[280, 279, 130, 141] -> target=175
+- cooc=13: `125` Gorilla 6100101 Tape Handy Roll, 1-Pack, Black  <->  `175` Gorilla Crystal Clear Duct Tape, 1.88&rdquo; x 9 yd, Clear, (Pack of 1
+  - example row=5642: history_tail=[1210, 622, 125] -> target=175
+- cooc=12: `125` Gorilla 6100101 Tape Handy Roll, 1-Pack, Black  <->  `130` Gorilla Tape, Black Duct Tape, 1.88" x 35 yd, Black, (Pack of 1)
+  - example row=3587: history_tail=[130] -> target=125
+- cooc=11: `130` Gorilla Tape, Black Duct Tape, 1.88" x 35 yd, Black, (Pack of 1)  <->  `377` Gorilla Tape, Black Tough & Wide Duct Tape, 2.88" x 30 yd, Black, (Pac
+  - example row=2824: history_tail=[3087, 1531, 362, 130] -> target=377
+- cooc=8: `1373` X-Treme Tape TPE-XZLBRD Silicone Rubber Self Fusing Tape, 1" x 10', Tr  <->  `1996` X-Treme Tape TPE-XZLBLU Silicone Rubber Self Fusing Tape, 1" x 10', Tr
+  - example row=14283: history_tail=[1373, 1352] -> target=1996
+- cooc=8: `1322` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors available, 2 inch  <->  `1323` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors available, 1 inch
+  - example row=518: history_tail=[1321, 1322] -> target=1323
+- cooc=8: `1321` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors available, 2 inch  <->  `1323` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors available, 1 inch
+  - example row=518: history_tail=[1321, 1322] -> target=1323
+- cooc=8: `1321` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors available, 2 inch  <->  `1322` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors available, 2 inch
+  - example row=517: history_tail=[1321] -> target=1322
+
+### Top L12 under this L1（该 L1 下最大的前两层桶）
+- L12 `['<a_226>', '<b_105>']` size=11, internal cooc edges=46
+  - `450` X-Treme Tape TPE-X36ZLB Silicone Rubber Self Fusing Tape, 1" x 36', Triangular, 
+  - `950` X-Treme Tape TPE-XZLCLR Silicone Rubber Self Fusing Tape, 1" x 10', Triangular, 
+  - `975` X-Treme Tape TPE-XZLB Silicone Rubber Self Fusing Tape, 1" x 10', Triangular, Bl
+  - `1028` Emergency Repair Tape, Self-Fusing Silicone Tape, 12' x 1", Red
+  - `1373` X-Treme Tape TPE-XZLBRD Silicone Rubber Self Fusing Tape, 1" x 10', Triangular, 
+  - `1665` X-Treme Tape TPE-XZLW Silicone Rubber Self Fusing Tape, 1" x 10', Triangular, Wh
+  - cooc=8: `1373` X-Treme Tape TPE-XZLBRD Silicone Rubber Self Fusing Tap <-> `1996` X-Treme Tape TPE-XZLBLU Silicone Rubber Self Fusing Tap
+  - cooc=7: `975` X-Treme Tape TPE-XZLB Silicone Rubber Self Fusing Tape, <-> `1373` X-Treme Tape TPE-XZLBRD Silicone Rubber Self Fusing Tap
+  - cooc=7: `950` X-Treme Tape TPE-XZLCLR Silicone Rubber Self Fusing Tap <-> `1373` X-Treme Tape TPE-XZLBRD Silicone Rubber Self Fusing Tap
+- L12 `['<a_226>', '<b_66>']` size=7, internal cooc edges=8
+  - `2102` TEMCo 3/8" Marine Heat Shrink Tube 3:1 Adhesive Glue Lined 4 ft RED
+  - `2103` TEMCo 1/2" Marine Heat Shrink Tube 3:1 Adhesive Glue Lined 4 ft RED
+  - `2311` TEMCo 3/4" Marine Heat Shrink Tube 3:1 Adhesive Glue Lined 4 ft RED
+  - `2312` TEMCo 1" Marine Heat Shrink Tube 3:1 Adhesive Glue Lined 4 ft RED
+  - `2313` TEMCo 1" Marine Heat Shrink Tube 3:1 Adhesive Glue Lined 4 ft BLACK
+  - `3232` TEMCo 3/8" Marine Heat Shrink Tube 3:1 Adhesive Glue Lined 4 ft BLACK
+  - cooc=1: `3232` TEMCo 3/8" Marine Heat Shrink Tube 3:1 Adhesive Glue Li <-> `3312` TEMCo 3/4" Marine Heat Shrink Tube 3:1 Adhesive Glue Li
+  - cooc=1: `2313` TEMCo 1" Marine Heat Shrink Tube 3:1 Adhesive Glue Line <-> `3312` TEMCo 3/4" Marine Heat Shrink Tube 3:1 Adhesive Glue Li
+  - cooc=1: `2313` TEMCo 1" Marine Heat Shrink Tube 3:1 Adhesive Glue Line <-> `3232` TEMCo 3/8" Marine Heat Shrink Tube 3:1 Adhesive Glue Li
+- L12 `['<a_226>', '<b_167>']` size=6, internal cooc edges=1
+  - `154` 3M Multi-Use Duct Tape, 2930-C, 1.88 Inches by 30 Yards
+  - `156` 3M Contractor Grade Pro Strength Duct Tape 3979 Silver, 1.88 in x 60 yd 8.0 mil,
+  - `222` 3M Heavy Duty Duct Tape 3939 Silver, 48 mm x 54.8 m 9.0 mil, Conveniently Packag
+  - `528` ProTapes Pro Duct 100 PE-Coated Cloth Economy Duct Tape, 60 yds Length x 2" Widt
+  - `553` 3M  Pro Strength Duct Tape, 1260-A, 1.88  Inches by 60 Yards
+  - `2251` 3M  Pro Strength Duct Tape, 1230-C, 1.88 Inches by 30 Yards
+  - cooc=1: `154` 3M Multi-Use Duct Tape, 2930-C, 1.88 Inches by 30 Yards <-> `222` 3M Heavy Duty Duct Tape 3939 Silver, 48 mm x 54.8 m 9.0
+- L12 `['<a_226>', '<b_251>']` size=5, internal cooc edges=6
+  - `130` Gorilla Tape, Black Duct Tape, 1.88" x 35 yd, Black, (Pack of 1)
+  - `377` Gorilla Tape, Black Tough & Wide Duct Tape, 2.88" x 30 yd, Black, (Pack of 1)
+  - `451` Gorilla Tape, White Duct Tape, 1.88" x 30 yd, White, (Pack of 1)
+  - `622` Gorilla Tape, Black Duct Tape, 1.88" x 12 yd, Black, (Pack of 1)
+  - `1271` Tape-Me Duct Tape Silver, 1.88 in x 55 yd (Pack of 3)
+  - cooc=11: `130` Gorilla Tape, Black Duct Tape, 1.88" x 35 yd, Black, (P <-> `377` Gorilla Tape, Black Tough & Wide Duct Tape, 2.88" x 30 
+  - cooc=8: `130` Gorilla Tape, Black Duct Tape, 1.88" x 35 yd, Black, (P <-> `622` Gorilla Tape, Black Duct Tape, 1.88" x 12 yd, Black, (P
+  - cooc=4: `130` Gorilla Tape, Black Duct Tape, 1.88" x 35 yd, Black, (P <-> `451` Gorilla Tape, White Duct Tape, 1.88" x 30 yd, White, (P
+- L12 `['<a_226>', '<b_100>']` size=4, internal cooc edges=0
+  - `374` M-D Building Products 2758 High Density Foam Tape, White
+  - `601` M-D Building Products 2733 Tape, White
+  - `826` M-D Building Products 2311 High Density Foam Tape, 1/2-by-3/4-Inch by 10 feet, G
+  - `2643` Peachtree 1118 UHMW Slick Tape - 3" X 48
+- L12 `['<a_226>', '<b_247>']` size=4, internal cooc edges=1
+  - `555` 3M 3920-BK Duct Tape Black, 1.88 Inches by 20 Yards
+  - `1429` 3M Duct Tape Black, 3920-BK, 1.88 Inches by 20 Yards
+  - `1673` 3M Vinyl Duct Tape, Red, 2-Inch by 50-Yard
+  - `3253` 3M 3960-RD Red Duct Tape, 1.88 Inches by 60 Yards
+  - cooc=2: `1673` 3M Vinyl Duct Tape, Red, 2-Inch by 50-Yard <-> `3253` 3M 3960-RD Red Duct Tape, 1.88 Inches by 60 Yards
+- L12 `['<a_226>', '<b_85>']` size=4, internal cooc edges=6
+  - `991` Pro Gaffer Gaffers Tape, 2 in x 55 yd, Black
+  - `1321` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors available, 2 inch, Brown
+  - `1322` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors available, 2 inch, Black
+  - `1323` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors available, 1 inch, Black
+  - cooc=8: `1322` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors av <-> `1323` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors av
+  - cooc=8: `1321` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors av <-> `1323` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors av
+  - cooc=8: `1321` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors av <-> `1322` Pro Gaff Gaffers Tape 1 and 2 inch widths, 17 colors av
+- L12 `['<a_226>', '<b_203>']` size=3, internal cooc edges=3
+  - `228` Duck Brand 240201 MAX Strength Duct Tape, 1.88 Inches by 45 Yards, Silver, Singl
+  - `614` Duck Brand 394471 Advanced Strength Duct Tape, 1.88 Inches by 60 Yards, Single R
+  - `703` Duck Brand 240200 Double-Sided Duct Tape, 1.4-Inch by 12-Yards, Single Roll
+  - cooc=2: `228` Duck Brand 240201 MAX Strength Duct Tape, 1.88 Inches b <-> `614` Duck Brand 394471 Advanced Strength Duct Tape, 1.88 Inc
+  - cooc=1: `614` Duck Brand 394471 Advanced Strength Duct Tape, 1.88 Inc <-> `703` Duck Brand 240200 Double-Sided Duct Tape, 1.4-Inch by 1
+  - cooc=1: `228` Duck Brand 240201 MAX Strength Duct Tape, 1.88 Inches b <-> `703` Duck Brand 240200 Double-Sided Duct Tape, 1.4-Inch by 1
+
+## L1 `<a_20>` size=103
+
+### Items（前 12 个物品）
+- `161` SA180 Adhesive Standoffs, 24 Pack, 0.180" Height, Offset 0.6x0.6" Base, Fits 0.125" PCB Hole
+- `389` uxcell Metal Nut LED Mounting Holder Panel w 3mm 50 Pieces Black
+- `632` TEKTRUM EXTERNALLY POWERED SOLDERLESS 1660 TIE-POINTS EXPERIMENT PLUG-IN BREADBOARD WITH ALUMINUM BA
+- `633` 100 x 2N2222 NPN TO-92 Plastic-Encapsulate Power Transistors 75V 600mA
+- `636` SUNKEE 20pcs Photo Light Sensitive Resistor Photoresistor Optoresistor 5mm GM5539 5539
+- `734` microtivity IL188 5mm Assorted Clear LED w/Resistors (8 Colors, Pack of 80)
+- `735` E-Projects EPC-102 43 Value Resistor Kit, 1 Ohm - 10M Ohm (Pack of 1075)
+- `956` Uxcell a13081500ux0353 20 Piece 50-100K Ohm Photoresistor Photo Resistors Light-Dependent Resistance
+- `1239` Uxcell A13122300UX0934 LED Light Mounting Holders Panel (Pack of 50)
+- `1545` Top-cofrLD 1/4w Resistors Pack 164 values x 10pcs = 1640pcs 0-22M Metal Film Full range resistors As
+- `1556` microtivity IM414 Double-sided Prototyping Board (4x6cm, Pack of 5)
+- `1566` Electronics-Salon 0.47uF to 1000uF Electrolytic Capacitors Assortment Kit, 13 Values, Total 200 Piec
+
+- internal train cooc edges（桶内训练共现边）: 771; top edge count sum=105
+- boundary train cooc edges（跨桶训练共现边）: 5424
+### Top internal cooc（桶内强共现）
+- cooc=9: `734` microtivity IL188 5mm Assorted Clear LED w/Resistors (8 Colors, Pack o  <->  `1753` 5pcs 6x8cm Double-Side Prototype PCB Universal Printed Circuit Board
+  - example row=9051: history_tail=[1563, 2952, 2959, 2559, 2960, 1617, 1556, 1753] -> target=734
+- cooc=8: `1760` microtivity IL151 5mm Clear White LED w/Resistors (Pack of 30)  <->  `3175` microtivity IL112 5mm Clear Red LED w/ Resistors (Pack of 30)
+  - example row=333: history_tail=[3175] -> target=1760
+- cooc=8: `1752` Vktech 10pcs 4x6cm Double Side Prototype PCB Universal Printed Circuit  <->  `1753` 5pcs 6x8cm Double-Side Prototype PCB Universal Printed Circuit Board
+  - example row=9173: history_tail=[250, 1752] -> target=1753
+- cooc=7: `633` 100 x 2N2222 NPN TO-92 Plastic-Encapsulate Power Transistors 75V 600mA  <->  `734` microtivity IL188 5mm Assorted Clear LED w/Resistors (8 Colors, Pack o
+  - example row=11442: history_tail=[2561, 734, 586, 2628] -> target=633
+- cooc=6: `1753` 5pcs 6x8cm Double-Side Prototype PCB Universal Printed Circuit Board  <->  `2958` 50 Pcs 16.000MHz AT49S 20PF DIP Quartz Crystal Oscillator
+  - example row=7477: history_tail=[1366, 2958, 2960, 1489] -> target=1753
+- cooc=6: `734` microtivity IL188 5mm Assorted Clear LED w/Resistors (8 Colors, Pack o  <->  `1778` Solderless Plug-in BreadBoard, 830 tie-points, 2 Power lanes, 200PTS, 
+  - example row=8154: history_tail=[2612, 1814, 1601, 381, 1860, 2847, 2848, 1780] -> target=1778
+- cooc=6: `734` microtivity IL188 5mm Assorted Clear LED w/Resistors (8 Colors, Pack o  <->  `1752` Vktech 10pcs 4x6cm Double Side Prototype PCB Universal Printed Circuit
+  - example row=8189: history_tail=[3055, 1556, 734] -> target=1752
+- cooc=5: `734` microtivity IL188 5mm Assorted Clear LED w/Resistors (8 Colors, Pack o  <->  `2958` 50 Pcs 16.000MHz AT49S 20PF DIP Quartz Crystal Oscillator
+  - example row=3306: history_tail=[281, 1462, 1728, 2958] -> target=734
+
+### Top L12 under this L1（该 L1 下最大的前两层桶）
+- L12 `['<a_20>', '<b_204>']` size=7, internal cooc edges=5
+  - `1723` Uxcell a15032300ux0532 Potentiometer Volume Control Knob Cap with 100 Piece, Knu
+  - `1864` 10K Ohm potentiometer potential+black control Knob
+  - `2536` uxcell 5 Pcs 500K ohm B500K Top Adjustment Single Linear Potentiometers
+  - `2565` uxcell 5pcs 2K ohm 3 Terminal 6mm Split Shaft Single Turn Potentiometers
+  - `2624` Uxcell a13060500ux0042 3 Pins Split Shaft Rotary Linear Taper Potentiometers wit
+  - `3104` Uxcell a15011600ux0239 2 Sets 1K 2K 5K 10K Ohm Linear Taper Rotary Potentiometer
+  - cooc=2: `2624` Uxcell a13060500ux0042 3 Pins Split Shaft Rotary Linear <-> `3553` Uxcell a15011600ux0214 5 Piece 5K Ohm Linear Taper Rota
+  - cooc=1: `2565` uxcell 5pcs 2K ohm 3 Terminal 6mm Split Shaft Single Tu <-> `2624` Uxcell a13060500ux0042 3 Pins Split Shaft Rotary Linear
+  - cooc=1: `2536` uxcell 5 Pcs 500K ohm B500K Top Adjustment Single Linea <-> `2624` Uxcell a13060500ux0042 3 Pins Split Shaft Rotary Linear
+- L12 `['<a_20>', '<b_246>']` size=6, internal cooc edges=8
+  - `734` microtivity IL188 5mm Assorted Clear LED w/Resistors (8 Colors, Pack of 80)
+  - `1683` microtivity IL142 5mm Diffused Blue LED w/ Resistors (Pack of 30)
+  - `1760` microtivity IL151 5mm Clear White LED w/Resistors (Pack of 30)
+  - `1785` microtivity IL184 5mm Assorted Clear LED w/ Resistors (6 Colors, Pack of 60)
+  - `2982` microtivity IL185 5mm Assorted Diffused LED w/ Resistors (5 Colors, Pack of 50)
+  - `3175` microtivity IL112 5mm Clear Red LED w/ Resistors (Pack of 30)
+  - cooc=8: `1760` microtivity IL151 5mm Clear White LED w/Resistors (Pack <-> `3175` microtivity IL112 5mm Clear Red LED w/ Resistors (Pack 
+  - cooc=3: `1760` microtivity IL151 5mm Clear White LED w/Resistors (Pack <-> `1785` microtivity IL184 5mm Assorted Clear LED w/ Resistors (
+  - cooc=2: `734` microtivity IL188 5mm Assorted Clear LED w/Resistors (8 <-> `1785` microtivity IL184 5mm Assorted Clear LED w/ Resistors (
+- L12 `['<a_20>', '<b_52>']` size=6, internal cooc edges=10
+  - `2392` E-Projects 100EP514100R 100 Ohm Resistors, 1/4 W, 5% (Pack of 100)
+  - `3043` E-Projects 25EP514220R 220 Ohm Resistors, 1/4 W, 5% (Pack of 25)
+  - `3125` E-Projects 10EP514470R 470 Ohm Resistors, 1/4 W, 5% (Pack of 10)
+  - `3340` E-Projects 25EP514150R 150 Ohm Resistors, 1/4 W, 5% (Pack of 25)
+  - `3381` E-Projects 25EP514120R 120 Ohm Resistors, 1/4 W, 5% (Pack of 25)
+  - `3382` E-Projects 100EP514200R 200 Ohm Resistors, 1/4 W, 5% (Pack of 100)
+  - cooc=3: `2392` E-Projects 100EP514100R 100 Ohm Resistors, 1/4 W, 5% (P <-> `3382` E-Projects 100EP514200R 200 Ohm Resistors, 1/4 W, 5% (P
+  - cooc=3: `2392` E-Projects 100EP514100R 100 Ohm Resistors, 1/4 W, 5% (P <-> `3381` E-Projects 25EP514120R 120 Ohm Resistors, 1/4 W, 5% (Pa
+  - cooc=3: `2392` E-Projects 100EP514100R 100 Ohm Resistors, 1/4 W, 5% (P <-> `3043` E-Projects 25EP514220R 220 Ohm Resistors, 1/4 W, 5% (Pa
+- L12 `['<a_20>', '<b_51>']` size=5, internal cooc edges=3
+  - `1545` Top-cofrLD 1/4w Resistors Pack 164 values x 10pcs = 1640pcs 0-22M Metal Film Ful
+  - `2649` Joe Knows Electronics 1/2W 86 Value 860 Piece Resistor Kit
+  - `2803` Joe Knows Electronics 1W 86 Value 860 Piece Resistor Kit
+  - `3047` 2140Pcs SAMSUNG SMD 0805 50 Value Resistor & 32 Value Capacitor Assortment Kit
+  - `3346` Yobett 0805 (15pF-1uF)&(0 ohm-2M ohm) 5% 80 Value 3725pcs SMD Resistor and Capac
+  - cooc=4: `2649` Joe Knows Electronics 1/2W 86 Value 860 Piece Resistor  <-> `2803` Joe Knows Electronics 1W 86 Value 860 Piece Resistor Ki
+  - cooc=1: `1545` Top-cofrLD 1/4w Resistors Pack 164 values x 10pcs = 164 <-> `3047` 2140Pcs SAMSUNG SMD 0805 50 Value Resistor & 32 Value C
+  - cooc=1: `1545` Top-cofrLD 1/4w Resistors Pack 164 values x 10pcs = 164 <-> `2649` Joe Knows Electronics 1/2W 86 Value 860 Piece Resistor 
+- L12 `['<a_20>', '<b_43>']` size=4, internal cooc edges=2
+  - `735` E-Projects EPC-102 43 Value Resistor Kit, 1 Ohm - 10M Ohm (Pack of 1075)
+  - `1601` E-Projects EPC-103 16 Value Resistor Kit, 10 Ohm - 1M Ohm (Pack of 400)
+  - `2028` E-Projects EPC-101 31 Value Resistor Kit, 10 Ohm - 1M Ohm, 1/4 Watt (Pack of 775
+  - `2983` E-Projects EPC-105 16 Value Resistor Kit, 10 Ohm - 1M Ohm, 1/2 Watt (Pack of 400
+  - cooc=2: `1601` E-Projects EPC-103 16 Value Resistor Kit, 10 Ohm - 1M O <-> `2983` E-Projects EPC-105 16 Value Resistor Kit, 10 Ohm - 1M O
+  - cooc=1: `735` E-Projects EPC-102 43 Value Resistor Kit, 1 Ohm - 10M O <-> `2028` E-Projects EPC-101 31 Value Resistor Kit, 10 Ohm - 1M O
+- L12 `['<a_20>', '<b_125>']` size=4, internal cooc edges=0
+  - `1566` Electronics-Salon 0.47uF to 1000uF Electrolytic Capacitors Assortment Kit, 13 Va
+  - `1814` sunkee 12 Value (1uf-470UF) 120 pcs Electrolytic Capacitors kit,50V1UF,each 10 p
+  - `2558` RHX 125pcs 25 Values Total Electrolytic Capacitors Assortment Kit 1uF to 2200uF
+  - `3074` E-Projects EPC-201 36 Value Capacitor Kit (Pack of 570)
+- L12 `['<a_20>', '<b_159>']` size=4, internal cooc edges=4
+  - `1600` uxcell 5 Pcs 5cm x 7cm Double Sided Prototype Universal PCB Circuit Board
+  - `1752` Vktech 10pcs 4x6cm Double Side Prototype PCB Universal Printed Circuit Board
+  - `1753` 5pcs 6x8cm Double-Side Prototype PCB Universal Printed Circuit Board
+  - `1881` Phantom YoYo 170 Points Mini Breadboard for Arduino Proto Shield (6 PCS)
+  - cooc=8: `1752` Vktech 10pcs 4x6cm Double Side Prototype PCB Universal  <-> `1753` 5pcs 6x8cm Double-Side Prototype PCB Universal Printed 
+  - cooc=3: `1753` 5pcs 6x8cm Double-Side Prototype PCB Universal Printed  <-> `1881` Phantom YoYo 170 Points Mini Breadboard for Arduino Pro
+  - cooc=3: `1752` Vktech 10pcs 4x6cm Double Side Prototype PCB Universal  <-> `1881` Phantom YoYo 170 Points Mini Breadboard for Arduino Pro
+- L12 `['<a_20>', '<b_207>']` size=3, internal cooc edges=0
+  - `636` SUNKEE 20pcs Photo Light Sensitive Resistor Photoresistor Optoresistor 5mm GM553
+  - `956` Uxcell a13081500ux0353 20 Piece 50-100K Ohm Photoresistor Photo Resistors Light-
+  - `1805` PODOY 20PCS Photoresistor GL5537 5537 LDR Photo Resistors Light-Dependent
+
+## L1 `<a_1>` size=93
+
+### Items（前 12 个物品）
+- `1` Stanley TRA708T Sharpshooter 1/2-Inch Leg Length Staples, Steel (1000 Count)
+- `2` Stanley TRA708SST 1/2-Inch HD Stainless Steel Narrow Crown Staple
+- `3` Kreg SML-C125-500 1-1/4-Inch #8 Coarse Pocket Hole Screws with Washer-Head, 500-Pack
+- `15` Kreg SML-C2-250 Pocket Screws 2-Inch, 8 Coarse, Washer Head, 250 Count
+- `17` BOSTITCH BT1335B-1M 1-3/8-Inch 18-Gauge Brads, 1000 per Box
+- `19` BOSTITCH BT1309B-1M 1-Inch 18-Gauge Brads, 1000 per Box
+- `20` PORTER-CABLE (PBN18075-1) 18 Gauge Brad Nails, 3/4-Inch, 1000-Pack
+- `21` Swordfish 32051 Brass Plated Wood Screw Assortment, 500 Piece
+- `91` BOSTITCH BT1309B 1-Inch 18-Gauge Brads, 3000 per Box
+- `166` ARROW 160455 Drywall Drill Bit, Screw and Anchor Kit
+- `171` Bulldog 131525 Multi-Screwdriver Holder Peg Hook
+- `224` Senco L15BAB 18 Gauge by 1/4-inch Crown by 1-1/4-inch Length Electro Galvanized Staples (5,000 per b
+
+- internal train cooc edges（桶内训练共现边）: 323; top edge count sum=136
+- boundary train cooc edges（跨桶训练共现边）: 4203
+### Top internal cooc（桶内强共现）
+- cooc=12: `387` Kreg SML-C125-100 1-1/4-Inch 8-Coarse Washer-Head Pocket Screws, 100-C  <->  `908` Kreg SML-C150-100 Pocket Screws 1-1/2-Inch, 8 Coarse, Washer-Head, 100
+  - example row=4381: history_tail=[387] -> target=908
+- cooc=11: `387` Kreg SML-C125-100 1-1/4-Inch 8-Coarse Washer-Head Pocket Screws, 100-C  <->  `1985` Kreg SML-C2 2-Inch Washer Head #8 Coarse Pocket Screws, 50 Count
+  - example row=4977: history_tail=[909, 178, 936, 603, 914, 37, 359, 1395] -> target=1985
+- cooc=10: `908` Kreg SML-C150-100 Pocket Screws 1-1/2-Inch, 8 Coarse, Washer-Head, 100  <->  `1985` Kreg SML-C2 2-Inch Washer Head #8 Coarse Pocket Screws, 50 Count
+  - example row=4977: history_tail=[909, 178, 936, 603, 914, 37, 359, 1395] -> target=1985
+- cooc=10: `391` Senco A209909 18-Gauge-by-1-2-Inch Electro Galvanized Variety Pack Bra  <->  `1229` Senco A209809 18-Gauge-by-5/8-Inch to 1-1/4-Inch Electro Galvanized Va
+  - example row=3194: history_tail=[359, 1865, 229, 347, 354, 1229] -> target=391
+- cooc=9: `387` Kreg SML-C125-100 1-1/4-Inch 8-Coarse Washer-Head Pocket Screws, 100-C  <->  `909` Kreg SML-C250-50 2-1/2-Inch #8 Coarse Washer-Head Pocket Screws, 50 Co
+  - example row=1967: history_tail=[395, 387] -> target=909
+- cooc=8: `909` Kreg SML-C250-50 2-1/2-Inch #8 Coarse Washer-Head Pocket Screws, 50 Co  <->  `1985` Kreg SML-C2 2-Inch Washer Head #8 Coarse Pocket Screws, 50 Count
+  - example row=4977: history_tail=[909, 178, 936, 603, 914, 37, 359, 1395] -> target=1985
+- cooc=8: `1` Stanley TRA708T Sharpshooter 1/2-Inch Leg Length Staples, Steel (1000   <->  `331` Stanley TRA700BN Heavy-Duty Staple & Brad Assortment, 2500-Pack
+  - example row=4706: history_tail=[2914, 1] -> target=331
+- cooc=7: `908` Kreg SML-C150-100 Pocket Screws 1-1/2-Inch, 8 Coarse, Washer-Head, 100  <->  `909` Kreg SML-C250-50 2-1/2-Inch #8 Coarse Washer-Head Pocket Screws, 50 Co
+  - example row=4574: history_tail=[482, 4, 387, 908] -> target=909
+
+### Top L12 under this L1（该 L1 下最大的前两层桶）
+- L12 `['<a_1>', '<b_35>']` size=6, internal cooc edges=4
+  - `17` BOSTITCH BT1335B-1M 1-3/8-Inch 18-Gauge Brads, 1000 per Box
+  - `19` BOSTITCH BT1309B-1M 1-Inch 18-Gauge Brads, 1000 per Box
+  - `363` BOSTITCH BT1350B-1M 2-Inch 18-Gauge Brads, 1000 per Box, Coated
+  - `762` BOSTITCH BT1350B 2-Inch 18-Gauge Brad Nails, 2000-Per Box
+  - `775` BOSTITCH FN1532-1M 2-Inch 15-Gauge FN Style Angled Finish Nails, 1000 per Box
+  - `1367` BOSTITCH PT-2319-3M 3/4-Inch 23 Gauge Pin (3000 per Box)
+  - cooc=6: `19` BOSTITCH BT1309B-1M 1-Inch 18-Gauge Brads, 1000 per Box <-> `363` BOSTITCH BT1350B-1M 2-Inch 18-Gauge Brads, 1000 per Box
+  - cooc=6: `17` BOSTITCH BT1335B-1M 1-3/8-Inch 18-Gauge Brads, 1000 per <-> `363` BOSTITCH BT1350B-1M 2-Inch 18-Gauge Brads, 1000 per Box
+  - cooc=4: `17` BOSTITCH BT1335B-1M 1-3/8-Inch 18-Gauge Brads, 1000 per <-> `19` BOSTITCH BT1309B-1M 1-Inch 18-Gauge Brads, 1000 per Box
+- L12 `['<a_1>', '<b_27>']` size=6, internal cooc edges=9
+  - `230` DEWALT DBN18125 Heavy Duty 18 Gauge, 1-1/4-Inch Brad Nail (5000-Pack)
+  - `362` DEWALT DCA16200 2-Inch by 16 Gauge 20-Degree Finish Nail (2,500 per Box)
+  - `446` DEWALT DCS16150 1-1/2-Inch by 16 Gauge Finish Nail (2,500 per Box)
+  - `447` DEWALT DCS16200 2-Inch by 16 Gauge Finish Nail (2,500 per Box)
+  - `1411` DEWALT DCS16250 2-1/2-Inch by 16 Gauge Finish Nail (2,500 per Box)
+  - `1450` DEWALT DCS16125 1-1/4-Inch by 16 Gauge Finish Nail (2,500 per Box)
+  - cooc=4: `447` DEWALT DCS16200 2-Inch by 16 Gauge Finish Nail (2,500 p <-> `1411` DEWALT DCS16250 2-1/2-Inch by 16 Gauge Finish Nail (2,5
+  - cooc=4: `446` DEWALT DCS16150 1-1/2-Inch by 16 Gauge Finish Nail (2,5 <-> `447` DEWALT DCS16200 2-Inch by 16 Gauge Finish Nail (2,500 p
+  - cooc=3: `1411` DEWALT DCS16250 2-1/2-Inch by 16 Gauge Finish Nail (2,5 <-> `1450` DEWALT DCS16125 1-1/4-Inch by 16 Gauge Finish Nail (2,5
+- L12 `['<a_1>', '<b_199>']` size=5, internal cooc edges=3
+  - `20` PORTER-CABLE (PBN18075-1) 18 Gauge Brad Nails, 3/4-Inch, 1000-Pack
+  - `355` PORTER-CABLE PBN18100-1 1-Inch 18 Gauge Brad Nails, 1000-Pack
+  - `710` PORTER-CABLE PBN18200-1 2-Inch, 18 ga. brad nails (1000-Pack)
+  - `2071` PORTER-CABLE BN18PP 18 Gauge Brad Nail Project Pack,PORTER-CABLE,BN18PP" />
+  - `2520` PORTER-CABLE PBN18125 18 Gauge 1-1/4-Inch Brad Nail (5000-Pack)
+  - cooc=2: `710` PORTER-CABLE PBN18200-1 2-Inch, 18 ga. brad nails (1000 <-> `2071` PORTER-CABLE BN18PP 18 Gauge Brad Nail Project Pack,POR
+  - cooc=1: `20` PORTER-CABLE (PBN18075-1) 18 Gauge Brad Nails, 3/4-Inch <-> `2071` PORTER-CABLE BN18PP 18 Gauge Brad Nail Project Pack,POR
+  - cooc=1: `20` PORTER-CABLE (PBN18075-1) 18 Gauge Brad Nails, 3/4-Inch <-> `355` PORTER-CABLE PBN18100-1 1-Inch 18 Gauge Brad Nails, 100
+- L12 `['<a_1>', '<b_128>']` size=5, internal cooc edges=1
+  - `428` Arrow Fastener 508IP Genuine T50 1/2-Inch Staples, 5,000-Pack
+  - `612` Arrow Fastener 214 Genuine JT21 1/4-Inch Staples, 1,000-Staples
+  - `1886` Arrow Fastener 256 Genuine T25 3/8-Inch Staples, 1,000-Pack
+  - `2019` Arrow Fastener 608 Wide Crown Swingline Style Heavy Duty 1/2-Inch Staples, 1000-
+  - `2022` Arrow Fastener 259 Genuine T25/T2025 9/16-Inch Staples, 1,000-Pack
+  - cooc=3: `1886` Arrow Fastener 256 Genuine T25 3/8-Inch Staples, 1,000- <-> `2022` Arrow Fastener 259 Genuine T25/T2025 9/16-Inch Staples,
+- L12 `['<a_1>', '<b_50>']` size=4, internal cooc edges=4
+  - `356` PORTER-CABLE PNS18075 3/4-Inch, 18 Gauge Narrow Crown (1/4-Inch) Staple (5000-Pa
+  - `357` PORTER-CABLE PNS18050 1/2-Inch, 18 Gauge Narrow Crown (1/4-Inch) Staple (5000-Pa
+  - `358` PORTER-CABLE PNS18100-1 1-Inch 18 Gauge Narrow Crown Staple, 1000-Pack
+  - `897` PORTER-CABLE NS18Pp 18 Gauge Narrow Crown Staple Project Pack, 900 Count, Variou
+  - cooc=2: `357` PORTER-CABLE PNS18050 1/2-Inch, 18 Gauge Narrow Crown ( <-> `897` PORTER-CABLE NS18Pp 18 Gauge Narrow Crown Staple Projec
+  - cooc=2: `357` PORTER-CABLE PNS18050 1/2-Inch, 18 Gauge Narrow Crown ( <-> `358` PORTER-CABLE PNS18100-1 1-Inch 18 Gauge Narrow Crown St
+  - cooc=1: `356` PORTER-CABLE PNS18075 3/4-Inch, 18 Gauge Narrow Crown ( <-> `358` PORTER-CABLE PNS18100-1 1-Inch 18 Gauge Narrow Crown St
+- L12 `['<a_1>', '<b_142>']` size=4, internal cooc edges=3
+  - `721` Kreg SML-C2B-250 Blue-Kote Weather Resistant Pocket Hole Screws - 2", 8 Coarse, 
+  - `910` Kreg SML-C150B-100 Blue-Kote WR Pocket Screws - 1-1/2-Inch, 100 pack
+  - `1985` Kreg SML-C2 2-Inch Washer Head #8 Coarse Pocket Screws, 50 Count
+  - `2508` Kreg SPS-C1-100 Pocket Screws - 1-Inch, 7 Coarse, Pan-Head, 100-Count
+  - cooc=2: `1985` Kreg SML-C2 2-Inch Washer Head #8 Coarse Pocket Screws, <-> `2508` Kreg SPS-C1-100 Pocket Screws - 1-Inch, 7 Coarse, Pan-H
+  - cooc=2: `721` Kreg SML-C2B-250 Blue-Kote Weather Resistant Pocket Hol <-> `2508` Kreg SPS-C1-100 Pocket Screws - 1-Inch, 7 Coarse, Pan-H
+  - cooc=1: `721` Kreg SML-C2B-250 Blue-Kote Weather Resistant Pocket Hol <-> `910` Kreg SML-C150B-100 Blue-Kote WR Pocket Screws - 1-1/2-I
+- L12 `['<a_1>', '<b_24>']` size=3, internal cooc edges=2
+  - `3` Kreg SML-C125-500 1-1/4-Inch #8 Coarse Pocket Hole Screws with Washer-Head, 500-
+  - `387` Kreg SML-C125-100 1-1/4-Inch 8-Coarse Washer-Head Pocket Screws, 100-Count
+  - `2491` Kreg SML-F125-100 1-1/4-Inch 7-Fine Washer-Head Pocket Screws, 100-Count
+  - cooc=6: `387` Kreg SML-C125-100 1-1/4-Inch 8-Coarse Washer-Head Pocke <-> `2491` Kreg SML-F125-100 1-1/4-Inch 7-Fine Washer-Head Pocket 
+  - cooc=2: `3` Kreg SML-C125-500 1-1/4-Inch #8 Coarse Pocket Hole Scre <-> `387` Kreg SML-C125-100 1-1/4-Inch 8-Coarse Washer-Head Pocke
+- L12 `['<a_1>', '<b_233>']` size=3, internal cooc edges=3
+  - `229` DEWALT DBN18063 Heavy Duty 5/8-Inch, 18 Gauge Brad Nails (5000-Pack)
+  - `347` DEWALT DBN18200 Heavy Duty 18 Gauge, 2-Inch Brad Nail (5000-Pack)
+  - `354` DEWALT DBN18150 Heavy Duty 18-Gauge1-1/2-Inch Brad Nail (5000-Pack)
+  - cooc=3: `347` DEWALT DBN18200 Heavy Duty 18 Gauge, 2-Inch Brad Nail ( <-> `354` DEWALT DBN18150 Heavy Duty 18-Gauge1-1/2-Inch Brad Nail
+  - cooc=3: `229` DEWALT DBN18063 Heavy Duty 5/8-Inch, 18 Gauge Brad Nail <-> `347` DEWALT DBN18200 Heavy Duty 18 Gauge, 2-Inch Brad Nail (
+  - cooc=2: `229` DEWALT DBN18063 Heavy Duty 5/8-Inch, 18 Gauge Brad Nail <-> `354` DEWALT DBN18150 Heavy Duty 18-Gauge1-1/2-Inch Brad Nail
+
+## Specific Pair Cases（具体物品对）
+
+- `2014` vs `2233`: cooc=0, SID=('<a_251>', '<b_7>', '<c_122>') / ('<a_251>', '<b_7>', '<c_228>'), LCP=2, overlap=2
+  - A: Red Brass Pipe Fitting, Nipple, Schedule 40 Seamless, 1/4" NPT Male X 1-1/2" Length
+  - B: Red Brass Pipe Fitting, Nipple, Schedule 40 Seamless, 1/4" NPT Male X 4" Length
+- `2233` vs `3345`: cooc=0, SID=('<a_251>', '<b_7>', '<c_228>') / ('<a_251>', '<b_7>', '<c_15>'), LCP=2, overlap=2
+  - A: Red Brass Pipe Fitting, Nipple, Schedule 40 Seamless, 1/4" NPT Male X 4" Length
+  - B: Red Brass Pipe Fitting, Nipple, Schedule 40 Seamless, 1/4" NPT Male X 3" Length
+- `2330` vs `3529`: cooc=0, SID=('<a_19>', '<b_231>', '<c_241>') / ('<a_19>', '<b_231>', '<c_239>'), LCP=2, overlap=2
+  - A: SIENOC 3D PLA 1KG 1.75mm PLA 3D Printer Filament, Dimensional Accuracy+/- 0.05mm 1 kg(2.2 lbs) Spool
+  - B: SIENOC 3D PLA 1KG 1.75mm PLA 3D Printer Filament, Dimensional Accuracy+/- 0.05mm 1 kg(2.2 lbs) Spool
+- `2701` vs `3096`: cooc=0, SID=('<a_19>', '<b_167>', '<c_20>') / ('<a_19>', '<b_167>', '<c_98>'), LCP=2, overlap=2
+  - A: HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Transparent Bla
+  - B: HATCHBOX 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Bronze
+- `3442` vs `3469`: cooc=0, SID=('<a_19>', '<b_89>', '<c_192>') / ('<a_19>', '<b_89>', '<c_124>'), LCP=2, overlap=2
+  - A: 3D Solutech Real Purple 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2
+  - B: 3D Solutech Real Pink 3D Printer PLA Filament 1.75MM Filament, Dimensional Accuracy +/- 0.03 mm, 2.2
+- `181` vs `182`: cooc=327, SID=('<a_205>', '<b_223>', '<c_0>') / ('<a_205>', '<b_223>', '<c_0>'), LCP=3, overlap=3
+  - A: AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and Humidity Gauge Indica
+  - B: AcuRite 00613 Humidity Monitor with Indoor Thermometer, Digital Hygrometer and Humidity Gauge Indica
+  - purchase example row=116: history_tail=[181, 181] -> target=182
+  - purchase example row=20304: history_tail=[2276, 181, 181] -> target=182
+- `139` vs `774`: cooc=3, SID=('<a_193>', '<b_134>', '<c_0>') / ('<a_193>', '<b_134>', '<c_0>'), LCP=3, overlap=3
+  - A: DuPont Teflon Non-Stick
+  - B: DuPont Teflon Non-Stick
+  - purchase example row=7555: history_tail=[2688, 98, 139] -> target=774
+  - purchase example row=28272: history_tail=[1987, 139, 140] -> target=774
+- `216` vs `217`: cooc=24, SID=('<a_180>', '<b_195>', '<c_0>') / ('<a_180>', '<b_195>', '<c_0>'), LCP=3, overlap=3
+  - A: Ancor Tinned Copper Lugs 8 AWG - 4/0 AWG
+  - B: Ancor Tinned Copper Lugs 8 AWG - 4/0 AWG
+  - purchase example row=247: history_tail=[216] -> target=217
+  - purchase example row=1763: history_tail=[178, 216] -> target=217
+- `1955` vs `3038`: cooc=1, SID=('<a_96>', '<b_48>', '<c_0>') / ('<a_96>', '<b_48>', '<c_0>'), LCP=3, overlap=3
+  - A: SEOH 5 Pack Glass Borosilicate Graduated Beakers 50 100 250 600 and 1000ml
+  - B: SEOH 5 Pack Glass Borosilicate Graduated Beakers 50 100 250 600 and 1000ml
+  - purchase example row=26735: history_tail=[863, 2323, 232, 3392, 1955] -> target=3038
+- `50` vs `562`: cooc=1, SID=('<a_19>', '<b_61>', '<c_67>') / ('<a_19>', '<b_61>', '<c_109>'), LCP=2, overlap=2
+  - A: HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Blue
+  - B: HATCHBOX PLA 3D Printer Filament, Dimensional Accuracy +/- 0.03 mm, 1 kg Spool, 1.75 mm, Black
+  - purchase example row=5724: history_tail=[2667, 562, 1851] -> target=50
+- `1553` vs `1554`: cooc=1, SID=('<a_223>', '<b_157>', '<c_33>') / ('<a_223>', '<b_157>', '<c_81>'), LCP=2, overlap=2
+  - A: Inland 1.75mm Red PLA 3D Printer Filament - 1kg Spool (2.2 lbs)
+  - B: Inland 1.75mm Peak Green PLA 3D Printer Filament - 1kg Spool (2.2 lbs)
+  - purchase example row=32974: history_tail=[3171, 51, 1554, 2718, 3097, 3535, 2918] -> target=1553
+- `24` vs `96`: cooc=4, SID=('<a_78>', '<b_106>', '<c_24>') / ('<a_187>', '<b_101>', '<c_165>'), LCP=0, overlap=0
+  - A: Wine Yeast Red Star Premier Classique Formerly Montrachet For Wine Making x10
+  - B: 1 X Hydrometer - Triple Scale
+  - purchase example row=1114: history_tail=[96, 120, 1727, 2605, 2778] -> target=24
+  - purchase example row=7403: history_tail=[1417, 96, 1714, 1714, 1727] -> target=24
+- `96` vs `1714`: cooc=6, SID=('<a_187>', '<b_101>', '<c_165>') / ('<a_78>', '<b_35>', '<c_0>'), LCP=0, overlap=0
+  - A: 1 X Hydrometer - Triple Scale
+  - B: Red Star Premier Cuvee Wine Yeast, 5g - 10-Pack
+  - purchase example row=467: history_tail=[1417, 96] -> target=1714
+  - purchase example row=468: history_tail=[1417, 96, 1714] -> target=1714

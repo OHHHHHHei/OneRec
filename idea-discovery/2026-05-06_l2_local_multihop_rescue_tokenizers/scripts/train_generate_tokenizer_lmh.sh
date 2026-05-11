@@ -25,7 +25,7 @@ mkdir -p "$(dirname "$GENERATED_INDEX")"
 mkdir -p "$(dirname "$GENERATE_SUMMARY")"
 mkdir -p "$CKPT_ROOT"
 
-python -m onerec.experiments.mgr_sid_lmh.train_entry \
+python -m onerec.experiments.hcsid.train_entry \
   --config "$CONFIG" 2>&1 | tee "$LOG"
 
 RUN_DIR="$(
@@ -41,7 +41,7 @@ print(max(dirs, key=lambda p: p.stat().st_mtime))
 PY
 )"
 
-python -m onerec.experiments.mgr_sid_lmh.generate_entry \
+python -m onerec.experiments.hcsid.generate_entry \
   --ckpt_path "$RUN_DIR/best_collision_model.pth" \
   --output_file "$GENERATED_INDEX" \
   --summary_file "$GENERATE_SUMMARY" \

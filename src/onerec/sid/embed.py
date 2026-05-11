@@ -138,8 +138,11 @@ def generate_item_embedding(args, item_text_list, tokenizer, model, accelerator,
         all_results_flat.sort(key=lambda x: x[0])
         
         final_embeddings = np.stack([x[1] for x in all_results_flat], axis=0)
+        if args.output_dtype == "float16":
+            final_embeddings = final_embeddings.astype(np.float16)
         
         print('Final Embeddings shape: ', final_embeddings.shape)
+        print('Final Embeddings dtype: ', final_embeddings.dtype)
         
         file_path = os.path.join(args.root, f"{args.dataset}.emb-{args.plm_name}-td.npy")
         np.save(file_path, final_embeddings)
@@ -165,6 +168,7 @@ def parse_args():
     parser.add_argument('--plm_checkpoint', type=str, default='xxx', help='Qwen model path')
     parser.add_argument('--max_sent_len', type=int, default=2048)
     parser.add_argument('--word_drop_ratio', type=float, default=-1, help='word drop ratio')
+    parser.add_argument('--output_dtype', type=str, default='float32', choices=['float32', 'float16'], help='saved embedding dtype')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -190,4 +194,3 @@ if __name__ == '__main__':
         accelerator, 
         word_drop_ratio=args.word_drop_ratio
     )
-

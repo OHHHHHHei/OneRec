@@ -2,59 +2,49 @@
 
 Status（状态）: `navigation（导航页）`
 
-Last updated（更新日期）: `2026-04-24`
+Last updated（更新日期）: `2026-05-11`
 
-这个目录现在只保留三个核心入口：
+This directory should stay lightweight（保持轻量）. It is not a place for every launch note（启动记录） or temporary experiment thought（临时实验想法）.
 
-1. 当前裁决的唯一事实源
-2. 实验总账与各实验阶段的可回溯记录入口
-3. 已归档 MGR-SID 负结果线的分类入口
+## Live Documents（实时维护文档）
 
-## Canonical Files（权威入口文件）
+Use these as the default entry points（默认入口）:
 
-- `CURRENT_STATE.md`
-- `experiment_registry/README.md`
-- `experiment_registry/downstream_scoreboard.csv`
-- `experiment_launches/README.md`
-- `archive/2026-04-24_mgr_sid_negative_research_archive/README.md`
+1. [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md): current claim boundary（当前主张边界）, strongest evidence（最强证据）, and next checkpoint（下一检查点）.
+2. [experiment_registry/README.md](/home/leejt/OneRec/research-progress-log/experiment_registry/README.md): registry workflow（总账流程）.
+3. [experiment_registry/downstream_scoreboard.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv): downstream result scoreboard（下游结果看板）.
+4. [experiment_registry/tokenizer_registry.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/tokenizer_registry.csv): tokenizer registry（分词器总账）.
+5. [experiment_registry/sft_registry.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/sft_registry.csv): SFT registry（监督微调总账）.
+6. [experiment_registry/rl_registry.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/rl_registry.csv): RL registry（强化学习总账）.
+
+Current method branch（当前方法分支）:
+
+- [MAINLINE.md](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/MAINLINE.md)
+
+## Snapshot Documents（快照文档）
+
+These are useful for history or advisor discussion（历史追溯或导师讨论）, but should not be treated as live state（实时状态）:
+
+- [archive/](/home/leejt/OneRec/research-progress-log/archive)
+- [2026-05-11_markdown_doc_cleanup/moved_files.txt](/home/leejt/OneRec/research-progress-log/archive/2026-05-11_markdown_doc_cleanup/moved_files.txt): list of archived Markdown files（已归档 Markdown 文件清单）.
+- legacy LaTeX artifacts（历史 LaTeX 产物） were archived under [legacy_latex/](/home/leejt/OneRec/research-progress-log/archive/2026-05-11_markdown_doc_cleanup/research-progress-log/legacy_latex).
+
+## Maintenance Policy（维护策略）
+
+- Finalized results（定稿结果） go into split registries（分表总账） first.
+- Current interpretation（当前解释） goes into `CURRENT_STATE.md`.
+- Method-specific detail（方法细节） goes into the active branch `MAINLINE.md`.
+- Advisor-facing text（导师汇报文字） goes under `advisor_reports/` as snapshot（快照）.
+- Launch state（启动状态）, tmux sessions（会话）, GPU assignments（显卡分配）, and temporary debugging（临时调试） should stay in logs（日志） or conversation（对话）, not long-term docs（长期文档）.
 
 Legacy（历史遗留）:
 
-- `../experiment_results.csv`
+- [experiment_results.csv](/home/leejt/OneRec/experiment_results.csv) remains a legacy wide registry（历史宽表总账） for compatibility（兼容） and migration（迁移） only.
 
-## Reference / Snapshot Files（参考 / 快照文件）
+## Reading Order（推荐阅读顺序）
 
-- `research_progress_log.tex`
-- `research_progress_log.pdf`
-- `archive/2026-04-24_mgr_sid_negative_research_archive/CLASSIFIED_STAGE_MANIFEST.md`
-- `archive/2026-04-24_mgr_sid_negative_research_archive/NEGATIVE_RESULT_POSTMORTEM.md`
-- `archive/2026-04-14_post_stage2_review_materials/README.md`
-  - 仅当你明确需要 archived brainstorm（归档头脑风暴） / external-review pack（外部评审包）时再读
-
-## Recommended Reading Order（推荐阅读顺序）
-
-1. `CURRENT_STATE.md`
-2. `archive/2026-04-24_mgr_sid_negative_research_archive/README.md`
-3. `archive/2026-04-24_mgr_sid_negative_research_archive/NEGATIVE_RESULT_POSTMORTEM.md`
-4. `experiment_registry/README.md`
-5. `experiment_registry/downstream_scoreboard.csv`
-6. `experiment_launches/README.md`
-7. 如需长篇里程碑叙事，再读 `research_progress_log.tex`
-8. 如需查历史 brainstorm（头脑风暴） / review（评审），再读 `archive/.../README.md`
-
-## Compile（编译）
-
-```bash
-cd /home/leejt/OneRec/research-progress-log
-pdflatex -interaction=nonstopmode -halt-on-error research_progress_log.tex
-```
-
-## Usage Policy（使用规则）
-
-- 当前裁决只维护在 `CURRENT_STATE.md`
-- 实验结果总账优先维护在 `experiment_registry/` 的 split registry（分表总账）中
-- `../experiment_results.csv` 是 legacy wide registry（历史宽表总账），只用于旧脚本兼容和迁移追溯
-- `research_progress_log.tex` 现在是 milestone narrative（里程碑叙事），不再承担 daily sync（日常同步）职责
-- `experiment_launches/README.md` 只维护阶段索引，不再单独复述当前主线
-- 细粒度 raw artifacts 保留在对应 run 目录下，不再在根目录平铺
-- 顶层 brainstorm（头脑风暴） / external review（外部评审） / postmortem（复盘）文档如果不再属于当前活跃叙事，应移入 `archive/`
+1. [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
+2. [MAINLINE.md](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/MAINLINE.md)
+3. [experiment_registry/downstream_scoreboard.csv](/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv)
+4. Needed advisor report（需要的导师汇报） under [advisor_reports/](/home/leejt/OneRec/research-progress-log/advisor_reports)
+5. Historical archive（历史归档） only when needed.

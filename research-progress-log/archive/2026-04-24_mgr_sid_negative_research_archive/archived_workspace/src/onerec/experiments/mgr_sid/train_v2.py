@@ -125,6 +125,10 @@ class MgrSidV2TrainConfig:
     qcr_l2_ramp_epochs: int = 0
     l3_contrastive_pull_weight: float = 0.0
     l3_contrastive_mode: str = "pairwise_pull"
+    l3_infonce_temperature: float = 0.1
+    l3_infonce_negative_pair_csv: str | None = None
+    l3_infonce_negative_pair_rule: str | None = None
+    l3_infonce_use_pair_reliability: bool = True
     l3_ranking_margin: float = 0.1
     l3_ranking_positive_topk: int = 8
     l3_ranking_negative_topk: int = 16
@@ -342,7 +346,7 @@ def _weighted_graph_guided_infonce_loss(
     if representations.size(0) <= 1:
         return representations.new_tensor(0.0)
     if temperature <= 0:
-        raise ValueError(f"l2_infonce_temperature must be positive, got {temperature}")
+        raise ValueError(f"graph_infonce temperature must be positive, got {temperature}")
 
     representations = F.normalize(representations.float(), p=2, dim=1)
     similarity = (representations @ representations.T) / temperature
@@ -809,6 +813,22 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
         if not cfg.l3_ranking_use_pair_reliability:
             l3_ranking_negative_pair_matrix = (l3_ranking_negative_pair_matrix > 0).float()
 
+    l3_infonce_negative_pair_matrix = None
+    if cfg.l3_contrastive_pull_weight > 0 and cfg.l3_contrastive_mode == "graph_infonce":
+        if not cfg.l3_infonce_negative_pair_csv:
+            raise ValueError(
+                "l3_infonce_negative_pair_csv is required when "
+                "l3_contrastive_mode=graph_infonce and l3_contrastive_pull_weight > 0"
+            )
+        l3_infonce_negative_pair_matrix = _load_selective_separation_pair_matrix(
+            path=cfg.l3_infonce_negative_pair_csv,
+            n_items=len(dataset),
+            device=device,
+            rule=cfg.l3_infonce_negative_pair_rule,
+        )
+        if not cfg.l3_infonce_use_pair_reliability:
+            l3_infonce_negative_pair_matrix = (l3_infonce_negative_pair_matrix > 0).float()
+
     model = _build_model_from_cfg(cfg, in_dim=dataset.dim).to(device)
     if cfg.warm_start_ckpt_path:
         _load_checkpoint_state(model, cfg.warm_start_ckpt_path, device=device)
@@ -1006,6 +1026,20 @@ def run_training(cfg: MgrSidV2TrainConfig) -> dict[str, Any]:
                         margin=cfg.l3_ranking_margin,
                         positive_topk=cfg.l3_ranking_positive_topk,
                         negative_topk=cfg.l3_ranking_negative_topk,
+                    )
+                elif cfg.l3_contrastive_mode == "graph_infonce":
+                    if l3_infonce_negative_pair_matrix is None:
+                        raise ValueError("l3_infonce_negative_pair_matrix was not initialized")
+                    l3_infonce_negative_subgraph = _select_subgraph(
+                        l3_infonce_negative_pair_matrix,
+                        batch_indices,
+                    )
+                    l3_contrastive_pull = _weighted_graph_guided_infonce_loss(
+                        level_representations[2],
+                        positive_pair_weights=local_subgraph,
+                        negative_pair_weights=l3_infonce_negative_subgraph,
+                        item_scales=graph_item_scale,
+                        temperature=cfg.l3_infonce_temperature,
                     )
                 else:
                     raise ValueError(f"Unsupported l3_contrastive_mode: {cfg.l3_contrastive_mode}")

@@ -2,158 +2,147 @@
 
 Status（状态）: `canonical（权威）`
 
-Last updated（更新日期）: `2026-05-07`
+Last updated（更新日期）: `2026-05-11`
 
 ## One-Line State（一句话状态）
 
-The active mainline（活跃主线） has shifted to:
+The current evidence line（当前证据线） is still:
 
-> `R690b local_multihop L2 rescue + weak contrastive pull=0.01`（R690b 局部多跳第二层救援 + 弱对比拉近 0.01） for SID tokenizer（语义标识分词器） construction, followed by standard OneRec SFT / RL（监督微调 / 强化学习）.
+> `r690b_lmh_l2_contrastive_pull_weight001`
 
-Reason（原因）:
+It is a meaningful tokenizer-side（分词器侧） positive signal on Industrial SFT（Industrial 监督微调）, but not yet a clean overall winner（整体胜者）:
 
-- It is the first tokenizer-side（分词器侧） line in this stage that beats the strongest original SFT baseline（原版最强监督微调基线） on `NDCG@1/@3/@5/@10`（归一化折损累计增益 @1/@3/@5/@10）.
-- It also beats `v2_on_p05` SFT（监督微调） on all primary `NDCG/HR@1/@3/@5/@10`（主要排序/命中指标） checkpoints.
-- Error analysis（错误分析） shows the gain is structurally meaningful: it improves rank quality（排序质量） especially when the target shares L2 prefix（第二层前缀） with historical items（历史物品）.
+- Industrial SFT（监督微调） improves NDCG（归一化折损累计增益） at @1/@3/@5/@10 over the strongest original MiniOneRec SFT baseline（原版最强监督微调基线）.
+- Industrial HR（命中率） is mixed, especially HR@10（命中率@10） is lower than the strongest original SFT baseline.
+- Industrial RL（强化学习） does not beat the strongest original MiniOneRec RL baseline（原版最强强化学习基线）.
+- Office SFT（Office 监督微调） gives small NDCG gains but mixed HR.
+- Toys SFT（Toys 监督微调） is negative.
 
-Current caveat（当前限制）:
+So the current claim should be conservative（保守）:
 
-- `HR@10`（命中率@10） is still below strongest original SFT（原版最强监督微调）.
-- The method improves ranking depth（排序靠前程度） more than coverage（覆盖面）.
-- RL/evaluate（强化学习/评测） is running and is the current decisive test（当前裁决实验）.
-
-Branch pointer（分支指针）:
-
-- [L2 Local Multihop Rescue Tokenizers](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/README.md)
-
-## Current Mainline Experiment（当前主线实验）
-
-Variant（变体）:
-
-- `r690b_lmh_l2_contrastive_pull_weight001`
-
-Tokenizer idea（分词器想法）:
-
-- Start from the R690b hierarchy-cost guided tokenizer（层级代价引导分词器） family.
-- Replace the stale/overweighted prior graph（旧先验图） setting with a refreshed local multihop graph（刷新后的局部多跳图）.
-- Apply a weak L2 contrastive pull（弱第二层对比拉近） with weight `0.01`.
-- Keep the downstream recipe（下游配方） aligned with the strongest comparable OneRec setup（OneRec 可比设置）.
-
-SFT result（监督微调结果）:
-
-| Metric（指标） | @1 | @3 | @5 | @10 |
-| --- | ---: | ---: | ---: | ---: |
-| NDCG（归一化折损累计增益） | 0.070593 | 0.088131 | 0.094889 | 0.104383 |
-| HR（命中率） | 0.070593 | 0.100816 | 0.117362 | 0.146923 |
-
-Primary comparisons（主要对比）:
-
-- Versus strongest original SFT（原版最强监督微调）:
-  - `NDCG@1/@3/@5/@10` all improve（全部提升）.
-  - `HR@1/@3` improve（提升）.
-  - `HR@5/@10` regress（下降）, with `HR@10 -0.003971`.
-- Versus `v2_on_p05` SFT:
-  - `NDCG/HR@1/@3/@5/@10` are all tied or improved（全部持平或提升）.
-
-Interpretation（解释）:
-
-- The model is not winning by simple hit-count expansion（命中数量扩张）.
-- It wins because more correct items move into earlier ranks（正确物品被排到更靠前位置）.
-- Pairwise against strongest original SFT（逐样本对比原版最强监督微调）:
-  - New Hit@10（本次命中@10）: `666`
-  - Original Hit@10（原版命中@10）: `684`
-  - New rank-better examples（本次排名更优样本）: `268`
-  - New rank-worse examples（本次排名更差样本）: `251`
-  - Net `NDCG@10` improvement（净提升）: `+0.000663`
-
-Error analysis（错误分析）:
-
-- Strongest slice（最强切片） versus `v2_on_p05`:
-  - `same_L2_seen`（历史中出现同第二层前缀）:
-    - `NDCG@10 +0.044051`
-    - `HR@10 +0.066845`
-- Main weakness（主要弱点）:
-  - `no_same_L1`（历史中没有同第一层前缀） has little gain.
-  - Fine-grained sibling items（同族兄弟物品） such as filament color/material variants（耗材颜色/材料变体） are still confused.
-
-Analysis artifacts（分析产物）:
-
-- [report.md](/home/leejt/OneRec/results/analysis/r690b_lmh_pull001_error_analysis_20260507/report.md)
-- [summary.json](/home/leejt/OneRec/results/analysis/r690b_lmh_pull001_error_analysis_20260507/summary.json)
-- [slice_comparison.csv](/home/leejt/OneRec/results/analysis/r690b_lmh_pull001_error_analysis_20260507/slice_comparison.csv)
-
-## Current Running Experiment（当前运行实验）
-
-RL/evaluate（强化学习/评测） is running:
-
-- tmux session（会话）: `mgr_r690b_lmh_pull001_rl_eval_0507`
-- GPUs（显卡）: `2,3,4,5`
-- W&B run（实验追踪）: `fug78gw7`
-- Log（日志）: [mgr_r690b_lmh_pull001_rl_eval_0507.log](/home/leejt/OneRec/logs/l2_lmh_rl/mgr_r690b_lmh_pull001_rl_eval_0507.log)
-- RL config（强化学习配置）: [rl_industrial_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_4gpu.yaml](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/configs/rl_industrial_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_4gpu.yaml)
-- Eval config（评测配置）: [evaluate_industrial_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_rl_4gpu.yaml](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/configs/evaluate_industrial_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_rl_4gpu.yaml)
-- Expected result（预期结果路径）: [final_result_rl_mgr_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_4gpu_Industrial_and_Scientific.json](/home/leejt/OneRec/results/experiments/mgr_sid_l2_lmh_sweep_rl_eval_20260507/final_result_rl_mgr_r690b_lmh_l2_contrastive_pull_weight001_title_on_desc_p05_4gpu_Industrial_and_Scientific.json)
-
-Do not write this RL run to `rl_registry.csv`（强化学习总账） until evaluate（评测） finishes and metrics are finalized（指标定稿）.
+> Local multihop collaborative shaping（局部多跳协同塑形） can improve SID tokenizer（语义标识分词器） learnability（可学习性） in SFT on Industrial, but the effect is not yet robust enough to claim broad or RL-level superiority.
 
 ## Core Research Question（核心研究问题）
 
 Current phrasing（当前表述）:
 
-> Can collaborative hierarchy information（协同层级信息） be injected into SID tokenizer construction（语义标识分词器构建） so that the downstream model can learn item routing（物品路由） more easily than with the original OneRec SID（原版 OneRec 语义标识）?
+> Can hierarchical collaborative information（层级协同信息） be injected into SID tokenizer construction（语义标识分词器构建） so that downstream recommendation models（下游推荐模型） learn item routing（物品路由） more easily than with the original semantic-only SID（原版纯语义标识）?
 
 Working answer（阶段性答案）:
 
-- Heavy graph propagation（重图传播） and broad graph-carrier upgrades（宽图载体升级） remain unsupported（不支持）.
-- Low-disturbance local hierarchy shaping（低扰动局部层级塑形） is now reopened as the most promising direction（最有希望方向）.
-- The useful signal appears to be at L2 local multihop structure（第二层局部多跳结构）, not broad mid-graph spectral/carrier features（宽中图谱/载体特征）.
+- Heavy RQ-VAE graph propagation（重残差量化变分自编码器图传播） remains unsupported.
+- Broad mid-graph carriers（宽中层图载体） and `fagsp_mid_base`-style variants remain unreliable.
+- The strongest useful signal so far is low-disturbance local multihop shaping（低扰动局部多跳塑形） around the L2/L3 SID hierarchy（第二/三层语义标识层级）.
+- Tokenizer proxy metrics（分词器代理指标） are useful for diagnosis, but downstream SFT/RL（监督微调/强化学习） remains the final judge（最终裁决）.
 
-## Baseline Gate（基线门槛）
+## Current Evidence Line（当前证据线）
 
-Primary baseline（主要基线）:
+Tokenizer（分词器）:
 
-- Strongest original OneRec SFT（原版最强监督微调）:
-  - `NDCG@10 = 0.10372025`
-  - `HR@10 = 0.15089345`
+- method name（方法名）: `LMH-HCSID`（局部多跳层级协同语义标识）
+- `r690b_lmh_l2_contrastive_pull_weight001`
 
-Upper reference（上界参考）:
+Method interpretation（方法解释）:
 
-- Strongest original OneRec RL（原版最强强化学习）:
-  - `NDCG@10 = 0.10726345`
-  - `HR@10 = 0.15133466`
+- L1（第一层） keeps coarse semantic routing（粗语义路由）.
+- L2（第二层） uses weak local multihop collaborative signal（弱局部多跳协同信号）.
+- L3（第三层） keeps local fine-grained refinement（局部细粒度修正）.
+- The method is best described as hierarchical collaborative SID shaping（层级协同语义标识塑形）, not as a new downstream model architecture（下游模型架构）.
 
-Current mainline SFT（当前主线监督微调）:
+Main branch document（主线分支文档）:
 
-- `NDCG@10 = 0.10438342`
-- `HR@10 = 0.14692257`
+- [MAINLINE.md](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/MAINLINE.md)
 
-Decision rule（决策规则）:
+Current tokenizer code（当前分词器代码）:
 
-- SFT（监督微调） has established a real positive signal（真实正向信号）, especially on `NDCG@1/@3/@5/@10`.
-- RL（强化学习） decides whether this becomes a strong main result（强主结果） or remains a promising SFT-only lead（仅监督微调有希望线索）.
-- A clean RL win should improve or at least preserve the SFT ranking gain（排序增益） while recovering `HR@10`（命中率@10）.
+- [hcsid/trainer.py](/home/leejt/OneRec/src/onerec/experiments/hcsid/trainer.py)
+- [hcsid/train_entry.py](/home/leejt/OneRec/src/onerec/experiments/hcsid/train_entry.py)
+- [sid_train_industrial_lmh_hcsid.yaml](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/configs/hcsid/sid_train_industrial_lmh_hcsid.yaml)
+
+Current report draft（当前汇报草稿）:
+
+- [main.tex](/home/leejt/OneRec/research-progress-log/advisor_reports/2026-05-11_mainline_vs_baseline_multidataset_results/main.tex)
+
+## Industrial Results（Industrial 结果）
+
+Single-run SFT comparison（单次监督微调对比）:
+
+| Method（方法） | NDCG@1 | NDCG@3 | NDCG@5 | NDCG@10 | HR@1 | HR@3 | HR@5 | HR@10 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Original SFT baseline（原版监督微调基线） | 0.067064 | 0.085008 | 0.093153 | 0.103720 | 0.067064 | 0.098390 | 0.118244 | 0.150893 |
+| Current tokenizer SFT（当前分词器监督微调） | 0.070593 | 0.088131 | 0.094889 | 0.104383 | 0.070593 | 0.100816 | 0.117362 | 0.146923 |
+
+Repeated-run SFT mean（多次重复监督微调均值）:
+
+| Method（方法） | NDCG@1 | NDCG@3 | NDCG@5 | NDCG@10 | HR@1 | HR@3 | HR@5 | HR@10 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Original SFT mean（原版监督微调均值） | 0.06574 | 0.08337 | 0.09089 | 0.10201 | 0.06574 | 0.09655 | 0.11486 | 0.14935 |
+| Current tokenizer SFT mean（当前分词器监督微调均值） | 0.07015 | 0.08590 | 0.09317 | 0.10291 | 0.07015 | 0.09736 | 0.11508 | 0.14538 |
+
+Industrial RL comparison（Industrial 强化学习对比）:
+
+| Method（方法） | NDCG@1 | NDCG@3 | NDCG@5 | NDCG@10 | HR@1 | HR@3 | HR@5 | HR@10 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Original RL baseline（原版强化学习基线） | 0.073241 | 0.089032 | 0.097045 | 0.107263 | 0.073241 | 0.100375 | 0.119788 | 0.151335 |
+| Current tokenizer RL（当前分词器强化学习） | 0.073020 | 0.087362 | 0.094663 | 0.105132 | 0.073020 | 0.097948 | 0.115597 | 0.148026 |
+
+Interpretation（解释）:
+
+- SFT（监督微调） gain is real but modest.
+- Repeated runs（重复实验） show NDCG gains are more stable than HR gains.
+- RL（强化学习） does not currently promote this method into a strongest-result claim（最强结果主张）.
+
+## Transfer Evidence（迁移证据）
+
+Office SFT（Office 监督微调）:
+
+- NDCG@1/@3/@5/@10 all improve slightly.
+- HR@1/@3/@5 improve, while HR@10 drops slightly.
+- This supports possible transfer（迁移） of the tokenizer idea, but only weakly.
+
+Toys SFT（Toys 监督微调）:
+
+- Current tokenizer is below baseline on NDCG/HR（归一化折损累计增益/命中率） at @1/@3/@5/@10.
+- This is a clear negative transfer（负迁移） warning.
+
+## Documentation Map（文档地图）
+
+Live canonical docs（仍需维护的权威文档）:
+
+- [CURRENT_STATE.md](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
+- [experiment_registry/README.md](/home/leejt/OneRec/research-progress-log/experiment_registry/README.md)
+- [MAINLINE.md](/home/leejt/OneRec/idea-discovery/2026-05-06_l2_local_multihop_rescue_tokenizers/MAINLINE.md)
+
+Snapshot docs（快照文档）:
+
+- `research-progress-log/advisor_reports/`
+- older dated reports（旧日期报告）
+- branch-level trackers（分支级追踪表）
+
+Maintenance rule（维护规则）:
+
+- Finalized results（定稿结果） go to split registries（分表总账） first.
+- Current interpretation（当前解释） goes here.
+- Branch details（分支细节） go to `MAINLINE.md`.
+- Advisor-facing narratives（给导师看的叙事） stay under `advisor_reports/` and should not be treated as live state（实时状态）.
 
 ## Closed Or Deprioritized Lines（关闭或降优先级路线）
 
-Still closed under current evidence（在当前证据下仍关闭）:
+Still closed or low priority（仍关闭或低优先级）:
 
 - Heavy RQ-VAE graph propagation（重残差量化变分自编码器图传播）.
 - QCR-L2 conflict ranking（量化冲突感知第二层排序） as previously tested.
-- FaGSP-mid-base style broad mid graph（宽中图） carriers.
+- `fagsp_mid_base` and broad mid graph（宽中图） carriers.
 - Hard L1 capacity reduction（硬第一层容量压缩）.
-- AttnRQ reconstruction-only residual weighting（仅重构路径注意力残差加权） as a mainline, unless reused in a more directly downstream-aligned tokenizer design（更直接对齐下游的分词器设计）.
+- L3 ranking loss（第三层排序损失） under the tested setting.
+- Removing L1 semantic pull（移除第一层语义拉近）.
+- Recipe setting `title_history2sid_off + desc_align_p05` for the current tokenizer（当前分词器）.
 
-Reopened with constraints（有条件重启）:
+## Next Checkpoint（下一检查点）
 
-- L2 local multihop（第二层局部多跳） structure.
-- Weak pull strength（弱拉近强度） around `0.01`, not the earlier overweighted `0.15` setup.
-- R690b-style hierarchy-aware codebook shaping（层级感知码本塑形）, if it preserves downstream learnability（下游可学习性）.
+The next documentation update should happen only when one of these changes（仅在这些变化发生时更新）:
 
-## Next Steps（下一步）
-
-1. Monitor the running RL/evaluate（强化学习/评测） chain and finalize metrics（定稿指标） into `rl_registry.csv` and `downstream_scoreboard.csv`.
-2. If RL improves over the strongest original RL（原版最强强化学习） or gives a clear `NDCG@10` gain without further HR collapse（命中率坍塌）, promote this branch to the strongest result line（最强结果线）.
-3. If RL is mixed, analyze whether RL recovers coverage（覆盖面） or amplifies sibling confusion（兄弟物品混淆） before deciding between:
-   - nearby pull-weight ablation（近邻拉近权重消融）: `0.005 / 0.02`
-   - weak sibling separation（弱兄弟物品分离）
-   - preserving this as SFT-only evidence（仅监督微调证据）
+1. A new finalized SFT/RL result（定稿监督微调/强化学习结果） changes the current best evidence.
+2. A method formula（方法公式） or code-aligned implementation（代码对齐实现） changes.
+3. The active research question（活跃研究问题） or next-step decision（下一步决策） changes.
+4. A report for the advisor（导师汇报） is finalized and should be linked as a snapshot（快照）.

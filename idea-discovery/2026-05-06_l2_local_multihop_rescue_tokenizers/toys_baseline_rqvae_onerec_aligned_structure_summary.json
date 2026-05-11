@@ -1,0 +1,34 @@
+{
+  "index_path": "/data/leejt/OneRec/output_weights/experiments/toys_tokenizer_20260510/generated_indices/Toys_and_Games.baseline_rqvae_onerec_aligned.index.json",
+  "num_items": 11252,
+  "active_l1": 161,
+  "unique_l12": 7609,
+  "unique_sid": 11221,
+  "collision_count": 31,
+  "collision_rate": 0.0027550657660860294,
+  "max_conflict": 4,
+  "max_l1_bucket": 347,
+  "top5_l1_cover": 1316,
+  "top5_l1": [
+    [
+      "<a_132>",
+      347
+    ],
+    [
+      "<a_100>",
+      301
+    ],
+    [
+      "<a_147>",
+      280
+    ],
+    [
+      "<a_169>",
+      198
+    ],
+    [
+      "<a_102>",
+      190
+    ]
+  ]
+}
