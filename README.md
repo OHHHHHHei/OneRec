@@ -1,65 +1,30 @@
 # OneRec
 
-OneRec 是一个面向**生成式推荐**的开源训练与评估框架，保留了以下主流程：
+OneRec is a codebase for generative recommendation. It follows the
+`SID -> SFT -> RL -> Evaluation` workflow used in MiniOneRec-style systems and
+provides a cleaner implementation of the main training and evaluation stages.
+
+This repository is intended to serve as a paper code release: the core pipeline
+is kept explicit, configuration-driven, and easy to adapt to different Amazon
+review categories.
+
+## Overview
+
+The full workflow is:
 
 ```text
 preprocess -> embed -> sid-train -> sid-generate -> convert -> sft -> rl -> evaluate
 ```
 
-它的目标不是重新设计一套全新算法，而是把原始 MiniOneRec 项目的主链路收敛为一套更清晰、更稳定、可维护的工程实现：
+Main components:
 
-- 保留 `SID -> SFT -> RL -> Evaluate` 的核心逻辑
-- 保留原项目的主要产物契约与训练链条
-- 用统一的 `bash + yaml` 入口替代分散脚本
-- 用更清晰的目录结构组织代码、配置和产物
+- `SID` (`Semantic ID`, 语义标识符) training and generation
+- `SFT` (`Supervised Fine-Tuning`, 监督微调)
+- `RL` (`Reinforcement Learning`, 强化学习)
+- constrained generation and ranking evaluation (`Evaluation`, 评估)
+- YAML-based configuration (`configuration`, 配置)
 
-## 文档导航
-
-如果你要快速建立上下文，建议按下面顺序阅读：
-
-- [文档维护工作流](/home/leejt/OneRec/DOCUMENTATION_MAINTENANCE_WORKFLOW.md)
-  - 适合先理解当前文档体系、权威入口、以及后续 agent（智能体）应如何维护文档。
-- [当前状态](/home/leejt/OneRec/research-progress-log/CURRENT_STATE.md)
-  - 适合快速同步当前裁决、baseline（基线）口径、已归档研究线和下一步动作。
-- [MGR-SID 负结果归档](/home/leejt/OneRec/research-progress-log/archive/2026-04-24_mgr_sid_negative_research_archive/README.md)
-  - 适合快速了解 MGR-SID / ACLR / QCR 研究线为什么被冻结归档。
-- [实验结果总账](/home/leejt/OneRec/research-progress-log/experiment_registry/README.md)
-  - 适合查 tokenizer（分词器）、SFT（监督微调）、RL（强化学习）的分表总账。
-- [下游指标榜单](/home/leejt/OneRec/research-progress-log/experiment_registry/downstream_scoreboard.csv)
-  - 适合快速比较 `NDCG@10`（归一化折损累计增益@10）和 `HR@10`（命中率@10）。
-- [项目工作区地图](/home/leejt/OneRec/PROJECT_WORKSPACE_MAP.md)
-  - 适合理解仓库目录角色和推荐阅读顺序。
-
-当前建议：
-
-- 想同步研究状态，优先看“当前状态”
-- 想查 strongest result（最强结果）和历史 run（运行），优先看“实验结果总账”和“下游指标榜单”
-- 想理解目录和文档分工，优先看“文档维护工作流”和“项目工作区地图”
-
-## 特性
-
-- 统一的主入口：
-  - `bash preprocess_amazon18.sh`
-  - `bash preprocess_amazon23.sh`
-  - `bash text2emb.sh`
-  - `bash sid_train.sh`
-  - `bash sid_generate.sh`
-  - `bash convert.sh`
-  - `bash sft.sh`
-  - `bash rl.sh`
-  - `bash evaluate.sh`
-- 按阶段组织代码：
-  - `src/onerec/preprocess`
-  - `src/onerec/sid`
-  - `src/onerec/convert`
-  - `src/onerec/sft`
-  - `src/onerec/rl`
-  - `src/onerec/evaluate`
-- YAML 配置模板化，支持用数据集 key 自动展开路径
-- 支持 SFT / RL checkpoint 的阶段化评估
-- 保留多卡训练与多卡并行评估能力
-
-## 项目结构
+## Repository Structure
 
 ```text
 OneRec/
@@ -97,136 +62,106 @@ OneRec/
   evaluate.sh
 ```
 
-## 安装
+## Installation
 
-### 1. 创建环境
+Create a Python environment:
 
 ```bash
 conda create -n OneRec python=3.11 -y
 conda activate OneRec
 ```
 
-### 2. 安装依赖
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 pip install -e .
 ```
 
-## 配置方式
+## Data Preparation
 
-当前主仓使用 `config/*.yaml` 作为正式配置入口。
+The code expects processed data under `data/`. Dataset paths are configured in
+`config/datasets.yaml`.
 
-其中：
+The default dataset key is `industrial`. The repository also includes
+configuration entries for `office`.
 
-- `config/datasets.yaml` 定义数据集 key 到实际路径变量的映射
-- `config/sft.yaml`、`config/rl.yaml`、`config/evaluate.yaml` 使用模板变量
-- shell 脚本会在运行前自动渲染出最终配置
-
-例如 `config/sft.yaml` 中会出现：
-
-```yaml
-data:
-  train_file: ./data/Amazon/train/%{split_stem}.csv
-  category: "%{category}"
-output:
-  output_dir: "./output/sft_%{category}_refactor"
-```
-
-这些占位符来自 `config/datasets.yaml`。
-
-当前内置数据集 key：
-
-- `industrial`
-- `office`
-
-## 快速开始
-
-### 1. 直接跑默认数据集
-
-默认数据集 key 是 `industrial`：
-
-```bash
-bash sft.sh
-bash rl.sh
-bash evaluate.sh
-```
-
-### 2. 显式指定数据集
-
-```bash
-bash sft.sh industrial
-bash rl.sh industrial
-bash evaluate.sh industrial
-```
-
-或者：
-
-```bash
-bash sft.sh office
-bash rl.sh office
-bash evaluate.sh office
-```
-
-### 3. 评估指定阶段的 checkpoint
-
-默认 `evaluate` 评的是 `sft` checkpoint。你也可以显式指定：
-
-```bash
-bash evaluate.sh sft industrial
-bash evaluate.sh rl industrial
-```
-
-## 常用命令
-
-### 数据预处理
+To run preprocessing:
 
 ```bash
 bash preprocess_amazon18.sh
-bash preprocess_amazon23.sh
 ```
 
-### 文本 embedding
+To generate text embeddings (`embedding`, 嵌入):
 
 ```bash
 bash text2emb.sh
 ```
 
-### SID 训练与生成
+## Usage
+
+### Train and Generate SID
 
 ```bash
-bash sid_train.sh
-bash sid_generate.sh
+bash sid_train.sh industrial
+bash sid_generate.sh industrial
 ```
 
-### 数据格式转换
+### Convert Data for Downstream Training
 
 ```bash
-bash convert.sh
+bash convert.sh industrial
 ```
 
-### SFT
+### Run SFT
 
 ```bash
 bash sft.sh industrial
 ```
 
-### RL
+### Run RL
 
 ```bash
 bash rl.sh industrial
 ```
 
-### Evaluate
+### Evaluate Checkpoints
+
+Evaluate an SFT checkpoint (`checkpoint`, 检查点):
 
 ```bash
 bash evaluate.sh sft industrial
+```
+
+Evaluate an RL checkpoint:
+
+```bash
 bash evaluate.sh rl industrial
 ```
 
-## Override 用法
+The same commands can be used with other dataset keys, for example:
 
-仍然支持在 shell 命令后追加 `key=value` 的 override：
+```bash
+bash sft.sh office
+bash rl.sh office
+bash evaluate.sh sft office
+```
+
+## Configuration
+
+All main stages are controlled by YAML files in `config/`.
+
+Important files:
+
+- `config/datasets.yaml`: dataset keys and path templates
+- `config/sid_train.yaml`: SID tokenizer training
+- `config/sid_generate.yaml`: SID generation
+- `config/convert.yaml`: data conversion
+- `config/sft.yaml`: supervised fine-tuning
+- `config/rl.yaml`: reinforcement learning
+- `config/evaluate.yaml`: evaluation
+
+Command-line overrides (`override`, 覆盖参数) are supported:
 
 ```bash
 bash sft.sh office training.num_epochs=3 training.batch_size=512
@@ -234,7 +169,7 @@ bash rl.sh industrial training.num_generations=4
 bash evaluate.sh rl office num_beams=48
 ```
 
-也支持显式指定配置文件：
+You can also pass an explicit configuration file:
 
 ```bash
 bash sft.sh config/sft.yaml industrial
@@ -242,102 +177,36 @@ bash rl.sh config/rl.yaml office
 bash evaluate.sh config/evaluate.yaml rl industrial
 ```
 
-## 结果与产物命名
+## Outputs
 
-### SFT / RL 输出目录
+Default SFT and RL outputs:
 
-默认命名规则：
-
-- SFT：`./output/sft_<category>_refactor`
-- RL：`./output/rl_<category>_refactor`
-
-最终 checkpoint 目录：
-
-- `final_checkpoint/`
-
-训练中间 checkpoint：
-
-- `checkpoint-*`
-
-### Evaluate 输出目录
-
-最终结果 JSON：
-
-- SFT 评估：`./results/final_result_sft_<category>.json`
-- RL 评估：`./results/final_result_rl_<category>.json`
-
-临时分片目录：
-
-- `./temp/sft-<category>`
-- `./temp/rl-<category>`
-
-分片结果文件：
-
-- `4.json`
-- `5.json`
-- `6.json`
-- `7.json`
-
-## 当前代码主链
-
-如果你只关心主链路代码，优先看这些目录：
-
-- `src/onerec/sft`
-- `src/onerec/rl`
-- `src/onerec/evaluate`
-- `src/onerec/utils`
-
-其中：
-
-- `src/onerec/sft`：SFT 数据集、token 扩展、训练流程
-- `src/onerec/rl`：RL 数据集、reward、trainer、约束生成
-- `src/onerec/evaluate`：约束解码、分片评估、merge、metrics
-- `src/onerec/main.py`：统一 stage 入口
-
-## 本地验证
-
-本地不要求跑完整训练，当前推荐的检查方式是：
-
-```bash
-python -m unittest discover -s tests/unit -v
-PYTHONPATH=./src python -m onerec.main --help
+```text
+output/
+  sft_<category>_refactor/
+    final_checkpoint/
+    checkpoint-*/
+  rl_<category>_refactor/
+    final_checkpoint/
+    checkpoint-*/
 ```
 
-## 远程服务器验收建议
+Default evaluation results:
 
-建议按下面顺序做：
+```text
+results/
+  final_result_sft_<category>.json
+  final_result_rl_<category>.json
+```
 
-1. SFT 小样本验证
-2. RL 小样本验证
-3. Evaluate 小样本验证
+Temporary evaluation shards are written under `temp/`.
 
-重点检查：
+## License
 
-- 路径是否按数据集 key 正确展开
-- 多卡参数是否正确生效
-- `final_checkpoint/` 是否生成
-- evaluate 的 split / worker / merge / metrics 是否完整跑通
+This project is released under the [Apache-2.0](./LICENSE) license.
 
-## 已知说明
+## Acknowledgements
 
-- 当前 `evaluate` 使用约束解码。如果 `num_beams` 大于约束树首层合法分支数，会出现 `Constraint mismatch summary` warning。
-- 当前主仓以工程稳定和主链路清晰为优先，不主动改动原始算法语义。
-- 这套实现以 `OneRec` 作为正式主仓名，但训练逻辑仍然继承 MiniOneRec 的核心流程。
-
-## 许可证
-
-本项目使用 [Apache-2.0](./LICENSE)。
-
-## 致谢
-
-本项目的设计和实现参考了原始 MiniOneRec 项目以及相关开源工作，尤其是：
-
-- ReRe
-- LC-Rec
-
-如果你发现问题，建议在 issue 中附上：
-
-- 运行命令
-- 使用的数据集 key
-- 关键 YAML 字段
-- 报错日志或 warning 摘要
+This implementation builds on the MiniOneRec-style generative recommendation
+pipeline and related open-source recommendation work, including ReRec and
+LC-Rec.
