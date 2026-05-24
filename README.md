@@ -1,30 +1,28 @@
 # OneRec
 
-OneRec is a codebase for generative recommendation. It follows the
-`SID -> SFT -> RL -> Evaluation` workflow used in MiniOneRec-style systems and
-provides a cleaner implementation of the main training and evaluation stages.
+OneRec 是一个面向生成式推荐的代码仓库。它沿用 MiniOneRec 风格系统中的
+`SID -> SFT -> RL -> Evaluation` 主流程，并对核心训练与评估链路做了更清晰的工程整理。
 
-This repository is intended to serve as a paper code release: the core pipeline
-is kept explicit, configuration-driven, and easy to adapt to different Amazon
-review categories.
+本仓库定位为论文代码发布版本：主流程显式、配置集中，并且便于迁移到不同的
+Amazon review 类目数据集。
 
-## Overview
+## 概览
 
-The full workflow is:
+完整流程如下：
 
 ```text
 preprocess -> embed -> sid-train -> sid-generate -> convert -> sft -> rl -> evaluate
 ```
 
-Main components:
+主要模块包括：
 
-- `SID` (`Semantic ID`, 语义标识符) training and generation
-- `SFT` (`Supervised Fine-Tuning`, 监督微调)
-- `RL` (`Reinforcement Learning`, 强化学习)
-- constrained generation and ranking evaluation (`Evaluation`, 评估)
-- YAML-based configuration (`configuration`, 配置)
+- `SID`（`Semantic ID`，语义标识符）训练与生成
+- `SFT`（`Supervised Fine-Tuning`，监督微调）
+- `RL`（`Reinforcement Learning`，强化学习）
+- 约束生成与排序评估（`Evaluation`，评估）
+- 基于 YAML 的配置管理（`configuration`，配置）
 
-## Repository Structure
+## 仓库结构
 
 ```text
 OneRec/
@@ -62,84 +60,83 @@ OneRec/
   evaluate.sh
 ```
 
-## Installation
+## 安装
 
-Create a Python environment:
+创建 Python 环境：
 
 ```bash
 conda create -n OneRec python=3.11 -y
 conda activate OneRec
 ```
 
-Install dependencies:
+安装依赖：
 
 ```bash
 pip install -r requirements.txt
 pip install -e .
 ```
 
-## Data Preparation
+## 数据准备
 
-The code expects processed data under `data/`. Dataset paths are configured in
-`config/datasets.yaml`.
+代码默认从 `data/` 目录读取处理后的数据。数据集路径统一在
+`config/datasets.yaml` 中配置。
 
-The default dataset key is `industrial`. The repository also includes
-configuration entries for `office`.
+当前默认数据集 key 为 `industrial`，仓库中也提供了 `office` 的配置入口。
 
-To run preprocessing:
+执行数据预处理：
 
 ```bash
 bash preprocess_amazon18.sh
 ```
 
-To generate text embeddings (`embedding`, 嵌入):
+生成文本嵌入（`embedding`，嵌入）：
 
 ```bash
 bash text2emb.sh
 ```
 
-## Usage
+## 使用方式
 
-### Train and Generate SID
+### 训练并生成 SID
 
 ```bash
 bash sid_train.sh industrial
 bash sid_generate.sh industrial
 ```
 
-### Convert Data for Downstream Training
+### 转换下游训练数据
 
 ```bash
 bash convert.sh industrial
 ```
 
-### Run SFT
+### 运行 SFT
 
 ```bash
 bash sft.sh industrial
 ```
 
-### Run RL
+### 运行 RL
 
 ```bash
 bash rl.sh industrial
 ```
 
-### Evaluate Checkpoints
+### 评估 checkpoint
 
-Evaluate an SFT checkpoint (`checkpoint`, 检查点):
+评估 SFT checkpoint（检查点）：
 
 ```bash
 bash evaluate.sh sft industrial
 ```
 
-Evaluate an RL checkpoint:
+评估 RL checkpoint（检查点）：
 
 ```bash
 bash evaluate.sh rl industrial
 ```
 
-The same commands can be used with other dataset keys, for example:
+同样的命令也可以切换到其他数据集 key，例如：
 
 ```bash
 bash sft.sh office
@@ -147,21 +144,21 @@ bash rl.sh office
 bash evaluate.sh sft office
 ```
 
-## Configuration
+## 配置
 
-All main stages are controlled by YAML files in `config/`.
+所有主流程均由 `config/` 下的 YAML 文件控制。
 
-Important files:
+主要配置文件包括：
 
-- `config/datasets.yaml`: dataset keys and path templates
-- `config/sid_train.yaml`: SID tokenizer training
-- `config/sid_generate.yaml`: SID generation
-- `config/convert.yaml`: data conversion
-- `config/sft.yaml`: supervised fine-tuning
-- `config/rl.yaml`: reinforcement learning
-- `config/evaluate.yaml`: evaluation
+- `config/datasets.yaml`：数据集 key 与路径模板
+- `config/sid_train.yaml`：SID tokenizer（分词器）训练
+- `config/sid_generate.yaml`：SID 生成
+- `config/convert.yaml`：数据格式转换
+- `config/sft.yaml`：监督微调
+- `config/rl.yaml`：强化学习
+- `config/evaluate.yaml`：评估
 
-Command-line overrides (`override`, 覆盖参数) are supported:
+命令行支持 override（覆盖参数）：
 
 ```bash
 bash sft.sh office training.num_epochs=3 training.batch_size=512
@@ -169,7 +166,7 @@ bash rl.sh industrial training.num_generations=4
 bash evaluate.sh rl office num_beams=48
 ```
 
-You can also pass an explicit configuration file:
+也可以显式指定配置文件：
 
 ```bash
 bash sft.sh config/sft.yaml industrial
@@ -177,9 +174,9 @@ bash rl.sh config/rl.yaml office
 bash evaluate.sh config/evaluate.yaml rl industrial
 ```
 
-## Outputs
+## 输出
 
-Default SFT and RL outputs:
+默认 SFT 与 RL 输出目录：
 
 ```text
 output/
@@ -191,7 +188,7 @@ output/
     checkpoint-*/
 ```
 
-Default evaluation results:
+默认评估结果：
 
 ```text
 results/
@@ -199,14 +196,12 @@ results/
   final_result_rl_<category>.json
 ```
 
-Temporary evaluation shards are written under `temp/`.
+临时评估分片会写入 `temp/` 目录。
 
-## License
+## 许可证
 
-This project is released under the [Apache-2.0](./LICENSE) license.
+本项目使用 [Apache-2.0](./LICENSE) 许可证。
 
-## Acknowledgements
+## 致谢
 
-This implementation builds on the MiniOneRec-style generative recommendation
-pipeline and related open-source recommendation work, including ReRec and
-LC-Rec.
+本实现基于 MiniOneRec 风格的生成式推荐流程，并参考了 ReRec、LC-Rec 等相关开源推荐工作。
