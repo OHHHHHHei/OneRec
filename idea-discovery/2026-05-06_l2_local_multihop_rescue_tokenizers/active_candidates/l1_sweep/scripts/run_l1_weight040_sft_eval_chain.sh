@@ -1,1 +1,0 @@
-../../../scripts/experiment_r690b_lmh_l1_weight040_sft_eval_4gpu_chain.sh

@@ -1,4 +1,0 @@
-variant,active_l1,unique_l2_pairs,unique_leaf_codes,l1_le_10,l1_gt_50,l1_median_bucket,largest_l1_bucket,avg_l1_bucket
-original,48,2295,3670,1,34,68,247,76.79
-R720b,247,2889,3675,70,2,13,105,14.92
-R720e,190,2695,3673,17,3,18,77,19.4

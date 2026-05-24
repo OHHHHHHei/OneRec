@@ -1,8 +1,0 @@
-{
-  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r693_hier_collab_only_20260418/industrial_r693a_hier_collab_only_multihop/Apr-18-2026_14-13-42/best_collision_model.pth",
-  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r693_hier_collab_only_20260418/generated_indices/Industrial_and_Scientific.r693a_hier_collab_only_multihop.index.json",
-  "collision_rate": 0.0032555615843733042,
-  "max_conflict": 2,
-  "collision_rounds_used": 20,
-  "num_items": 3686
-}

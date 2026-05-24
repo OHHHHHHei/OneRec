@@ -1,8 +1,0 @@
-{
-  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_original_l3_collab_local_20260420/industrial_original_l3_collab_local/Apr-20-2026_22-56-39/best_collision_model.pth",
-  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_original_l3_collab_local_20260420/generated_indices/Industrial_and_Scientific.original_l3_collab_local.index.json",
-  "collision_rate": 0.00352685838307108,
-  "max_conflict": 2,
-  "collision_rounds_used": 20,
-  "num_items": 3686
-}

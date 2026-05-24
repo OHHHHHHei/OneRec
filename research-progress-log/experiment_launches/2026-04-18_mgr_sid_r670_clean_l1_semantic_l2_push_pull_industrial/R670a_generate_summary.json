@@ -1,8 +1,0 @@
-{
-  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r670_clean_l1_semantic_l2_push_pull_20260418/industrial_r670a_clean_l1_semantic_l2_push_pull/Apr-18-2026_01-16-51/best_collision_model.pth",
-  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_r670_clean_l1_semantic_l2_push_pull_20260418/generated_indices/Industrial_and_Scientific.r670a_clean_l1_semantic_l2_push_pull.index.json",
-  "collision_rate": 0.04395008138903961,
-  "max_conflict": 35,
-  "collision_rounds_used": 20,
-  "num_items": 3686
-}

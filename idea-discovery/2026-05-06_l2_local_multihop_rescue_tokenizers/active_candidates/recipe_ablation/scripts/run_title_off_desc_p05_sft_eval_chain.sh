@@ -1,1 +1,0 @@
-../../../scripts/experiment_r690b_lmh_pull001_title_off_desc_p05_sft_eval_4gpu_chain.sh

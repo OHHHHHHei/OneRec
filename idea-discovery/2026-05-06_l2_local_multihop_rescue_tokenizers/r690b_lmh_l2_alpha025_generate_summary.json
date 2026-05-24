@@ -1,9 +1,0 @@
-{
-  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_l2_alpha_20260510/r690b_lmh_l2_alpha025/May-11-2026_01-22-31/best_collision_model.pth",
-  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_l2_alpha_20260510/generated_indices/Industrial_and_Scientific.r690b_lmh_l2_alpha025.index.json",
-  "num_items": 3686,
-  "unique_sid": 3675,
-  "collision_count": 11,
-  "collision_rounds": 20,
-  "max_conflict": 2
-}

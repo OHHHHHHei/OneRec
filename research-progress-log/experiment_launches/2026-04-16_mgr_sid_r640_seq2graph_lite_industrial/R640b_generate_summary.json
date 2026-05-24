@@ -1,8 +1,0 @@
-{
-  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_seq2graph_lite_20260416/industrial_r640b_seq2graph_rel/Apr-16-2026_23-18-08/best_collision_model.pth",
-  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_seq2graph_lite_20260416/generated_indices/Industrial_and_Scientific.r640b_seq2graph_rel.index.json",
-  "collision_rate": 0.4120998372219208,
-  "max_conflict": 310,
-  "collision_rounds_used": 20,
-  "num_items": 3686
-}

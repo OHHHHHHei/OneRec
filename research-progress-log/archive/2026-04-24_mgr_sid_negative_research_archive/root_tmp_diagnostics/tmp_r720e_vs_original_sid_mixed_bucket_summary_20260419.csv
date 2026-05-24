@@ -1,4 +1,0 @@
-variant,mixed_bucket_count,mixed_bucket_avg_size,mixed_bucket_median_size,cross_family_direct_support_ratio_mean,top20_cross_family_direct_support_ratio_mean,top20_cross_family_direct_support_mean
-original,27,69.15,60.0,0.0345,0.7537,8.3993
-R720b,51,16.45,15.0,0.0686,0.2461,2.5839
-R720e,59,18.27,17.0,0.0524,0.2441,2.2001

@@ -1,3 +1,0 @@
-subset,count,top10_has_same_family_bucket_rate,top10_has_same_top_family_rate,pred1_same_family_rate,pred1_l1_top_family_matches_target_family_rate
-l1_missing,3134,0.8656668793873644,0.6908104658583281,0.3730057434588385,0.4093809827696235
-l1_present,1399,1.0,0.9199428162973553,0.7805575411007862,0.679771265189421

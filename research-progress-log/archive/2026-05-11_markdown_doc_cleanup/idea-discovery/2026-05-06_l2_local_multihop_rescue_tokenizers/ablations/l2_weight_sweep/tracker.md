@@ -1,1 +1,0 @@
-../../STAGE1_L2_SWEEP.md

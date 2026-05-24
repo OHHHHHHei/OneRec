@@ -1,7 +1,0 @@
-kind: rqvae
-lr: 0.001
-epochs: 10
-batch_size: 256
-num_workers: 0
-data_path: ./data/Amazon/index/Industrial_and_Scientific.emb-qwen-tdcf-v05-e1.npy
-ckpt_dir: ./output/rqvae_Industrial_and_Scientific_tdcf_v05_e1

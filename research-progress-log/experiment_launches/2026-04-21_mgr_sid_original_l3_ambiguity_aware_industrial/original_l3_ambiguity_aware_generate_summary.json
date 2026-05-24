@@ -1,8 +1,0 @@
-{
-  "ckpt_path": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_original_l3_ambiguity_aware_20260421/industrial_original_l3_ambiguity_aware/Apr-21-2026_10-10-36/best_collision_model.pth",
-  "output_file": "/data/leejt/OneRec/output_weights/experiments/mgr_sid_original_l3_ambiguity_aware_20260421/generated_indices/Industrial_and_Scientific.original_l3_ambiguity_aware.index.json",
-  "collision_rate": 0.1782419967444384,
-  "max_conflict": 72,
-  "collision_rounds_used": 20,
-  "num_items": 3686
-}
