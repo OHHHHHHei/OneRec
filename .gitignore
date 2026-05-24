@@ -1,4 +1,10 @@
-# Python
+# OneRec ignore policy
+#
+# Keep source code, configs, canonical docs, and experiment registries tracked.
+# Keep large/raw data, model weights, local logs, temporary shards, and private
+# agent/editor state out of git.
+
+# Python caches and test artifacts
 __pycache__/
 *.py[cod]
 *$py.class
@@ -19,7 +25,7 @@ site/
 *.egg-info/
 .eggs/
 
-# Virtual environments
+# Virtual environments and local Python version pins
 .env
 .venv/
 venv/
@@ -28,16 +34,15 @@ ENV/
 conda-meta/
 .python-version
 
-# Editors and OS files
+# Editors, OS files, and local agent/private state
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
-AGENTS.md
 .codex
-
-# Local research notes and writeups
-MiniOneRec An Open-Source Framework for Scaling Generative Recommendation.pdf
+.codex/
+.claude/settings.local.json
+.claude/skills/
 
 # TeX build artifacts
 *.aux
@@ -53,51 +58,62 @@ MiniOneRec An Open-Source Framework for Scaling Generative Recommendation.pdf
 *.run.xml
 *.synctex.gz
 *.toc
+missfont.log
 
-# Logs and local caches
+# Runtime logs, caches, and temporary evaluation shards
 logs/
 log/
 wandb/
 .cache/
 temp/
 tmp/
-*.log
 
-# Training and evaluation outputs
+# Training, evaluation, and model outputs
 output/
-results/
+outputs/
+output_weights/
 checkpoints/
 runs/
 
-# Model artifacts
+# Result payloads can be large; keep metrics in research-progress-log registries.
+results/
+idea-discovery/**/mainline/results/
+
+# Model and optimizer artifacts
 *.pt
 *.pth
 *.ckpt
 *.bin
 *.safetensors
 
-# Data artifacts generated during preprocessing, SID construction, and training
+# Raw/downloaded/generated data
 raw_data/
 data/Amazon14/
 data/Amazon18/
+data/Amazon23/
 data/Amazon14_Processed/
 data/**/.cache/
 data/**/*.npy
 
-# Keep small fixtures used by unit tests
-!tests/fixtures/
-!tests/fixtures/**
-
-# Track curated Amazon artifacts in this repository
+# Keep curated Amazon artifacts that are already part of the repository.
 !data/Amazon/
 !data/Amazon/**
 
-# Do not track runtime dataset caches under curated Amazon artifacts
+# Runtime dataset caches under curated Amazon artifacts
 data/Amazon/**/.cache/
 data/Amazon/**/.cache/**
 
-# AI Agent local skills
-.claude/skills/
+# Generated experiment datasets: existing tracked files remain tracked, but new
+# converted variants should be recorded through scripts/registries, not added by
+# accident.
+data_experiment/**/.cache/
+data_experiment/**/*.npy
 
-# Local downloaded papers
+# Local downloaded papers and paper-reading notes.
+papers/**/*.pdf
+papers/**/*.PDF
 papers/
+
+# Keep small fixtures used by unit tests
+!tests/fixtures/
+!tests/fixtures/**

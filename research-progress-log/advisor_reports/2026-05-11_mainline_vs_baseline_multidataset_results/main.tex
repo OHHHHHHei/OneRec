@@ -16,6 +16,8 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{caption}
+\usepackage{graphicx}
+\usepackage{placeins}
 \usepackage{hyperref}
 
 \setlength{\parindent}{0pt}
@@ -25,15 +27,15 @@
 
 \begin{document}
 
-{\LARGE 当前方法 Tokenizer 与 Baseline 多数据集结果对比}
+\begin{center}
+{\LARGE 实验结果}
+\end{center}
 
 \vspace{0.4\baselineskip}
 
-\textbf{日期：}2026 年 5 月 11 日
-
 \section{说明}
 
-\textbf{Baseline（基线）：}各数据集上当前可用的原版 semantic RQ-VAE tokenizer（语义残差量化变分自编码器分词器）结果。
+\textbf{Baseline（基线）：}原版 semantic RQ-VAE tokenizer结果。
 
 \textbf{当前方法：}当前实验的结果。
 
@@ -43,7 +45,8 @@
 
 \begin{table}[h]
 \centering
-\caption{Industrial and Scientific 上的 SFT（监督微调）结果}
+\caption{Industrial and Scientific 上的 SFT 结果}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrrrr}
 \toprule
 Variant（变体） & NDCG@1 & NDCG@3 & NDCG@5 & NDCG@10 & HR@1 & HR@3 & HR@5 & HR@10 \\
@@ -53,21 +56,22 @@ Current Method（当前方法） & 0.070593 & 0.088131 & 0.094889 & 0.104383 & 0
 Current Method - Baseline（差值） & +0.003530 & +0.003123 & +0.001736 & +0.000663 & +0.003530 & +0.002427 & -0.000882 & -0.003971 \\
 Relative Change（变化率） & +5.26\% & +3.67\% & +1.86\% & +0.64\% & +5.26\% & +2.47\% & -0.75\% & -2.63\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
+
 \end{table}
 
-结果摘要：当前方法 tokenizer（分词器）在所有 NDCG（归一化折损累计增益）指标上高于 baseline（基线），并在 HR@1/HR@3（命中率@1/@3）上高于 baseline（基线），但 HR@5/HR@10（命中率@5/@10）低于 baseline（基线）。
+当前方法 tokenizer 在所有 NDCG 指标上高于 baseline，并在 HR@1/HR@3 上高于 baseline，但 HR@5/HR@10低于 baseline。
 
 \subsection{Industrial SFT 多次重复实验}
 
-为了判断 Industrial 上的 SFT（监督微调）差异是否可能来自单次训练波动，我们对 baseline（基线）和 current method（当前方法）各整理了三次同配置 repeated runs（重复运行）结果。这里三次运行使用相同 seed（随机种子）和相同代码/配置；但由于 multi-GPU training（多卡训练）、DeepSpeed（分布式训练框架）和底层算子的非完全 deterministic（确定性），相同 seed（随机种子）不保证每次数值完全一致。
-
-Baseline（基线）使用原版 semantic SID（语义 SID）和较强 SFT（监督微调）配方 \texttt{title\_history2sid\_off + desc\_align\_p05}。Current Method（当前方法）使用 R690b-LMH tokenizer（分词器）及其对应配方 \texttt{title\_history2sid\_on + desc\_align\_p05}。
+为了判断 Industrial 上的 SFT 差异是否可能来自单次训练波动，我们对 baseline 和 current method 各整理了三次同配置重复运行结果。
 
 \begin{table}[h]
 \centering
 \small
-\caption{Industrial SFT（监督微调）重复实验的 NDCG（归一化折损累计增益）}
+\caption{Industrial SFT 重复实验的 NDCG }
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrr}
 \toprule
 Run（运行） & NDCG@1 & NDCG@3 & NDCG@5 & NDCG@10 \\
@@ -84,13 +88,16 @@ Current Method mean$\pm$std（均值$\pm$标准差） & 0.07015$\pm$0.00138 & 0.
 \midrule
 Mean relative change（平均相对变化） & +6.71\% & +3.04\% & +2.51\% & +0.89\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
+
 \end{table}
 
 \begin{table}[h]
 \centering
 \small
-\caption{Industrial SFT（监督微调）重复实验的 HR（命中率）}
+\caption{Industrial SFT 重复实验的 HR }
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrr}
 \toprule
 Run（运行） & HR@1 & HR@3 & HR@5 & HR@10 \\
@@ -107,16 +114,21 @@ Current Method mean$\pm$std（均值$\pm$标准差） & 0.07015$\pm$0.00138 & 0.
 \midrule
 Mean relative change（平均相对变化） & +6.71\% & +0.84\% & +0.19\% & -2.66\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
+
 \end{table}
 
-重复实验结果摘要：三次平均后，current method（当前方法）在 NDCG@1/3/5/10（归一化折损累计增益@1/3/5/10）上均高于 baseline（基线），其中 NDCG@1（归一化折损累计增益@1）提升最大。HR（命中率）方面，current method（当前方法）在 HR@1/3/5（命中率@1/3/5）平均值上略高于 baseline（基线），但 HR@10（命中率@10）平均值低于 baseline（基线）。因此，重复实验支持的更保守表述是：current method（当前方法）在 Industrial SFT（Industrial 监督微调）上更稳定地改善 top-rank ranking quality（前排排序质量），但没有全面改善 recall coverage（召回覆盖）。
+\FloatBarrier
+
+三次平均后，current method 在 NDCG@1/3/5/10上均高于 baseline，其中 NDCG@1 提升最大。HR 方面，current method 在 HR@1/3/5 平均值上略高于 baseline，但 HR@10 平均值低于 baseline。
 
 \subsection{Office Products}
 
 \begin{table}[h]
 \centering
-\caption{Office Products 上的 SFT（监督微调）结果}
+\caption{Office Products 上的 SFT 结果}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrrrr}
 \toprule
 Variant（变体） & NDCG@1 & NDCG@3 & NDCG@5 & NDCG@10 & HR@1 & HR@3 & HR@5 & HR@10 \\
@@ -126,16 +138,19 @@ Current Method（当前方法） & 0.081998 & 0.100994 & 0.107274 & 0.114991 & 0
 Current Method - Baseline（差值） & +0.000822 & +0.001876 & +0.000930 & +0.000123 & +0.000822 & +0.002877 & +0.000617 & -0.001439 \\
 Relative Change（变化率） & +1.01\% & +1.89\% & +0.87\% & +0.11\% & +1.01\% & +2.57\% & +0.48\% & -0.93\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
+
 \end{table}
 
-结果摘要：当前方法 tokenizer（分词器）在所有 NDCG（归一化折损累计增益）指标上小幅高于 baseline（基线），并在 HR@1/HR@3/HR@5（命中率@1/@3/@5）上高于 baseline（基线），但 HR@10（命中率@10）低于 baseline（基线）。
+当前方法 tokenizer 在所有 NDCG 指标上小幅高于 baseline，并在 HR@1/HR@3/HR@5 上高于 baseline，但 HR@10 低于 baseline。
 
 \subsection{Toys and Games}
 
 \begin{table}[h]
 \centering
 \caption{Toys and Games 上的 SFT（监督微调）结果}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrrrr}
 \toprule
 Variant（变体） & NDCG@1 & NDCG@3 & NDCG@5 & NDCG@10 & HR@1 & HR@3 & HR@5 & HR@10 \\
@@ -145,18 +160,23 @@ Current Method（当前方法） & 0.021426 & 0.030527 & 0.034850 & 0.041285 & 0
 Current Method - Baseline（差值） & -0.001277 & -0.000970 & -0.000982 & -0.001570 & -0.001277 & -0.000922 & -0.000922 & -0.002696 \\
 Relative Change（变化率） & -5.62\% & -3.08\% & -2.74\% & -3.66\% & -5.62\% & -2.42\% & -1.90\% & -3.83\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
+
 \end{table}
 
-结果摘要：在 Toys and Games 上，当前方法 tokenizer（分词器）的 SFT（监督微调）结果在列出的所有 cutoff（截断位置）上均低于 baseline（基线）。
+在 Toys and Games 上，当前方法 tokenizer 的 SFT 结果低于 baseline。
+
+\clearpage
 
 \section{RL 结果}
 
-当前 registry（总账）中，只有 Industrial and Scientific 已有完整的当前方法 RL（强化学习）与 baseline RL（基线强化学习）对比。
+我们只进行了 Industrial and Scientific 的当前方法 RL 与 baseline RL 对比。
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
-\caption{Industrial and Scientific 上的 RL（强化学习）结果}
+\caption{Industrial and Scientific 上的 RL 结果}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrrrr}
 \toprule
 Variant（变体） & NDCG@1 & NDCG@3 & NDCG@5 & NDCG@10 & HR@1 & HR@3 & HR@5 & HR@10 \\
@@ -166,18 +186,10 @@ Current Method RL（当前方法强化学习） & 0.073020 & 0.087362 & 0.094663
 Current Method - Baseline（差值） & -0.000221 & -0.001670 & -0.002382 & -0.002131 & -0.000221 & -0.002427 & -0.004191 & -0.003309 \\
 Relative Change（变化率） & -0.30\% & -1.88\% & -2.45\% & -1.99\% & -0.30\% & -2.42\% & -3.50\% & -2.19\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
-结果摘要：在 Industrial and Scientific 上，当前方法 RL（强化学习）在列出的所有指标上均低于当前可用的最强 baseline RL（基线强化学习）。
-
-\section{客观结论}
-
-\begin{enumerate}
-  \item Industrial SFT（Industrial 监督微调）：单次结果和三次重复实验均显示，当前方法 tokenizer（分词器）带来稳定的 NDCG（归一化折损累计增益）提升；但 HR@10（命中率@10）低于 baseline（基线），因此不是全面提升。
-  \item Office SFT（Office 监督微调）：当前方法 tokenizer（分词器）带来小幅 NDCG（归一化折损累计增益）提升，HR（命中率）结果混合。
-  \item Toys SFT（Toys 监督微调）：当前方法 tokenizer（分词器）未超过 baseline（基线）。
-  \item Industrial RL（Industrial 强化学习）：当前方法 tokenizer（分词器）未超过当前可用的最强 baseline RL（基线强化学习）。
-\end{enumerate}
+在 Industrial and Scientific 上，当前方法 RL 低于当前最强 baseline RL。
 
 \end{document}
